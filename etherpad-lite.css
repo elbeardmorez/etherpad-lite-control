@@ -1,0 +1,20 @@
+
+body {
+  background-color: #ddd;
+  padding: 0px;
+  margin: 0px;
+}
+
+.button {
+  color: white;
+  border-radius: 3px;
+  min-width: 100px;
+  padding: 4px 15px;
+  margin: 5px; 
+}
+
+#epStatus {
+  font-size: 0.8em;
+  color: red;
+}
+

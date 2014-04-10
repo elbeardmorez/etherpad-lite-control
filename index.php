@@ -15,7 +15,7 @@ function getFunctionName($s) {
 <script type="text/javascript" src="etherpad-lite.js"></script>
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 </head>
-<body>
+<body onload="loadState();">
   <div id="control" style="position: absolute; top: 15px; right: 5px; bottom: 15px; width: 120px;">
     <?php
       $controls = [ 'Status' ];

@@ -12,11 +12,36 @@ a minimal html/javascript/php interface for the Etherpad-Lite API allowing for e
 
 ## <p></p>
 
+### installation / running
+
+there is a php 'include' referencing a '*composer*' (dependency manager) installation of the 'etherpad-lite-client' php library dependency. the following are the minimal steps to install and run the application:
+
+```
+# pull project
+> git clone https://github.com/elbeardmorez/etherpad-lite-control.git etherpad-lite-control
+
+# install composer (if not already available)
+> curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer
+
+# switch to project root
+> cd /path/to/etherpad-lite-control
+
+# install dependencies
+> composer --verbose install
+
+# run*
+> php /path/to/etherpad-lite-control/index.php
+```
+
+*personally, i deploy for use through an Apache web server
+## <p></p>
+
 ### development
 #### done
 - ui layout
 - php client wrapper
 - api token check
+- maintain state
 
 #### todo
 - popup dialog mechanism

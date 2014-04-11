@@ -18,7 +18,7 @@ function getFunctionName($s) {
 <body onload="loadState();">
   <div id="control" style="position: absolute; top: 15px; right: 5px; bottom: 15px; width: 120px;">
     <?php
-      $controls = [ 'Status', 'Pads' ];
+      $controls = [ 'Status', 'Pads', 'Content' ];
       foreach ($controls as $control) {
         echo '<input type="button" class="button" onclick="epc_' . getFunctionName($control) . '()" value="' . $control . '">';
       }
@@ -90,6 +90,19 @@ function getFunctionName($s) {
       </select>
     </div>
 
+  </div>
+  </div>
+
+  <div id="popup-background" class="popup-background" style="position: absolute; height: 100%; width: 100%;"></div>
+
+  <div id="popup-outer" class="popup-outer" style="position: absolute; height: 100%; width: 100%;">
+  <div id="popup-inner" class="popup-inner" style="position: relative; top: 50%; left: 50%; height: 400px; width: 500px; margin-top: -200px; margin-left: -250px; overflow: auto;">
+    <h2 id=popupTitle></h2>
+    <div id="popupContent">
+    </div>
+    <p>
+      <input type="button" class="button" value="close" onclick="popupToggle();">
+    </p>
   </div>
   </div>
 

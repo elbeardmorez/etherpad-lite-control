@@ -43,12 +43,12 @@ there is a php 'include' referencing a '*composer*' (dependency manager) install
 - api token check
 - maintain state
 - list all pads
+- popup dialog mechanism
+- view pad content
 
 #### todo
-- popup dialog mechanism
 - list all groups
 - list all authors
-- view pad content
 - delete pads
 - group/pad info
 - set pad passwords

@@ -91,3 +91,27 @@ function epc_pads() {
   }
 }
 
+function epc_content() {
+  console.log('[debug|epc_content]');
+  selected = $('#epPads :selected').map(function(){return this.value;}).get();
+  console.log('selected #: ' + selected.length + ', @: ' + selected.join(", "));
+  if (selected.length > 0) {
+    var args = [selected[0]];
+    jsonData = ep_call('getHTML', args);
+    if (jsonData !== undefined) {
+      $('#popupContent').html(jsonData['html']);
+      popupToggle();
+    }
+  }
+}
+
+function popupToggle() {
+  if ($('#popup-background').css('display') === 'none') {
+    $('#popup-background').css('display', 'block');
+    $('#popup-outer').css('display', 'block');
+  } else {
+    $('#popup-background').css('display', 'none');
+    $('#popup-outer').css('display', 'none');
+  }
+}
+

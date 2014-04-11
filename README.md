@@ -42,10 +42,10 @@ there is a php 'include' referencing a '*composer*' (dependency manager) install
 - php client wrapper
 - api token check
 - maintain state
+- list all pads
 
 #### todo
 - popup dialog mechanism
-- list all pads
 - list all groups
 - list all authors
 - view pad content

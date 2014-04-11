@@ -40,26 +40,54 @@ function getApiVersion() {
           document.forms['etherpad-lite']['epc_apiversion'].value : "1.0.0"); 
 }
 
-function epc_status() {
-  console.log('[debug|ep_status]');
+function ep_call(func, args) {
+  console.log('[debug|ep_call]');
+  if (args === undefined)
+    var args = [];
   sServer = getServer();
   sApiVersion = getApiVersion(); 
   sData = '';
+  jsonData = undefined;
   $.ajax({
     url: './etherpad-lite.php',
     type: 'POST',  
     async: false,
-    data: { 'func' : "checkToken",
+    dataType: 'json',
+    data: { 'func' : func,
+            'args' : args,
             'url' : sServer },
     success: function(data, textStatus, textStatus, jqXHR) {
-      console.log('[debug|ep_status] success');
-      sData = data;
+      console.log('[debug|ep_call] success');
+      sData = data['raw'];
+      jsonData = data['data'];
     },
     failure: function(data, textStatus, textStatus, jqXHR) {
-      console.log('[debug|ep_status] failure');
-      sData = data;
+      console.log('[debug|ep_call] failure');
+      sData = data['raw'];
     }
   });
   $('#epStatus').html(sData);
+  return jsonData;
+}
+
+function epc_status() {
+  console.log('[debug|epc_status]');
+  ep_call('checkToken');
+}
+
+function epc_pads() {
+  console.log('[debug|epc_pads]');
+  jsonData = ep_call('listAllPads')
+  if (jsonData !== undefined) {
+    // process
+    $('#epPads').html('');
+    $('#epPadsTitle').html('pads (' + jsonData['padIDs'].length + ')');
+    if (jsonData['padIDs'].length > 0) {
+      $('#epPads').html('<option value="0">All</option>');
+      $.each(jsonData['padIDs'], function(key, value) {
+        $('#epPads').append('<option>' + value + '</option>');
+      });
+    }
+  }
 }
 

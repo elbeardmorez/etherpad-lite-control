@@ -105,7 +105,7 @@ function epc_content(verbose) {
     jsonData = ep_call(verbose, 'getHTML', args);
     if (jsonData !== undefined) {
       $('#popupContent').html(jsonData['html']);
-      popupToggle();
+      popupToggle('ok');
     }
   }
 }
@@ -126,7 +126,34 @@ function epc_delete(verbose){
   epc_pads(false);
 }
 
-function popupToggle() {
+function popupToggle(type) {
+  if (type === undefined)
+    var type = "ok";
+  switch (type) {
+    case "ok":
+      $('#popup-button-ok').css('opacity', 1.0);
+      $('#popup-button-ok').attr('value', 'ok');
+      $('#popup-button-ok').off("click");
+      $('#popup-button-ok').on('click', function(){ popupToggle(); });
+      $('#popup-button-cancel').css('opacity', 0.0);
+      break;
+    case "ok|cancel":
+      $('#popup-button-ok').css('opacity', 1.0);
+      $('#popup-button-ok').attr('value', 'ok');
+      $('#popup-button-cancel').css('opacity', 1.0);
+      $('#popup-button-cancel').attr('value', 'cancel');
+      $('#popup-button-cancel').off("click");
+      $('#popup-button-cancel').on("click", function(){ popupToggle(); });
+      break;
+    case "yes|no":
+      $('#popup-button-ok').css('opacity', 1.0);
+      $('#popup-button-ok').attr('value', 'yes');
+      $('#popup-button-cancel').css('opacity', 1.0);
+      $('#popup-button-cancel').attr('value', 'no');
+      $('#popup-button-cancel').off("click");
+      $('#popup-button-cancel').on("click", function(){ popupToggle(); });
+      break;
+  }
   if ($('#popup-background').css('display') === 'none') {
     $('#popup-background').css('display', 'block');
     $('#popup-outer').css('display', 'block');

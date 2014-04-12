@@ -40,8 +40,12 @@ function getApiVersion() {
           document.forms['etherpad-lite']['epc_apiversion'].value : "1.0.0"); 
 }
 
-function ep_call(func, args) {
+function ep_call(verbose, func, args) {
   console.log('[debug|ep_call]');
+  if (verbose === undefined)
+    var verbose = true;
+  if (func === undefined)
+    var func = "checkToken";
   if (args === undefined)
     var args = [];
   sServer = getServer();
@@ -66,18 +70,19 @@ function ep_call(func, args) {
       sData = data['raw'];
     }
   });
-  $('#epStatus').html(sData);
+  if (verbose)
+    $('#epStatus').html(sData);
   return jsonData;
 }
 
-function epc_status() {
+function epc_status(verbose) {
   console.log('[debug|epc_status]');
-  ep_call('checkToken');
+  ep_call(verbose, 'checkToken');
 }
 
-function epc_pads() {
+function epc_pads(verbose) {
   console.log('[debug|epc_pads]');
-  jsonData = ep_call('listAllPads')
+  jsonData = ep_call(verbose, 'listAllPads')
   if (jsonData !== undefined) {
     // process
     $('#epPads').html('');
@@ -91,18 +96,34 @@ function epc_pads() {
   }
 }
 
-function epc_content() {
+function epc_content(verbose) {
   console.log('[debug|epc_content]');
   selected = $('#epPads :selected').map(function(){return this.value;}).get();
   console.log('selected #: ' + selected.length + ', @: ' + selected.join(", "));
   if (selected.length > 0) {
     var args = [selected[0]];
-    jsonData = ep_call('getHTML', args);
+    jsonData = ep_call(verbose, 'getHTML', args);
     if (jsonData !== undefined) {
       $('#popupContent').html(jsonData['html']);
       popupToggle();
     }
   }
+}
+
+function epc_delete(verbose){
+  console.log('[debug|epc_delete]');
+
+  selected = $('#epPads :selected').map(function(){return this.value;}).get();
+  console.log('selected #: ' + selected.length + ', @: ' + selected.join(", "));
+  if (selected.length > 0) {
+    $.each(selected, function(key, value) {
+      console.log('[info] deleted pad, id: \'' + value + '\'');
+      var args = [value];
+      jsonData = ep_call(verbose, 'deletePad', args);
+    });
+  }
+  // reload pads
+  epc_pads(false);
 }
 
 function popupToggle() {

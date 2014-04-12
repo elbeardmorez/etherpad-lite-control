@@ -18,7 +18,7 @@ function getFunctionName($s) {
 <body onload="loadState();">
   <div id="control" style="position: absolute; top: 15px; right: 5px; bottom: 15px; width: 120px;">
     <?php
-      $controls = [ 'Status', 'Pads', 'Content' ];
+      $controls = [ 'Status', 'Pads', 'Content', 'Delete' ];
       foreach ($controls as $control) {
         echo '<input type="button" class="button" onclick="epc_' . getFunctionName($control) . '()" value="' . $control . '">';
       }

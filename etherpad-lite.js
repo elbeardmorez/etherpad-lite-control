@@ -110,20 +110,46 @@ function epc_content(verbose) {
   }
 }
 
-function epc_delete(verbose){
+function epc_delete(verbose, data) {
   console.log('[debug|epc_delete]');
 
   selected = $('#epPads :selected').map(function(){return this.value;}).get();
   console.log('selected #: ' + selected.length + ', @: ' + selected.join(", "));
   if (selected.length > 0) {
-    $.each(selected, function(key, value) {
-      console.log('[info] deleted pad, id: \'' + value + '\'');
-      var args = [value];
-      jsonData = ep_call(verbose, 'deletePad', args);
-    });
+    if (data === undefined) {
+      // confirmation message
+      console.log('[debug|epc_delete] confirmation message');
+      sMessage = '<p>are you sure you want to delete the following pads</p>\n';
+      sMessage += '<ul>\n';
+      $.each(selected, function(key, value) {
+        sMessage += '<li>' + value + '</li>\n'
+      });
+      sMessage += '</ul>\n';
+      $('#popupContent').html(sMessage);
+      // set the click handler
+      $('#popup-button-ok').off("click");
+      $('#popup-button-ok').on('click', function() {epc_delete(true, true);});
+      popupToggle('yes|no');
+    } else {
+      // toggle popup
+      popupToggle();
+      // do deletion
+      if (data === true) {
+        selectedIndex = $("#epPads option:selected")[0].index;
+        $.each(selected, function(key, value) {
+          var args = [value];
+          jsonData = ep_call(verbose, 'deletePad', args);
+          console.log('[info] deleted pad, id: \'' + value + '\'');
+        });
+        // reload pads
+        epc_pads(false);
+        // reselect
+        if (selectedIndex > $('#epPads')[0].length)
+          selectedIndex = $('#epPads')[0].length;
+        $('#epPads')[0].selectedIndex = selectedIndex;
+      }
+    }
   }
-  // reload pads
-  epc_pads(false);
 }
 
 function popupToggle(type) {

@@ -101,7 +101,8 @@ function getFunctionName($s) {
     <div id="popupContent">
     </div>
     <p>
-      <input type="button" class="button" value="close" onclick="popupToggle();">
+      <input id="popup-button-ok" type="button" class="button">
+      <input id="popup-button-cancel" type="button" class="button">
     </p>
   </div>
   </div>

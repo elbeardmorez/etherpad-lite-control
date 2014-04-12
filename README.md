@@ -45,11 +45,11 @@ there is a php 'include' referencing a '*composer*' (dependency manager) install
 - list all pads
 - popup dialog mechanism
 - view pad content
+- delete pads
 
 #### todo
 - list all groups
 - list all authors
-- delete pads
 - group/pad info
 - set pad passwords
 - toggle pad private/public

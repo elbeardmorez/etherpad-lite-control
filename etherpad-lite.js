@@ -104,6 +104,7 @@ function epc_content(verbose) {
     var args = [selected[0]];
     jsonData = ep_call(verbose, 'getHTML', args);
     if (jsonData !== undefined) {
+      $('#popupTitle').html(selected[0]);
       $('#popupContent').html(jsonData['html']);
       popupToggle('ok');
     }

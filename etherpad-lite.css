@@ -18,6 +18,11 @@ body {
   color: red;
 }
 
+#popupTitle {
+  margin-top: 0px; 
+  margin-bottom: 5px; 
+}
+
 .popup-background {
   display: none;
   opacity: 0.9;

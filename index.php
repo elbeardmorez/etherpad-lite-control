@@ -96,14 +96,14 @@ function getFunctionName($s) {
   <div id="popup-background" class="popup-background" style="position: absolute; height: 100%; width: 100%;"></div>
 
   <div id="popup-outer" class="popup-outer" style="position: absolute; height: 100%; width: 100%;">
-  <div id="popup-inner" class="popup-inner" style="position: relative; top: 50%; left: 50%; height: 400px; width: 500px; margin-top: -200px; margin-left: -250px; overflow: auto;">
+  <div id="popup-inner" class="popup-inner" style="position: relative; top: 50%; left: 50%; width: 500px; margin-top: -200px; margin-left: -250px;">
     <h2 id=popupTitle></h2>
-    <div id="popupContent">
+    <div id="popupContent" style="position: relative; margin: 5px 5px 40px 5px; max-height: 325px; overflow: auto; border-width: 0px 0px 2px 0px; border-color: #aaa;">
     </div>
-    <p>
+    <div id="popupContent" style="position: absolute; bottom: 15px; height: 30px;">
       <input id="popup-button-ok" type="button" class="button">
       <input id="popup-button-cancel" type="button" class="button">
-    </p>
+    </div>
   </div>
   </div>
 

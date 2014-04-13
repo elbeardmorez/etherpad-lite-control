@@ -41,7 +41,7 @@ function getApiVersion() {
 }
 
 function ep_call(verbose, func, args) {
-  console.log('[debug|ep_call]');
+//  console.log('[debug|ep_call]');
   if (verbose === undefined)
     var verbose = true;
   if (func === undefined)
@@ -61,12 +61,12 @@ function ep_call(verbose, func, args) {
             'args' : args,
             'url' : sServer },
     success: function(data, textStatus, textStatus, jqXHR) {
-      console.log('[debug|ep_call] success');
+//      console.log('[debug|ep_call] success');
       sData = data['raw'];
       jsonData = data['data'];
     },
     failure: function(data, textStatus, textStatus, jqXHR) {
-      console.log('[debug|ep_call] failure');
+//      console.log('[debug|ep_call] failure');
       sData = data['raw'];
     }
   });
@@ -151,6 +151,58 @@ function epc_delete(verbose, data) {
       }
     }
   }
+}
+
+function epc_groups(verbose) {
+  console.log('[debug|epc_groups]');
+  jsonData = ep_call(verbose, 'listAllGroups')
+  if (jsonData !== undefined) {
+    // process
+    $('#epGroups').html('');
+    $('#epGroupsTitle').html('groups (' + jsonData['groupIDs'].length + ')');
+    if (jsonData['groupIDs'].length > 0) {
+      $('#epGroups').html('<option value="0">All</option>');
+      $.each(jsonData['groupIDs'], function(key, value) {
+        $('#epGroups').append('<option>' + value + '</option>');
+      });
+    }
+  }
+}
+
+function epc_authors(verbose) {
+  console.log('[debug|epc_authors]');
+  jsonData = ep_call(false, 'listAllPads')
+  authors = {};
+  authorNames = {};
+  if (jsonData !== undefined) {
+    $.each(jsonData['padIDs'], function(idx, padID) {
+      var args = [padID];
+      jsonData2 = ep_call(false, 'listAuthorsOfPad', args);
+      if (jsonData2 !== undefined) {
+        $.each(jsonData['authorIDs'], function(idx2, authorID) {
+          var authorName = authorNames[authorID];
+          if (authorName === undefined) {
+            var args2 = [authorID];
+            jsonData3 = undefined;
+            jsonData3 = ep_call(true, 'getAuthorName', args2);
+            if (jsonData3 !== undefined && jsonData3 !== null) {
+//              authorName = jsonData3['authorName'] // api bug?
+              authorName = jsonData3
+              authorNames[authorID] = authorName;
+            }
+          }
+          if (authorName !== undefined)
+            authors[authorID] = jsonData3 + ' [' + authorID + ']';
+          else
+            authors[authorID] = '[' + authorID + ']';
+        });
+      }
+    });
+  }
+  $('#epAuthors').html('<option value="0">All</option>');
+  $.each(authors, function(idx, value) {
+    $('#epAuthors').append('<option>' + value + '</option>');
+  });
 }
 
 function popupToggle(type) {

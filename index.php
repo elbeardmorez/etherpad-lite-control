@@ -20,7 +20,7 @@ function getFunctionName($s) {
     <?php
       $controls = [ 'Status', 'Pads', 'Content', 'Delete' ];
       foreach ($controls as $control) {
-        echo '<input type="button" class="button" onclick="epc_' . getFunctionName($control) . '()" value="' . $control . '">';
+        echo '<input id="epc' . $control . '" type="button" class="button" onclick="epc_' . getFunctionName($control) . '()" value="' . $control . '">';
       }
     ?>
   </div>

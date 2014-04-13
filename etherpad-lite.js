@@ -21,7 +21,7 @@ function getCookie(sName) {
 }
 
 function loadState() {
-  var arr = [ 'epc_server', 'epc_port', 'epc_basepath', 'epc_apiversion' ];
+  var arr = [ 'epc_server', 'epc_port', 'epc_apikeypath' ];
   for (idx in arr) {
     var sElement = arr[idx];
     console.log('restoring state for: \'' + sElement + '\'');
@@ -35,10 +35,6 @@ function getServer() {
          (document.forms['etherpad-lite']['epc_basepath'].value ? "/" +
          document.forms['etherpad-lite']['epc_basepath'].value : ""); 
 }
-function getApiVersion() {
-         (document.forms['etherpad-lite']['epc_apiversion'].value ? "/" +
-          document.forms['etherpad-lite']['epc_apiversion'].value : "1.0.0"); 
-}
 
 function ep_call(verbose, func, args) {
 //  console.log('[debug|ep_call]');
@@ -49,7 +45,7 @@ function ep_call(verbose, func, args) {
   if (args === undefined)
     var args = [];
   sServer = getServer();
-  sApiVersion = getApiVersion(); 
+  sApiKeyPath = $('#epc_apikeypath').attr('value');
   sData = '';
   jsonData = undefined;
   $.ajax({
@@ -59,7 +55,8 @@ function ep_call(verbose, func, args) {
     dataType: 'json',
     data: { 'func' : func,
             'args' : args,
-            'url' : sServer },
+            'url' : sServer,
+            'apiKeyPath' : sApiKeyPath },
     success: function(data, textStatus, textStatus, jqXHR) {
 //      console.log('[debug|ep_call] success');
       sData = data['raw'];

@@ -17,10 +17,12 @@ body {
   font-size: 0.8em;
   color: red;
 }
-
 #epcDelete {
   margin-top: 25px;
   color: red;
+}
+#epc_basepath {
+  color: blue;
 }
 
 #popupTitle {

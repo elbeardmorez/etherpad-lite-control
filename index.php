@@ -45,11 +45,11 @@ function getFunctionName($s) {
           </div>
           <div style="display: block">
             <p style="margin-top: 8px; margin-bottom: 3px;">base path:</p>
-            <input id="epc_basepath" type=text size=25 onchange="if (this.value.length > 0) setCookie(this.id, this.value);">
+            <input id="epc_basepath" type=text size=25 onchange="if (this.value.length > 0) setCookie(this.id, this.value);" style="opacity: 0.5;" disabled>
           </div>
           <div style="display: block">
-            <p style="margin-top: 8px; margin-bottom: 3px;">api version:</p>
-            <input id="epc_apiversion" type=text size=25 onchange="if (this.value.length > 0) setCookie(this.id, this.value);">
+            <p style="margin-top: 8px; margin-bottom: 3px;">api key path:</p>
+            <input id="epc_apikeypath" type=text size=25 onchange="if (this.value.length > 0) setCookie(this.id, this.value);">
           </div>
       </form>
       </div>

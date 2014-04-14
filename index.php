@@ -17,7 +17,7 @@ function getFunctionName($s) {
 </head>
 <body onload="loadState();">
   <div id="header" style="position: absolute; height: 75px; width: 100%;">
-    <div id="title" style="position: relative; top: 25px; left: 5px; right: 135px; padding: 0px 2.5%;">
+    <div id="title" style="position: relative; top: 25px; left: 5px; right: 135px; margin: 0px 2.5%;">
       <h2>Etherpad-Lite Control</h2>
     </div>
   </div>

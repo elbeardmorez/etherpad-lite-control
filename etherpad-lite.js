@@ -68,7 +68,7 @@ function ep_call(verbose, func, args) {
     }
   });
   if (verbose)
-    $('#epStatus').html(sData);
+    $('#epStatus-inner').html(sData);
   return jsonData;
 }
 

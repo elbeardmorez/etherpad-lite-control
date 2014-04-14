@@ -1,4 +1,6 @@
 
+var pads = {};
+
 function setCookie(sName, sValue, lExpire) {
   if (!lExpire)
     var lExpire = 365;
@@ -82,15 +84,56 @@ function epc_pads(verbose) {
   jsonData = ep_call(verbose, 'listAllPads')
   if (jsonData !== undefined) {
     // process
-    $('#epPads').html('');
-    $('#epPadsTitle').html('pads (' + jsonData['padIDs'].length + ')');
     if (jsonData['padIDs'].length > 0) {
-      $('#epPads').html('<option value="0">All</option>');
-      $.each(jsonData['padIDs'], function(key, value) {
-        $('#epPads').append('<option>' + value + '</option>');
+      $.each(jsonData['padIDs'], function(idx, padID) {
+        if (pads[padID] === undefined)
+          pads[padID] = {'id': padID};
+        var args = [padID]
+        jsonData2 = ep_call(false, 'getPublicStatus', args);
+        if (jsonData2 !== undefined && jsonData2 !== null) {
+          if (jsonData2)
+            pads[padID]['public'] = true;
+          else
+            pads[padID]['public'] = false;
+        }
       });
+      // update select control
+      epc_padsType($('#epPadsType').attr('value'));
     }
   }
+}
+
+function epc_padsType(type) {
+  console.log('[debug|epc_padsType]');
+
+  switch (type) {
+    case "":
+      console.log("[debug|epc_padsType] selected all pads");
+      break;
+    case "Public":
+      console.log("[debug|epc_padsType] selected public pads only");
+      break;
+    case "Private":
+      console.log("[debug|epc_padsType] selected private pads only");
+      break;
+  }
+  $('#epPads').html('<option value="0">All</option>');
+  $.each(pads, function(idx, value) {
+    switch (type) {
+      case "":
+        $('#epPads').append('<option>' + value['id'] + '</option>');
+        break;
+      case "Public":
+        if (value['public'] !== undefined && value['public'] === true)
+          $('#epPads').append('<option>' + value['id'] + '</option>');
+        break;
+      case "Private":
+        if (value['public'] !== undefined && value['public'] !== true)
+          $('#epPads').append('<option>' + value['id'] + '</option>');
+        break;
+    }
+  });
+  $('#epPadsTitle').html('pads (' + ($('#epPads')[0].length - 1) + ')');
 }
 
 function epc_content(verbose) {

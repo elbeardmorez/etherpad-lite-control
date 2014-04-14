@@ -21,12 +21,12 @@ function getFunctionName($s) {
       <h2>Etherpad-Lite Control</h2>
     </div>
   </div>
-  <div id="control-background" style="z-index: 1; position: absolute; top: 75px; right: 5px; bottom: 55px; width: 120px;"></div>
-  <div id="control-inner" style="z-index: 1; position: absolute; top: 75px; right: 5px; bottom: 55px; width: 120px;">
+  <div id="control-background" style="z-index: 1; position: absolute; top: 75px; right: 0px; bottom: 55px; width: 120px;"></div>
+  <div id="control-inner" style="z-index: 1; position: absolute; top: 75px; right: 0px; bottom: 55px; width: 120px;">
     <?php
       $controls = [ 'Status', 'Groups', 'Authors', 'Pads', 'Content', 'Delete' ];
       foreach ($controls as $control) {
-        echo '<input id="epc' . $control . '" type="button" class="button" onclick="epc_' . getFunctionName($control) . '()" value="' . $control . '" style="margin-left: 13px;">';
+        echo '<input id="epc' . $control . '" type="button" class="button" onclick="epc_' . getFunctionName($control) . '()" value="' . $control . '" style="margin-left: 10px;">';
       }
     ?>
   </div>

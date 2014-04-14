@@ -11,11 +11,39 @@ body {
   min-width: 100px;
   padding: 4px 15px;
   margin: 5px; 
+  background-color: #313131;
+  background-image: -webkit-gradient(linear, 0% 0%, 0% 100% from(#666), to(#151515));
+  background-image: -moz-linear-gradient(90deg, #666, #151515);
+  background-image: -webkit-linear-gradient(bottom, #666 0%, #151515 100%);
 }
 
+#header {
+  background-color: #ddd;
+  background-image: -webkit-gradient(linear, 0% 0%, 0% 100% from(#ddd), to(#151515));
+  background-image: -moz-linear-gradient(90deg, #ddd, #151515);
+  background-image: -webkit-linear-gradient(bottom, #ddd 0%, #151515 100%);
+}
+
+#footer {
+  background-color: #ddd;
+  background-image: -webkit-gradient(linear, 0% 0%, 100% 0% from(#ddd), to(#151515));
+  background-image: -moz-linear-gradient(-90deg, #ddd, #151515);
+  background-image: -webkit-linear-gradient(bottom, #ddd 100%, #151515 0%);
+}
+
+#title {
+  color: black;
+  text-shadow: 1px 1px 1px white, 2px 2px 25px white;
+}
 #epStatus {
-  font-size: 0.8em;
   color: red;
+  background-color: #eee;
+}
+#epStatus, #epInfo {
+  font-size: 0.8em;
+  border-style: solid;
+  border-color: #888;
+  border-width: 0px 1px 1px 0px;
 }
 #epcDelete {
   margin-top: 25px;

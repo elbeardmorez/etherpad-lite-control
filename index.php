@@ -16,7 +16,12 @@ function getFunctionName($s) {
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 </head>
 <body onload="loadState();">
-  <div id="control" style="position: absolute; top: 15px; right: 5px; bottom: 15px; width: 120px;">
+  <div id="header" style="height: 75px;">
+    <div id="title" style="position: absolute; top: 25px; left: 5px; right: 135px; padding: 0px 2.5%;">
+      <h2>Etherpad-Lite Control</h2>
+    </div>
+  </div>
+  <div id="control" style="z-index: 1; position: absolute; top: 75px; right: 5px; bottom: 15px; width: 120px;">
     <?php
       $controls = [ 'Status', 'Groups', 'Authors', 'Pads', 'Content', 'Delete' ];
       foreach ($controls as $control) {
@@ -24,10 +29,9 @@ function getFunctionName($s) {
       }
     ?>
   </div>
-  <div id="content-outer" style="position: absolute; top: 15px; right: 135px; bottom: 5px; left: 5px;">
-  <div id="content-inner" style="position: relative; height: 100%; width: 90%; margin: auto;">
+  <div id="content-outer" style="position: absolute; top: 75px; right: 135px; bottom: 50px; left: 5px; min-width: 700px;">
+  <div id="content-inner" style="position: relative; height: 100%; width: 95%; margin: auto;">
 
-    <h2 style="margin-top: 0px; margin-bottom: 5px; ">Etherpad-Lite Control</h2>
 
     <div style="height: 225px; width: 100%;">
 
@@ -57,7 +61,7 @@ function getFunctionName($s) {
     <div style="float: right; position: relative; height: 100%; width: 30%; width: 175px;">
       <div style="position: absolute; top: 5px; bottom: 5px; left: 5px; right: 5px;">
       <p style="margin-top: 8px; margin-bottom: 5px;"><b>info</b></p>
-        <div id="info">
+        <div id="epInfo" style="position: absolute; top: 35px; bottom: 0px; width: 100%; overflow: auto;">
         </div>
       </div>
     </div>
@@ -65,7 +69,7 @@ function getFunctionName($s) {
     <div style="position: relative; height: 100%; min-width: 200px; margin: 0px 175px;">
       <div style="position: absolute; top: 5px; bottom: 5px; left: 5px; right: 5px;">
       <p style="margin-top: 8px; margin-bottom: 5px;"><b>status</b></p>
-      <div id="epStatus" style="position: absolute; top: 35px; bottom: 0px; width: 100%; overflow: scroll;"> 
+      <div id="epStatus" style="position: absolute; top: 35px; bottom: 0px; width: 100%; overflow: auto;">
       </div>
       </div>
     </div>
@@ -74,23 +78,27 @@ function getFunctionName($s) {
     <div style="float: none"></div>
   <!--
   -->
-    <div style="display: inline-block;">
-      <p id="epGroupsTitle" style="margin-bottom: 5px; font-weight: bold;">groups</p>
-      <select id="epGroups" size="20" multiple="multiple" style="min-width: 200px;">
-      </select>
-    </div>
-    <div style="display: inline-block;">
-      <p id="epAuthorsTitle" style="margin-bottom: 5px; font-weight: bold;">authors</p>
-      <select id="epAuthors" size="20" multiple="multiple" style="min-width: 200px;">
-      </select>
-    </div>
-    <div style="display: inline-block;">
-      <p id="epPadsTitle" style="margin-bottom: 5px; font-weight: bold;">pads</p>
-      <select id="epPads" size="20" multiple="multiple" style="min-width: 200px;">
-      </select>
+    <div style="position: relative; height: 225px; width: 100%;">
+      <div style="display: block; float: left; width: 30%; min-width: 150px; margin: auto;">
+        <p id="epGroupsTitle" style="margin-bottom: 5px; font-weight: bold;">groups</p>
+        <select id="epGroups" size="20" multiple="multiple" style="width: 100%;">
+        </select>
+      </div>
+      <div style="display: block; float: left; width: 30%; min-width: 150px; margin: auto;">
+        <p id="epAuthorsTitle" style="margin-bottom: 5px; font-weight: bold;">authors</p>
+        <select id="epAuthors" size="20" multiple="multiple" style="width: 100%;">
+        </select>
+      </div>
+      <div style="display: block; float: left; width: 40%; min-width: 150px; margin: auto;">
+        <p id="epPadsTitle" style="margin-bottom: 5px; font-weight: bold;">pads</p>
+        <select id="epPads" size="20" multiple="multiple" style="width: 100%;">
+        </select>
+      </div>
     </div>
 
   </div>
+  </div>
+  <div id="footer" style="position: absolute; bottom: 0px; height: 50px; width: 100%;">
   </div>
 
   <div id="popup-background" class="popup-background" style="position: absolute; height: 100%; width: 100%;"></div>

@@ -16,8 +16,8 @@ function getFunctionName($s) {
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 </head>
 <body onload="loadState();">
-  <div id="header" style="height: 75px;">
-    <div id="title" style="position: absolute; top: 25px; left: 5px; right: 135px; padding: 0px 2.5%;">
+  <div id="header" style="position: absolute; height: 75px; width: 100%;">
+    <div id="title" style="position: relative; top: 25px; left: 5px; right: 135px; padding: 0px 2.5%;">
       <h2>Etherpad-Lite Control</h2>
     </div>
   </div>
@@ -111,8 +111,8 @@ function getFunctionName($s) {
   <div id="footer" style="position: absolute; bottom: 0px; height: 50px; width: 100%;">
   </div>
 
-  <div id="popup-background" class="popup-background" style="position: absolute; height: 100%; width: 100%;"></div>
-  <div id="popup-outer" class="popup-outer" style="position: absolute; height: 100%; width: 100%;">
+  <div id="popup-background" class="popup-background" style="z-index: 10; position: absolute; height: 100%; width: 100%;"></div>
+  <div id="popup-outer" class="popup-outer" style="z-index: 11; position: absolute; height: 100%; width: 100%;">
   <div id="popup-inner" class="popup-inner" style="position: relative; top: 50%; left: 50%; width: 500px; margin-top: -200px; margin-left: -250px;">
     <h2 id=popupTitle></h2>
     <div id="popupContent" style="position: relative; margin: 5px 5px 40px 5px; max-height: 325px; overflow: auto; border-width: 0px 0px 2px 0px; border-color: #aaa;">

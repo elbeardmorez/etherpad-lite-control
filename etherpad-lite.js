@@ -185,10 +185,13 @@ function epc_padsRemove(verbose, data) {
         $.each(selected, function(key, value) {
           var args = [value];
           jsonData = ep_call(verbose, 'deletePad', args);
-          console.log('[info] deleted pad, id: \'' + value + '\'');
+          if (jsonData) {
+            console.log('[info] deleted pad, id: \'' + value + '\'');
+            delete(pads[value]);
+          }
         });
         // reload pads
-        epc_pads(false);
+        epc_padsType();
         // reselect
         if (selectedIndex > $('#epPads')[0].length)
           selectedIndex = $('#epPads')[0].length;

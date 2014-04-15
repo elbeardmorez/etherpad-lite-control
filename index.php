@@ -24,7 +24,7 @@ function getFunctionName($s) {
   <div id="control-background" style="z-index: 1; position: absolute; top: 75px; right: 0px; bottom: 55px; width: 120px;"></div>
   <div id="control-inner" style="z-index: 1; position: absolute; top: 75px; right: 0px; bottom: 55px; width: 120px;">
     <?php
-      $controls = [ 'Status', 'Groups', 'Authors', 'Pads', 'Content', 'Delete' ];
+      $controls = [ 'Status', 'Groups', 'Authors', 'Pads', 'Content' ];
       foreach ($controls as $control) {
         echo '<input id="epc' . $control . '" type="button" class="button" onclick="epc_' . getFunctionName($control) . '()" value="' . $control . '" style="margin-left: 10px;">';
       }
@@ -50,7 +50,7 @@ function getFunctionName($s) {
             </div>
             <div style="display: block">
               <p style="margin-top: 5px; margin-bottom: 2px;">base path:</p>
-              <input id="epc_basepath" type=text size=25 onchange="if (this.value.length > 0) setCookie(this.id, this.value);" style="width: 100%; opacity: 0.5;" disabled>
+              <input id="epc_basepath" type=text size=25 onchange="if (this.value.length > 0) setCookie(this.id, this.value);" style="width: 100%;" disabled>
             </div>
             <div style="display: block">
               <p style="margin-top: 5px; margin-bottom: 2px;">api key path:</p>
@@ -87,11 +87,33 @@ function getFunctionName($s) {
         <p id="epGroupsTitle" style="margin-bottom: 5px; font-weight: bold;">groups</p>
         <select id="epGroups" multiple="multiple" style="height: 218px; width: 100%;">
         </select>
+        <div style="position: relative; height: 20px; width: 100%;">
+          <div style="position: absolute; left: 0px; right: 42px;">
+            <input id="epGroupName" type="text" style="width: 100%;" disabled>
+          </div>
+          <div style="float: right; margin-right: 2px;">
+            <input type="button" class="button button-remove" value="-" onclick="epc_groupsRemove();">
+          </div>
+          <div style="float: right;">
+            <input type="button" class="button button-add" value="+" onclick="epc_groupsAdd();">
+          </div>
+        </div>
       </div>
       <div style="display: block; float: left; width: 30%; min-width: 150px; margin: auto;">
         <p id="epAuthorsTitle" style="margin-bottom: 5px; font-weight: bold;">authors</p>
         <select id="epAuthors" multiple="multiple" style="height: 218px; width: 100%;">
         </select>
+        <div style="position: relative; height: 20px; width: 100%;">
+          <div style="position: absolute; left: 0px; right: 42px;">
+            <input id="epAuthorName" type="text" style="width: 100%;" disabled>
+          </div>
+          <div style="float: right; margin-right: 2px;">
+            <input type="button" class="button button-remove" value="-" onclick="epc_authorsRemove();">
+          </div>
+          <div style="float: right;">
+            <input type="button" class="button button-add" value="+" onclick="epc_authorsAdd();">
+          </div>
+        </div>
       </div>
       <div style="display: block; float: left; width: 40%; min-width: 150px; margin: auto;">
         <p id="epPadsTitle" style="margin-bottom: 5px; font-weight: bold;">pads</p>
@@ -102,6 +124,17 @@ function getFunctionName($s) {
         </select>
         <select id="epPads" multiple="multiple" style="height: 200px; width: 100%;">
         </select>
+        <div style="position: relative; height: 20px; width: 100%;">
+          <div style="position: absolute; left: 0px; right: 42px;">
+            <input id="epPadName" type="text" style="width: 100%;" disabled>
+          </div>
+          <div style="float: right; margin-right: 2px;">
+            <input type="button" class="button button-remove" value="-" onclick="epc_padsRemove();">
+          </div>
+          <div style="float: right;">
+            <input type="button" class="button button-add" value="+" onclick="epc_padsAdd();">
+          </div>
+        </div>
       </div>
     </div>
 

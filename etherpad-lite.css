@@ -16,6 +16,19 @@ body {
   background-image: -moz-linear-gradient(90deg, #666, #151515);
   background-image: -webkit-linear-gradient(bottom, #666 0%, #151515 100%);
 }
+.button-add {
+  font-weight: bolder;
+  padding: 0px;
+  min-width: 17px;
+  margin: 0px;
+}
+.button-remove {
+  color: red;
+  font-weight: bolder;
+  padding: 0px;
+  min-width: 18px;
+  margin: 0px;
+}
 
 #header {
   background-color: #ddd;
@@ -61,12 +74,11 @@ body {
   margin: 10px;
 }
 
-#epcDelete {
-  margin-top: 25px;
-  color: red;
-}
+#epGroupName,
+#epAuthorName,
+#epPadName,
 #epc_basepath {
-  color: blue;
+ opacity: 0.5;
 }
 
 #popupTitle {

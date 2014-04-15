@@ -79,6 +79,21 @@ function epc_status(verbose) {
   ep_call(verbose, 'checkToken');
 }
 
+function epc_content(verbose) {
+  console.log('[debug|epc_content]');
+  selected = $('#epPads :selected').map(function(){return this.value;}).get();
+  console.log('selected #: ' + selected.length + ', @: ' + selected.join(", "));
+  if (selected.length > 0) {
+    var args = [selected[0]];
+    jsonData = ep_call(verbose, 'getHTML', args);
+    if (jsonData !== undefined) {
+      $('#popupTitle').html(selected[0]);
+      $('#popupContent').html(jsonData['html']);
+      popupToggle('ok');
+    }
+  }
+}
+
 function epc_pads(verbose) {
   console.log('[debug|epc_pads]');
   jsonData = ep_call(verbose, 'listAllPads')
@@ -102,7 +117,6 @@ function epc_pads(verbose) {
     }
   }
 }
-
 function epc_padsType(type) {
   console.log('[debug|epc_padsType]');
 
@@ -135,31 +149,18 @@ function epc_padsType(type) {
   });
   $('#epPadsTitle').html('pads (' + ($('#epPads')[0].length - 1) + ')');
 }
-
-function epc_content(verbose) {
-  console.log('[debug|epc_content]');
-  selected = $('#epPads :selected').map(function(){return this.value;}).get();
-  console.log('selected #: ' + selected.length + ', @: ' + selected.join(", "));
-  if (selected.length > 0) {
-    var args = [selected[0]];
-    jsonData = ep_call(verbose, 'getHTML', args);
-    if (jsonData !== undefined) {
-      $('#popupTitle').html(selected[0]);
-      $('#popupContent').html(jsonData['html']);
-      popupToggle('ok');
-    }
-  }
+function epc_padsAdd(verbose, data) {
+  console.log('[debug|epc_padsAdd]');
 }
-
-function epc_delete(verbose, data) {
-  console.log('[debug|epc_delete]');
+function epc_padsRemove(verbose, data) {
+  console.log('[debug|epc_padsRemove]');
 
   selected = $('#epPads :selected').map(function(){return this.value;}).get();
   console.log('selected #: ' + selected.length + ', @: ' + selected.join(", "));
   if (selected.length > 0) {
     if (data === undefined) {
       // confirmation message
-      console.log('[debug|epc_delete] confirmation message');
+      console.log('[debug|epc_padsRemove] confirmation message');
       sMessage = '<p>are you sure you want to delete the following pads</p>\n';
       sMessage += '<ul>\n';
       $.each(selected, function(key, value) {
@@ -169,7 +170,7 @@ function epc_delete(verbose, data) {
       $('#popupContent').html(sMessage);
       // set the click handler
       $('#popup-button-ok').off("click");
-      $('#popup-button-ok').on('click', function() {epc_delete(true, true);});
+      $('#popup-button-ok').on('click', function() {epc_padsRemove(true, true);});
       popupToggle('yes|no');
     } else {
       // toggle popup
@@ -208,6 +209,12 @@ function epc_groups(verbose) {
     }
   }
 }
+function epc_groupsAdd(verbose, data) {
+  console.log('[debug|epc_groupsAdd]');
+}
+function epc_groupsRemove(verbose, data) {
+  console.log('[debug|epc_groupsRemove]');
+}
 
 function epc_authors(verbose) {
   console.log('[debug|epc_authors]');
@@ -243,6 +250,12 @@ function epc_authors(verbose) {
   $.each(authors, function(idx, value) {
     $('#epAuthors').append('<option>' + value + '</option>');
   });
+}
+function epc_authorsAdd(verbose, data) {
+  console.log('[debug|epc_authorsAdd]');
+}
+function epc_authorsRemove(verbose, data) {
+  console.log('[debug|epc_authorsRemove]');
 }
 
 function popupToggle(type) {

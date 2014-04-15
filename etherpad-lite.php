@@ -35,7 +35,7 @@ function epCall($func, $args = [],
       $client = new \EtherpadLite\Client($sApiKey, $url);
       # make call  
       $response = $client->__call($func, $args);
-      $sData = var2string($response);
+      $sData = var2string($response, 3);
       $jsonData = [ 'code' => $response->getCode(),
                     'message' => $response->getMessage(),
                     'data' => $response->getData() ];

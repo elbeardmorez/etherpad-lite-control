@@ -59,14 +59,14 @@ function ep_call(verbose, func, args) {
             'args' : args,
             'url' : sServer,
             'apiKeyPath' : sApiKeyPath },
-    success: function(data, textStatus, textStatus, jqXHR) {
+    success: function(data, textStatus, jqXHR) {
 //      console.log('[debug|ep_call] success');
       sData = data['raw'];
       jsonData = data['data']['data'];
       if (jsonData === null && data['data']['code'] == 0)
         jsonData = true;
     },
-    failure: function(data, textStatus, textStatus, jqXHR) {
+    failure: function(data, textStatus, jqXHR) {
 //      console.log('[debug|ep_call] failure');
       sData = data['raw'];
     }

@@ -99,6 +99,9 @@ function epc_content(verbose) {
 function epc_pads(verbose) {
   console.log('[debug|epc_pads]');
   jsonData = ep_call(verbose, 'listAllPads')
+
+  // reset pads object
+  pads = {};
   if (jsonData !== undefined) {
     // process
     if (jsonData['padIDs'].length > 0) {

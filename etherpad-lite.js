@@ -115,13 +115,15 @@ function epc_pads(verbose) {
         }
       });
       // update select control
-      epc_padsType($('#epPadsType').attr('value'));
+      epc_padsType();
     }
   }
 }
 function epc_padsType(type) {
   console.log('[debug|epc_padsType]');
 
+  if (type === undefined)
+    type = $('#epPadsType').attr('value');
   switch (type) {
     case "":
       console.log("[debug|epc_padsType] selected all pads");

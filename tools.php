@@ -1,6 +1,6 @@
 <?php
 
-function var2string($v, $l) {
+function var2str($v, $l = 3) {
   $s = '';;
   $s .= '<pre>';
   ob_start();

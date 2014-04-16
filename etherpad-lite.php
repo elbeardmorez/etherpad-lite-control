@@ -33,7 +33,7 @@ function epCall($func, $args = [],
       $client = new \EtherpadLite\Client($sApiKey, $url);
       # make call  
       $response = $client->__call($func, $args);
-      $sData = var2string($response, 3);
+      $sData = var2str($response);
       $jsonData = [ 'code' => $response->getCode(),
                     'message' => $response->getMessage(),
                     'data' => $response->getData() ];
@@ -64,7 +64,7 @@ if (!empty($_POST)) {
       $apiKeyPath = $_POST['apiKeyPath'];
 
     error_log('$_POST[\'func\'] set as: \'' . $func . '\'');
-    error_log('$_POST[\'args\'] set as: \'' . var2string($args) . '\'');
+    error_log('$_POST[\'args\'] set as: \'' . var2str($args) . '\'');
     error_log('$_POST[\'url\'] set as: \'' . $url . '\'');
     error_log('$_POST[\'apiKeyPath\'] set as: \'' . $apiKeyPath . '\'');
     echo epCall ($func, $args, $url, $apiKeyPath);

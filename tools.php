@@ -12,4 +12,14 @@ function var2string($v, $l) {
   return $s;
 }
 
+function getFileContents($path) {
+  $sContents = '';
+  if (is_readable($path)) {
+    $f = fopen($path, 'r');
+    $sContents = fread($f, filesize($path));
+    fclose($f);
+  }
+  return $sContents;
+}
+
 ?>

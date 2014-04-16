@@ -4,14 +4,12 @@ include ('vendor/autoload.php');
 include ('tools.php');
 
 function getApiKey($apiKeyPath) {
-  $fApiKey = fopen($apiKeyPath, 'r');
-  $sApiKey = fread($fApiKey, filesize($apiKeyPath));
-  fclose($fApiKey);
+  $sApiKey = getFileContents($apiKeyPath);
   if(!$sApiKey) {
     $sApiKey = '';
     error_log('[error] cannot read etherpad-lite api key from path \'' . $apiKeyPath . '\'');
   }
-  
+
 #  error_log('[info] sApiKey: \'' . $sApiKey . '\'');
   return $sApiKey;
 }

@@ -89,7 +89,7 @@ function getFunctionName($s) {
         </select>
         <div style="position: relative; height: 20px; width: 100%;">
           <div style="position: absolute; left: 0px; right: 42px;">
-            <input id="epGroupName" type="text" style="width: 100%;" disabled>
+            <input id="epGroupName" type="text" style="width: 100%;">
           </div>
           <div style="float: right; margin-right: 2px;">
             <input type="button" class="button button-remove" value="-" onclick="epc_groupsRemove();">

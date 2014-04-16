@@ -1,4 +1,5 @@
 
+var groups = {};
 var pads = {};
 
 function setCookie(sName, sValue, lExpire) {
@@ -206,24 +207,99 @@ function epc_padsRemove(verbose, data) {
 
 function epc_groups(verbose) {
   console.log('[debug|epc_groups]');
+  // reset groups object
+  groups = {};
   jsonData = ep_call(verbose, 'listAllGroups')
   if (jsonData !== undefined) {
     // process
-    $('#epGroups').html('');
-    $('#epGroupsTitle').html('groups (' + jsonData['groupIDs'].length + ')');
     if (jsonData['groupIDs'].length > 0) {
-      $('#epGroups').html('<option value="0">All</option>');
-      $.each(jsonData['groupIDs'], function(key, value) {
-        $('#epGroups').append('<option>' + value + '</option>');
+      $.each(jsonData['groupIDs'], function(idx, groupID) {
+        if (groups[groupID] === undefined)
+          groups[groupID] = {'id': groupID};
       });
     }
   }
+  // update select control
+  epc_groupsShow();
 }
-function epc_groupsAdd(verbose, data) {
+function epc_groupsShow() {
+  console.log('[debug|epc_groupsShow]');
+  $('#epGroups').html('');
+  $.each(groups, function(key, group) {
+    if (group['name'] === undefined)
+      $('#epGroups').append('<option>[' + group['id'] + ']</option>');
+    else
+      $('#epGroups').append('<option>' + group['name'] + '[' + group['id'] + ']</option>');
+  });
+  if ($('#epGroups')[0].length > 0) {
+    $('#epGroups').prepend('<option value="0">All</option>');
+    $('#epGroupsTitle').html('groups (' + ($('#epGroups')[0].length - 1) + ')');
+  } else
+    $('#epGroupsTitle').html('groups (0)');
+}
+function epc_groupsAdd(verbose) {
   console.log('[debug|epc_groupsAdd]');
+  name = $('#epGroupName').attr('value');
+  args = [name];
+  jsonData = ep_call(verbose, 'createGroupIfNotExistsFor', args);
+  if (jsonData !== null) {
+//    gid = jsonData['groupID']; // api bug?
+    gid = jsonData;
+    group = groups[gid];
+    if (group === undefined) {
+      groups[gid] = { 'gid': gid, 'name': name };
+      console.log('[info] group name \'' + name + '\' added with gid \'' + gid + '\'');
+    } else
+      console.log('[info] group name \'' + name + '\' already exists with gid \'' + gid + '\'');
+  }
 }
 function epc_groupsRemove(verbose, data) {
   console.log('[debug|epc_groupsRemove]');
+  selected = $('#epGroups :selected').map(function(){return this.value;}).get();
+//  console.log('selected #: ' + selected.length + ', @: ' + selected.join(", "));
+  if (selected.length > 0) {
+    if (data === undefined) {
+      // confirmation message
+      console.log('[debug|epc_groupsRemove] confirmation message');
+      $('#popupTitle').html('warning: confirmation required');
+      suffix = ''
+      if (selected.length > 1)
+        suffix = 's';
+      sMessage = '<p>are you sure you want to permanently remove the following group' + suffix + ':</p>\n';
+      sMessage += '<ul>\n';
+      $.each(selected, function(key, value) {
+        sMessage += '<li>' + value + '</li>\n'
+      });
+      sMessage += '</ul>\n';
+      $('#popupContent').html(sMessage);
+      // set the click handler
+      $('#popup-button-ok').off("click");
+      $('#popup-button-ok').on('click', function() {epc_groupsRemove(true, true);});
+      popupToggle('yes|no');
+    } else {
+      // toggle popup
+      popupToggle();
+      // do deletion
+      if (data === true) {
+        selectedIndex = $("#epGroups option:selected")[0].index;
+        $.each(selected, function(key, value) {
+          var groupID =value.match('.*\\[(.*)\\].*')[1];
+          var args = [groupID];
+          jsonData = ep_call(verbose, 'deleteGroup', args);
+          if (jsonData) {
+            console.log('[info] deleted group, id: \'' + groupID + '\'');
+            delete(groups[groupID]);
+          }
+        });
+        // reload group
+        epc_groupsShow();
+        // reselect
+        if (selectedIndex > $('#epGroups')[0].length)
+          selectedIndex = $('#epGroups')[0].length;
+        $('#epGroups')[0].selectedIndex = selectedIndex;
+      }
+    }
+  }
 }
 
 function epc_authors(verbose) {

@@ -2,6 +2,10 @@
 var groups = {};
 var pads = {};
 
+function epc_test() {
+  console.log('[debug|epc_test]');
+}
+
 function setCookie(sName, sValue, lExpire) {
   if (!lExpire)
     var lExpire = 365;

@@ -22,13 +22,23 @@ function getFunctionName($s) {
     </div>
   </div>
   <div id="control-background" style="z-index: 1; position: absolute; top: 75px; right: 0px; bottom: 55px; width: 120px;"></div>
-  <div id="control-inner" style="z-index: 1; position: absolute; top: 75px; right: 0px; bottom: 55px; width: 120px;">
+  <div id="control-outer" style="z-index: 1; position: absolute; top: 75px; right: 0px; bottom: 55px; width: 120px;">
+  <div id="control-inner" style="position: relative; display: table; height: 100%; width: 100%;">
     <?php
       $controls = [ 'Status', 'Groups', 'Authors', 'Pads', 'Content' ];
       foreach ($controls as $control) {
         echo '<input id="epc' . $control . '" type="button" class="button" onclick="epc_' . getFunctionName($control) . '()" value="' . $control . '" style="margin-left: 10px;">';
       }
     ?>
+    <div style="display: table-row; height: 100%;"></div>
+    <?php
+      $controls = [ 'Test' ];
+      foreach ($controls as $control) {
+        echo '<input id="epc' . $control . '" type="button" class="button" onclick="epc_' . getFunctionName($control) . '()" value="' . $control . '" style="margin-left: 10px;">';
+      }
+
+    ?>
+  </div>
   </div>
 
   <div id="content-outer" style="position: absolute; top: 75px; right: 135px; bottom: 50px; left: 5px; min-width: 700px; overflow: hidden;">

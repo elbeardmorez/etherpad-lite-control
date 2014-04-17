@@ -4,6 +4,7 @@ var pads = {};
 
 function epc_test() {
   console.log('[debug|epc_test]');
+  epx_call();
 }
 
 function setCookie(sName, sValue, lExpire) {
@@ -28,7 +29,7 @@ function getCookie(sName) {
 }
 
 function loadState() {
-  var arr = [ 'epc_server', 'epc_port', 'epc_apikeypath' ];
+  var arr = [ 'epc_server', 'epc_port', 'epc_apikeypath', 'epc_settingspath' ];
   for (idx in arr) {
     var sElement = arr[idx];
     console.log('restoring state for: \'' + sElement + '\'');
@@ -41,6 +42,42 @@ function getServer() {
          document.forms['etherpad-lite']['epc_port'].value +
          (document.forms['etherpad-lite']['epc_basepath'].value ? "/" +
          document.forms['etherpad-lite']['epc_basepath'].value : ""); 
+}
+
+function epx_call(verbose, func, args) {
+  console.log('[debug|epx_call]');
+  if (verbose === undefined)
+    var verbose = true;
+  if (func === undefined)
+    var func = "test";
+  if (args === undefined)
+    var args = [];
+  sSettingsPath = $('#epc_settingspath').attr('value');
+  sData = '';
+  jsonData = undefined;
+  $.ajax({
+    url: './etherpad-lite.php',
+    type: 'POST',
+    async: false,
+    dataType: 'json',
+    data: { 'func' : func,
+            'args' : args,
+            'settingsPath' : sSettingsPath },
+    success: function(data, textStatus, jqXHR) {
+      console.log('[debug|epx_call] success');
+      sData = data['raw'];
+      jsonData = data['data']['data'];
+      if (jsonData === null && data['data']['code'] == 0)
+        jsonData = true;
+    },
+    failure: function(data, textStatus, jqXHR) {
+      console.log('[debug|epx_call] failure');
+      sData = data['raw'];
+    }
+  });
+  if (verbose)
+    $('#epStatus-inner').html(sData);
+  return jsonData;
 }
 
 function ep_call(verbose, func, args) {

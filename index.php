@@ -46,27 +46,33 @@ function getFunctionName($s) {
 
 
     <div style="height: 200px; width: 100%;">
-      <div style="float: left; position: relative; height: 100%; width: 175px;">
-        <div style="position: absolute; top: 5px; bottom: 5px; left: 5px; right: 5px;">
-        <form id="etherpad-lite">
-            <p style="margin-top: 8px; margin-bottom: 5px;"><b>settings</b></p>
-            <div style="display: block">
-              <p style="margin-top: 5px; margin-bottom: 2px;">server:</p>
+      <div style="float: left; position: relative; height: 100%; width: 200px;">
+        <div style="position: absolute; top: 5px; bottom: 5px; left: 5px; right: 0px;">
+          <p style="margin-top: 8px; margin-bottom: 5px;"><b>settings</b></p>
+          <div style="position: absolute; top: 35px; bottom: 0px; left: 5px; right: 5px; overflow-y: scroll; overflow-x: hidden;">
+            <form id="etherpad-lite">
+            <div style="display: block; margin-right: 10px;">
+              <p style="margin-top: 2px; margin-bottom: 1px;">server:</p>
               <input id="epc_server" type=text onchange="if (this.value.length > 0) setCookie(this.id, this.value);" style="width: 100%;">
             </div>
-            <div style="display: block">
-              <p style="margin-top: 5px; margin-bottom: 2px;">port:</p>
-              <input id="epc_port" type=text size=25 onchange="if (this.value.length > 0) setCookie(this.id, this.value);" style="width: 100%;">
+            <div style="display: block; margin-right: 10px;">
+              <p style="margin-top: 2px; margin-bottom: 1px;">port:</p>
+              <input id="epc_port" type=text onchange="if (this.value.length > 0) setCookie(this.id, this.value);" style="width: 100%;">
             </div>
-            <div style="display: block">
-              <p style="margin-top: 5px; margin-bottom: 2px;">base path:</p>
-              <input id="epc_basepath" type=text size=25 onchange="if (this.value.length > 0) setCookie(this.id, this.value);" style="width: 100%;" disabled>
+            <div style="display: block; margin-right: 10px;">
+              <p style="margin-top: 2px; margin-bottom: 1px;">base path:</p>
+              <input id="epc_basepath" type=text onchange="if (this.value.length > 0) setCookie(this.id, this.value);" style="width: 100%;" disabled>
             </div>
-            <div style="display: block">
-              <p style="margin-top: 5px; margin-bottom: 2px;">api key path:</p>
-              <input id="epc_apikeypath" type=text size=25 onchange="if (this.value.length > 0) setCookie(this.id, this.value);" style="width: 100%;">
+            <div style="display: block; margin-right: 10px;">
+              <p style="margin-top: 2px; margin-bottom: 1px;">api key path:</p>
+              <input id="epc_apikeypath" type=text onchange="if (this.value.length > 0) setCookie(this.id, this.value);" style="width: 100%;">
             </div>
-        </form>
+            <div style="display: block; margin-right: 10px;">
+              <p style="margin-top: 2px; margin-bottom: 1px;">settings path:</p>
+              <input id="epc_settingspath" type=text onchange="if (this.value.length > 0) setCookie(this.id, this.value);" style="width: 100%;">
+            </div>
+            </form>
+          </div>
         </div>
       </div>
       <div style="float: right; position: relative; height: 100%; width: 30%; width: 175px;">
@@ -79,7 +85,7 @@ function getFunctionName($s) {
         </div>
       </div>
 
-      <div style="position: relative; height: 100%; min-width: 200px; margin: 0px 175px;">
+      <div style="position: relative; height: 100%; min-width: 200px; margin: 0px 175px 0px 200px;">
         <div style="position: absolute; top: 5px; bottom: 5px; left: 5px; right: 5px;">
           <p style="margin-top: 8px; margin-bottom: 5px;"><b>status</b></p>
           <div id="epStatus-outer" style="position: absolute; top: 35px; bottom: 0px; width: 100%; overflow: auto;">

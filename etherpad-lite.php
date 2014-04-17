@@ -2,6 +2,7 @@
 
 include ('vendor/autoload.php');
 include ('tools.php');
+include ('database.php');
 
 function getSettings($settingsPath) {
   $dbSettings = null;
@@ -41,18 +42,27 @@ function epxCall($func, $args = [],
   error_log('[debug|epxCall]');
 
   $sData = '';
-  $jsonData = null;
+  $jsonData = [ 'code' => 1,
+                'message' => '[error] epxCall failed',
+                'data' => null ];
 
   $dbSettings = getSettings($settingsPath);
   if ($dbSettings != null) {
     switch ($dbSettings['type']) {
       case "postgres":
+        # connection
+        # example: "host=localhost dbname=etherpad-lite user=www password=secret"
+        $dbConnectionString = 'host=' . $dbSettings['settings']['host'] . ' ' .
+                              'dbname=' . $dbSettings['settings']['database'] . ' ' .
+                              'user=' . $dbSettings['settings']['user'] . ' ' .
+                              'password=' . $dbSettings['settings']['password'];
         switch ($func) {
           case 'test':
-            $sData = '[info] dbSettings: ' . var2str($dbSettings);
-            $jsonData = [ 'code' => 0,
-                          'message' => 'success',
-                          'data' => null ];
+            $query = 'select * from store limit 10';
+            $data = dbQuery($dbSettings['type'], $dbConnectionString, $query);
+            $sData = var2str($dbSettings) . "\n" .
+                     var2str($data);
+            $jsonData = $data;
             break;
           default:
             $sData = '[info] unsupported non-api function \'' . $func . '\'';

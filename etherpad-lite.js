@@ -44,14 +44,16 @@ function getServer() {
          document.forms['etherpad-lite']['epc_basepath'].value : ""); 
 }
 
-function epx_call(verbose, func, args) {
+function epx_call(func, args, verbose, append) {
   console.log('[debug|epx_call]');
-  if (verbose === undefined)
-    var verbose = true;
   if (func === undefined)
     var func = "test";
   if (args === undefined)
     var args = [];
+  if (verbose === undefined)
+    var verbose = true;
+  if (append === undefined)
+    var append = false;
   sSettingsPath = $('#epc_settingspath').attr('value');
   sData = '';
   jsonData = undefined;
@@ -76,18 +78,23 @@ function epx_call(verbose, func, args) {
     }
   });
   if (verbose)
-    $('#epStatus-inner').html(sData);
+    if (append)
+      $('#epStatus-inner').append(sData);
+    else
+      $('#epStatus-inner').html(sData);
   return jsonData;
 }
 
-function ep_call(verbose, func, args) {
-//  console.log('[debug|ep_call]');
-  if (verbose === undefined)
-    var verbose = true;
+function ep_call(func, args, verbose, append) {
+// console.log('[debug|ep_call]');
   if (func === undefined)
     var func = "checkToken";
   if (args === undefined)
     var args = [];
+  if (verbose === undefined)
+    var verbose = true;
+  if (append === undefined)
+    var append = false;
   sServer = getServer();
   sApiKeyPath = $('#epc_apikeypath').attr('value');
   sData = '';
@@ -114,13 +121,16 @@ function ep_call(verbose, func, args) {
     }
   });
   if (verbose)
-    $('#epStatus-inner').html(sData);
+    if (append)
+      $('#epStatus-inner').append(sData);
+    else
+      $('#epStatus-inner').html(sData);
   return jsonData;
 }
 
 function epc_status(verbose) {
   console.log('[debug|epc_status]');
-  ep_call(verbose, 'checkToken');
+  ep_call('checkToken', undefined, verbose);
 }
 
 function epc_content(verbose) {
@@ -129,7 +139,7 @@ function epc_content(verbose) {
   console.log('selected #: ' + selected.length + ', @: ' + selected.join(", "));
   if (selected.length > 0) {
     var args = [selected[0]];
-    jsonData = ep_call(verbose, 'getHTML', args);
+    jsonData = ep_call('getHTML', args, verbose);
     if (jsonData !== undefined) {
       $('#popupTitle').html(selected[0]);
       $('#popupContent').html(jsonData['html']);
@@ -140,7 +150,7 @@ function epc_content(verbose) {
 
 function epc_pads(verbose) {
   console.log('[debug|epc_pads]');
-  jsonData = ep_call(verbose, 'listAllPads')
+  jsonData = ep_call('listAllPads', undefined, verbose)
 
   // reset pads object
   pads = {};
@@ -151,7 +161,7 @@ function epc_pads(verbose) {
         if (pads[padID] === undefined)
           pads[padID] = {'id': padID};
         var args = [padID]
-        jsonData2 = ep_call(false, 'getPublicStatus', args);
+        jsonData2 = ep_call('getPublicStatus', args, false);
         if (jsonData2 !== undefined && jsonData2 !== null) {
           if (jsonData2)
             pads[padID]['public'] = true;
@@ -229,7 +239,7 @@ function epc_padsRemove(verbose, data) {
         selectedIndex = $("#epPads option:selected")[0].index;
         $.each(selected, function(key, value) {
           var args = [value];
-          jsonData = ep_call(verbose, 'deletePad', args);
+          jsonData = ep_call('deletePad', args, verbose);
           if (jsonData) {
             console.log('[info] deleted pad, id: \'' + value + '\'');
             delete(pads[value]);
@@ -250,7 +260,7 @@ function epc_groups(verbose) {
   console.log('[debug|epc_groups]');
   // reset groups object
   groups = {};
-  jsonData = ep_call(verbose, 'listAllGroups')
+  jsonData = ep_call('listAllGroups', undefined, verbose)
   if (jsonData !== undefined) {
     // process
     if (jsonData['groupIDs'].length > 0) {
@@ -261,7 +271,7 @@ function epc_groups(verbose) {
     }
   }
   // map external names where possible
-  jsonData = epx_call(true, 'getGroupMappers');
+  jsonData = epx_call('getGroupMappers', undefined, true, true);
   if (jsonData !== undefined) {
     // process
     $.each(groups, function(key, group) {
@@ -293,7 +303,7 @@ function epc_groupsAdd(verbose) {
   console.log('[debug|epc_groupsAdd]');
   name = $('#epGroupName').attr('value');
   args = [name];
-  jsonData = ep_call(verbose, 'createGroupIfNotExistsFor', args);
+  jsonData = ep_call('createGroupIfNotExistsFor', args, verbose);
   if (jsonData !== null) {
 //    gid = jsonData['groupID']; // api bug?
     gid = jsonData;
@@ -337,7 +347,7 @@ function epc_groupsRemove(verbose, data) {
         $.each(selected, function(key, value) {
           var groupID =value.match('.*\\[(.*)\\].*')[1];
           var args = [groupID];
-          jsonData = ep_call(verbose, 'deleteGroup', args);
+          jsonData = ep_call('deleteGroup', args, verbose);
           if (jsonData) {
             console.log('[info] deleted group, id: \'' + groupID + '\'');
             delete(groups[groupID]);
@@ -356,20 +366,21 @@ function epc_groupsRemove(verbose, data) {
 
 function epc_authors(verbose) {
   console.log('[debug|epc_authors]');
-  jsonData = ep_call(false, 'listAllPads')
+  jsonData = ep_call('listAllPads', undefined, false);
   authors = {};
   authorNames = {};
+  $('#epStatus-inner').html('');
   if (jsonData !== undefined) {
     $.each(jsonData['padIDs'], function(idx, padID) {
       var args = [padID];
-      jsonData2 = ep_call(false, 'listAuthorsOfPad', args);
+      jsonData2 = ep_call('listAuthorsOfPad', args, true, true);
       if (jsonData2 !== undefined) {
         $.each(jsonData['authorIDs'], function(idx2, authorID) {
           var authorName = authorNames[authorID];
           if (authorName === undefined) {
             var args2 = [authorID];
             jsonData3 = undefined;
-            jsonData3 = ep_call(true, 'getAuthorName', args2);
+            jsonData3 = ep_call('getAuthorName', args2, true, true);
             if (jsonData3 !== undefined && jsonData3 !== null) {
 //              authorName = jsonData3['authorName'] // api bug?
               authorName = jsonData3

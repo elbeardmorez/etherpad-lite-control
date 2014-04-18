@@ -260,6 +260,17 @@ function epc_groups(verbose) {
       });
     }
   }
+  // map external names where possible
+  jsonData = epx_call(true, 'getGroupMappers');
+  if (jsonData !== undefined) {
+    // process
+    $.each(groups, function(key, group) {
+      if (groups['name'] === undefined &&
+        jsonData[key] !== undefined) {
+        group['name'] = jsonData[key]['name'];
+      }
+    });
+  }
   // update select control
   epc_groupsShow();
 }
@@ -270,7 +281,7 @@ function epc_groupsShow() {
     if (group['name'] === undefined)
       $('#epGroups').append('<option>[' + group['id'] + ']</option>');
     else
-      $('#epGroups').append('<option>' + group['name'] + '[' + group['id'] + ']</option>');
+      $('#epGroups').append('<option>' + group['name'] + ' [' + group['id'] + ']</option>');
   });
   if ($('#epGroups')[0].length > 0) {
     $('#epGroups').prepend('<option value="0">All</option>');

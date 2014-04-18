@@ -57,6 +57,18 @@ function epxCall($func, $args = [],
                               'user=' . $dbSettings['settings']['user'] . ' ' .
                               'password=' . $dbSettings['settings']['password'];
         switch ($func) {
+          case "getGroupMappers":
+            $query = 'select trim(value, \'\"\') as gid, replace(key, \'mapper2group:\', \'\') as name from store where key like \'mapper2group:%\'';
+            $data = dbQuery($dbSettings['type'], $dbConnectionString, $query);
+            // create json data
+            $data2 = [];
+            foreach ($data['data'] as $arr) {
+              $data2[$arr['gid']] = $arr;
+            }
+            $data['data'] = $data2;
+            $jsonData = $data;
+            $sData = var2str($jsonData);
+            break;
           case 'test':
             $query = 'select * from store limit 10';
             $data = dbQuery($dbSettings['type'], $dbConnectionString, $query);
@@ -119,7 +131,7 @@ function epCall($func, $args = [],
 }
 
 $aEpApi = [ 'checkToken', 'getHTML', 'getPublicStatus', 'deletePad', 'deleteGroup', 'listAllPads', 'listAllGroups', 'createGroupIfNotExistsFor', 'listAuthorsOfPad', 'getAuthorName' ];
-$aEpX = [ 'test' ];
+$aEpX = [ 'test', 'getGroupMappers' ];
 
 if (!empty($_POST)) {
   if (!empty($_POST['func'])) {

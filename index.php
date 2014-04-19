@@ -133,7 +133,7 @@ function getFunctionName($s) {
       </div>
       <div style="display: block; float: left; width: 40%; min-width: 150px; margin: auto;">
         <p id="epPadsTitle" style="margin-bottom: 5px; font-weight: bold;">pads</p>
-        <select id="epPadsType" style="width: 100%;" onchange="epc_padsType(this.value)">
+        <select id="epPadsType" style="width: 100%;" onchange="epc_padsShow(this.value)">
           <option></option>
           <option>Public</option>
           <option>Private</option>

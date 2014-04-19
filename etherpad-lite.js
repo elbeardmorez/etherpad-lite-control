@@ -170,24 +170,24 @@ function epc_pads(verbose) {
         }
       });
       // update select control
-      epc_padsType();
+      epc_padsShow();
     }
   }
 }
-function epc_padsType(type) {
-  console.log('[debug|epc_padsType]');
+function epc_padsShow(type) {
+  console.log('[debug|epc_padsShow]');
 
   if (type === undefined)
     type = $('#epPadsType').attr('value');
   switch (type) {
     case "":
-      console.log("[debug|epc_padsType] selected all pads");
+      console.log("[debug|epc_padsShow] selected all pads");
       break;
     case "Public":
-      console.log("[debug|epc_padsType] selected public pads only");
+      console.log("[debug|epc_padsShow] selected public pads only");
       break;
     case "Private":
-      console.log("[debug|epc_padsType] selected private pads only");
+      console.log("[debug|epc_padsShow] selected private pads only");
       break;
   }
   $('#epPads').html('<option value="0">All</option>');
@@ -246,7 +246,7 @@ function epc_padsRemove(verbose, data) {
           }
         });
         // reload pads
-        epc_padsType();
+        epc_padsShow();
         // reselect
         if (selectedIndex > $('#epPads')[0].length)
           selectedIndex = $('#epPads')[0].length;

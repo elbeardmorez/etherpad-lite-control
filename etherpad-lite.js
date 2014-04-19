@@ -190,23 +190,28 @@ function epc_padsShow(type) {
       console.log("[debug|epc_padsShow] selected private pads only");
       break;
   }
-  $('#epPads').html('<option value="0">All</option>');
+  $('#epPads').html('');
   $.each(pads, function(idx, value) {
     switch (type) {
-      case "":
-        $('#epPads').append('<option>' + value['id'] + '</option>');
-        break;
-      case "Public":
+      case "group (public)":
         if (value['public'] !== undefined && value['public'] === true)
           $('#epPads').append('<option>' + value['id'] + '</option>');
         break;
-      case "Private":
+      case "group (private)":
         if (value['public'] !== undefined && value['public'] !== true)
           $('#epPads').append('<option>' + value['id'] + '</option>');
         break;
+      case "global":
+        $('#epPads').append('<option>' + value['id'] + '</option>');
+        break;
     }
   });
-  $('#epPadsTitle').html('pads (' + ($('#epPads')[0].length - 1) + ')');
+
+  if ($('#epPads')[0].length > 0) {
+    $('#epPads').prepend('<option value="0">All</option>');
+    $('#epPadsTitle').html('pads (' + ($('#epPads')[0].length - 1) + ')');
+  } else
+    $('#epPadsTitle').html('pads (0)');
 }
 function epc_padsAdd(verbose, data) {
   console.log('[debug|epc_padsAdd]');

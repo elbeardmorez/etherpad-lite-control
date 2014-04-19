@@ -266,7 +266,7 @@ function epc_groups(verbose) {
     if (jsonData['groupIDs'].length > 0) {
       $.each(jsonData['groupIDs'], function(idx, groupID) {
         if (groups[groupID] === undefined)
-          groups[groupID] = {'id': groupID};
+          groups[groupID] = {'gid': groupID};
       });
     }
   }
@@ -289,9 +289,9 @@ function epc_groupsShow() {
   $('#epGroups').html('');
   $.each(groups, function(key, group) {
     if (group['name'] === undefined)
-      $('#epGroups').append('<option>[' + group['id'] + ']</option>');
+      $('#epGroups').append('<option>[' + group['gid'] + ']</option>');
     else
-      $('#epGroups').append('<option>' + group['name'] + ' [' + group['id'] + ']</option>');
+      $('#epGroups').append('<option>' + group['name'] + ' [' + group['gid'] + ']</option>');
   });
   if ($('#epGroups')[0].length > 0) {
     $('#epGroups').prepend('<option value="0">All</option>');
@@ -305,14 +305,19 @@ function epc_groupsAdd(verbose) {
   args = [name];
   jsonData = ep_call('createGroupIfNotExistsFor', args, verbose);
   if (jsonData !== null) {
-//    gid = jsonData['groupID']; // api bug?
-    gid = jsonData;
+    gid = jsonData['groupID'];
     group = groups[gid];
     if (group === undefined) {
       groups[gid] = { 'gid': gid, 'name': name };
       console.log('[info] group name \'' + name + '\' added with gid \'' + gid + '\'');
     } else
       console.log('[info] group name \'' + name + '\' already exists with gid \'' + gid + '\'');
+
+    // reload group
+    epc_groupsShow();
+    // select added / existing
+//   $('#epGroups option[innerHTML=\'' + gid + '\']').attr('selected', 'selected');
+    $('#epGroups option:contains(' + gid + ')').attr('selected', 'selected');
   }
 }
 function epc_groupsRemove(verbose, data) {
@@ -356,8 +361,8 @@ function epc_groupsRemove(verbose, data) {
         // reload group
         epc_groupsShow();
         // reselect
-        if (selectedIndex > $('#epGroups')[0].length)
-          selectedIndex = $('#epGroups')[0].length;
+        if (selectedIndex > $('#epGroups')[0].length - 1)
+          selectedIndex = $('#epGroups')[0].length - 1;
         $('#epGroups')[0].selectedIndex = selectedIndex;
       }
     }

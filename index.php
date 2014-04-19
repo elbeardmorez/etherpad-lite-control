@@ -65,7 +65,8 @@ function getFunctionName($s) {
   <div id="content-inner" style="position: relative; height: 100%; width: 95%; margin: auto;">
 
 
-    <div style="height: 200px; width: 100%;">
+    <div style="position: relative; height: 40%; width: 100%;">
+
       <div style="float: left; position: relative; height: 100%; width: 200px;">
         <div style="position: absolute; top: 5px; bottom: 5px; left: 5px; right: 0px;">
           <p style="margin-top: 8px; margin-bottom: 5px;"><b>settings</b></p>
@@ -95,6 +96,7 @@ function getFunctionName($s) {
           </div>
         </div>
       </div>
+
       <div style="float: right; position: relative; height: 100%; width: 30%; width: 175px;">
         <div style="position: absolute; top: 5px; bottom: 5px; left: 5px; right: 5px;">
           <p style="margin-top: 8px; margin-bottom: 5px;"><b>info</b></p>
@@ -114,16 +116,18 @@ function getFunctionName($s) {
           </div>
         </div>
       </div>
+
     </div>
 
-    <div style="float: none"></div>
+    <div style="position: relative; height: 60%; width: 100%;">
 
-    <div style="position: relative; height: 225px; width: 100%;">
-      <div style="display: block; float: left; width: 30%; min-width: 150px; margin: auto;">
+      <div style="position: relative; float: left; height: 100%; width: 30%; min-width: 150px;">
         <p id="epGroupsTitle" style="margin-bottom: 5px; font-weight: bold;">groups</p>
-        <select id="epGroups" multiple="multiple" style="height: 218px; width: 100%;">
-        </select>
-        <div style="position: relative; height: 20px; width: 100%;">
+        <div style="position: absolute; top: 35px; bottom: 26px; left: 5px; right: 2px;">
+          <select id="epGroups" multiple="multiple" style="height: 100%; width: 100%;">
+          </select>
+        </div>
+        <div style="position: absolute; bottom: 5px; left: 5px; right: 0px; height: 20px;">
           <div style="position: absolute; left: 0px; right: 42px;">
             <input id="epGroupName" type="text" style="width: 100%;">
           </div>
@@ -135,11 +139,14 @@ function getFunctionName($s) {
           </div>
         </div>
       </div>
-      <div style="display: block; float: left; width: 30%; min-width: 150px; margin: auto;">
+
+      <div style="position: relative; float: left; height: 100%; width: 30%; min-width: 150px;">
         <p id="epAuthorsTitle" style="margin-bottom: 5px; font-weight: bold;">authors</p>
-        <select id="epAuthors" multiple="multiple" style="height: 218px; width: 100%;">
-        </select>
-        <div style="position: relative; height: 20px; width: 100%;">
+        <div style="position: absolute; top: 35px; bottom: 26px; left: 5px; right: 2px;">
+          <select id="epAuthors" multiple="multiple" style="height: 100%; width: 100%;">
+          </select>
+        </div>
+        <div style="position: absolute; bottom: 5px; left: 5px; right: 0px; height: 20px;">
           <div style="position: absolute; left: 0px; right: 42px;">
             <input id="epAuthorName" type="text" style="width: 100%;" disabled>
           </div>
@@ -151,16 +158,21 @@ function getFunctionName($s) {
           </div>
         </div>
       </div>
-      <div style="display: block; float: left; width: 40%; min-width: 150px; margin: auto;">
+
+      <div style="position: relative; float: left; height: 100%; width: 40%; min-width: 150px;">
         <p id="epPadsTitle" style="margin-bottom: 5px; font-weight: bold;">pads</p>
-        <select id="epPadsType" style="width: 100%;" onchange="epc_padsShow(this.value)">
-          <option>group (public)</option>
-          <option>group (private)</option>
-          <option>global</option>
-        </select>
-        <select id="epPads" multiple="multiple" style="height: 200px; width: 100%;">
-        </select>
-        <div style="position: relative; height: 20px; width: 100%;">
+        <div style="position: absolute; top: 35px; bottom: 30px; left: 5px; right: 2px;">
+          <select id="epPadsType" style="width: 100%;" onchange="epc_padsShow(this.value)">
+            <option>group (public)</option>
+            <option>group (private)</option>
+            <option>global</option>
+          </select>
+        </div>
+        <div style="position: absolute; top: 55px; bottom: 26px; left: 5px; right: 2px;">
+          <select id="epPads" multiple="multiple" style="top: 20px; height: 100%; width: 100%;">
+          </select>
+        </div>
+        <div style="position: absolute; bottom: 5px; left: 5px; right: 0px; height: 20px;">
           <div style="position: absolute; left: 0px; right: 42px;">
             <input id="epPadName" type="text" style="width: 100%;" disabled>
           </div>

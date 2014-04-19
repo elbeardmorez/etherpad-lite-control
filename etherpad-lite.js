@@ -133,21 +133,6 @@ function epc_status(verbose) {
   ep_call('checkToken', undefined, verbose);
 }
 
-function epc_content(verbose) {
-  console.log('[debug|epc_content]');
-  selected = $('#epPads :selected').map(function(){return this.value;}).get();
-  console.log('selected #: ' + selected.length + ', @: ' + selected.join(", "));
-  if (selected.length > 0) {
-    var args = [selected[0]];
-    jsonData = ep_call('getHTML', args, verbose);
-    if (jsonData !== undefined) {
-      $('#popupTitle').html(selected[0]);
-      $('#popupContent').html(jsonData['html']);
-      popupToggle('ok');
-    }
-  }
-}
-
 function epc_pads(verbose) {
   console.log('[debug|epc_pads]');
   jsonData = ep_call('listAllPads', undefined, verbose)
@@ -260,6 +245,20 @@ function epc_padsRemove(verbose, data) {
     }
   }
 }
+function epc_padContent(verbose) {
+  console.log('[debug|epc_content]');
+  selected = $('#epPads :selected').map(function(){return this.value;}).get();
+  console.log('selected #: ' + selected.length + ', @: ' + selected.join(", "));
+  if (selected.length > 0) {
+    var args = [selected[0]];
+    jsonData = ep_call('getHTML', args, verbose);
+    if (jsonData !== undefined) {
+      $('#popupTitle').html(selected[0]);
+      $('#popupContent').html(jsonData['html']);
+      popupToggle('ok');
+    }
+  }
+}
 
 function epc_groups(verbose) {
   console.log('[debug|epc_groups]');
@@ -355,7 +354,7 @@ function epc_groupsRemove(verbose, data) {
       if (data === true) {
         selectedIndex = $("#epGroups option:selected")[0].index;
         $.each(selected, function(key, value) {
-          var groupID =value.match('.*\\[(.*)\\].*')[1];
+          var groupID = value.match('.*\\[(.*)\\].*')[1];
           var args = [groupID];
           jsonData = ep_call('deleteGroup', args, verbose);
           if (jsonData) {

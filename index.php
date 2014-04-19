@@ -24,20 +24,40 @@ function getFunctionName($s) {
   <div id="control-background" style="z-index: 1; position: absolute; top: 75px; right: 0px; bottom: 55px; width: 120px;"></div>
   <div id="control-outer" style="z-index: 1; position: absolute; top: 75px; right: 0px; bottom: 55px; width: 120px;">
   <div id="control-inner" style="position: relative; display: table; height: 100%; width: 100%;">
-    <?php
-      $controls = [ 'Status', 'Groups', 'Authors', 'Pads', 'Content' ];
-      foreach ($controls as $control) {
-        echo '<input id="epc' . $control . '" type="button" class="button" onclick="epc_' . getFunctionName($control) . '()" value="' . $control . '" style="margin-left: 10px;">';
-      }
-    ?>
-    <div style="display: table-row; height: 100%;"></div>
-    <?php
-      $controls = [ 'Test' ];
-      foreach ($controls as $control) {
-        echo '<input id="epc' . $control . '" type="button" class="button" onclick="epc_' . getFunctionName($control) . '()" value="' . $control . '" style="margin-left: 10px;">';
-      }
 
+    <p style="margin: 2px 5px;">global</p>
+    <hr style="margin: 5px;">
+    <?php
+      $controls = [ 'Groups', 'Authors', 'Pads' ];
+      foreach ($controls as $control) {
+        echo '<input id="epc' . $control . '" type="button" class="button" onclick="epc_' . getFunctionName($control) . '()" value="' . $control . '" style="margin-left: 10px;">';
+      }
     ?>
+
+    <div style="display: table-row; height: 5%;"></div>
+    <p style="margin: 2px 5px;">group</p>
+    <hr style="margin: 5px;">
+
+    <div style="display: table-row; height: 5%;"></div>
+    <p style="margin: 2px 5px;">pad</p>
+    <hr style="margin: 5px;">
+    <?php
+      $controls = [ 'Content' ];
+      foreach ($controls as $control) {
+        echo '<input id="epcPad' . $control . '" type="button" class="button" onclick="epc_' . getFunctionName('pad' . $control) . '()" value="' . $control . '" style="margin-left: 10px;">';
+      }
+    ?>
+
+    <div style="display: table-row; height: 80%;"></div>
+    <p style="margin: 2px 5px;">misc</p>
+    <hr style="margin: 5px;">
+    <?php
+      $controls = [ 'Status' , 'Test' ];
+      foreach ($controls as $control) {
+        echo '<input id="epc' . $control . '" type="button" class="button" onclick="epc_' . getFunctionName($control) . '()" value="' . $control . '" style="margin-left: 10px;">';
+      }
+    ?>
+
   </div>
   </div>
 

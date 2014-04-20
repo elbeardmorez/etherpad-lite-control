@@ -2,13 +2,23 @@
 ## Etherpad-Lite Control
 
 ### description
-a minimal html/javascript/php interface for the Etherpad-Lite API allowing for easy manipulation of groups, authors and pads
+a html/javascript/php interface for Etherpad-Lite administration. Uses Etherpad-Lite API where possible, supplemented by direct database calls to extend functionality where needed
+
+### features
+- add / remove groups
+- remove multiple pads
+- view pad content
+- list all authors
+- display group 'mapper' names __*__
+
+__*__ requires non-api/direct database calls to a supported database [currently: 'postgre' only]
 
 ### dependencies
 - php >5.3
 - etherpad-lite-client [php bindings for Etherpad-Lite (https://github.com/0x46616c6b/etherpad-lite-client.git)]
 - jquery
 - composer
+- postgre [additional non-api functionality]
 
 ## <p></p>
 
@@ -48,10 +58,16 @@ there is a php 'include' referencing a '*composer*' (dependency manager) install
 - delete pads
 - list all groups
 - list all authors
+- switch for global and group private/public pads
+- list group pads
+- add/remove groups
+- add database layer
+- reference mapper names
 
 #### todo
 - group/pad info
 - set pad passwords
-- toggle pad private/public
-- add/remove user(s) to/from group(s)
+- create sessions to add/remove user(s) to/from group(s)
+- convert global pads to group pads
+- allow non-api functionality to be disabled
 

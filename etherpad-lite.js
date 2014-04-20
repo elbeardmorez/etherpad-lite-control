@@ -268,9 +268,9 @@ function epc_groups(verbose) {
   if (jsonData !== undefined) {
     // process
     if (jsonData['groupIDs'].length > 0) {
-      $.each(jsonData['groupIDs'], function(idx, groupID) {
-        if (groups[groupID] === undefined)
-          groups[groupID] = {'gid': groupID};
+      $.each(jsonData['groupIDs'], function(idx, id) {
+        if (groups[id] === undefined)
+          groups[id] = {'id': id};
       });
     }
   }
@@ -293,9 +293,9 @@ function epc_groupsShow() {
   $('#epGroups').html('');
   $.each(groups, function(key, group) {
     if (group['name'] === undefined)
-      $('#epGroups').append('<option>[' + group['gid'] + ']</option>');
+      $('#epGroups').append('<option>[' + group['id'] + ']</option>');
     else
-      $('#epGroups').append('<option>' + group['name'] + ' [' + group['gid'] + ']</option>');
+      $('#epGroups').append('<option>' + group['name'] + ' [' + group['id'] + ']</option>');
   });
   if ($('#epGroups')[0].length > 0) {
     $('#epGroups').prepend('<option value="0">All</option>');
@@ -309,19 +309,19 @@ function epc_groupsAdd(verbose) {
   args = [name];
   jsonData = ep_call('createGroupIfNotExistsFor', args, verbose);
   if (jsonData !== null) {
-    gid = jsonData['groupID'];
-    group = groups[gid];
+    id = jsonData['groupID'];
+    group = groups[id];
     if (group === undefined) {
-      groups[gid] = { 'gid': gid, 'name': name };
-      console.log('[info] group name \'' + name + '\' added with gid \'' + gid + '\'');
+      groups[id] = { 'id': id, 'name': name };
+      console.log('[info] group name \'' + name + '\' added with id \'' + id + '\'');
     } else
-      console.log('[info] group name \'' + name + '\' already exists with gid \'' + gid + '\'');
+      console.log('[info] group name \'' + name + '\' already exists with id \'' + id + '\'');
 
     // reload group
     epc_groupsShow();
     // select added / existing
-//   $('#epGroups option[innerHTML=\'' + gid + '\']').attr('selected', 'selected');
-    $('#epGroups option:contains(' + gid + ')').attr('selected', 'selected');
+//   $('#epGroups option[innerHTML=\'' + id + '\']').attr('selected', 'selected');
+    $('#epGroups option:contains(' + id + ')').attr('selected', 'selected');
   }
 }
 function epc_groupsRemove(verbose, data) {
@@ -354,12 +354,12 @@ function epc_groupsRemove(verbose, data) {
       if (data === true) {
         selectedIndex = $("#epGroups option:selected")[0].index;
         $.each(selected, function(key, value) {
-          var groupID = value.match('.*\\[(.*)\\].*')[1];
-          var args = [groupID];
+          var id = value.match('.*\\[(.*)\\].*')[1];
+          var args = [id];
           jsonData = ep_call('deleteGroup', args, verbose);
           if (jsonData) {
-            console.log('[info] deleted group, id: \'' + groupID + '\'');
-            delete(groups[groupID]);
+            console.log('[info] deleted group, id: \'' + id + '\'');
+            delete(groups[id]);
           }
         });
         // reload group

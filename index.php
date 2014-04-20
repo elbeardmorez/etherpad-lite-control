@@ -16,13 +16,13 @@ function getFunctionName($s) {
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 </head>
 <body onload="loadState();">
-  <div id="header" style="position: absolute; height: 75px; width: 100%;">
+  <div id="header" style="z-index: 2; position: absolute; height: 75px; width: 100%;">
     <div id="title" style="position: relative; top: 25px; left: 5px; right: 135px; margin: 0px 2.5%;">
       <h2>Etherpad-Lite Control</h2>
     </div>
   </div>
   <div id="control-background" style="z-index: 1; position: absolute; top: 75px; right: 0px; bottom: 55px; width: 120px;"></div>
-  <div id="control-outer" style="z-index: 1; position: absolute; top: 75px; right: 0px; bottom: 55px; width: 120px;">
+  <div id="control-outer" style="z-index: 1; position: absolute; top: 75px; right: 0px; bottom: 55px; width: 120px; overflow: hidden;">
   <div id="control-inner" style="position: relative; display: table; height: 100%; width: 100%;">
 
     <p style="margin: 2px 5px;">global</p>
@@ -189,7 +189,7 @@ function getFunctionName($s) {
   </div>
   </div>
 
-  <div id="footer" style="position: absolute; bottom: 0px; height: 50px; width: 100%;">
+  <div id="footer" style="z-index: 2; position: absolute; bottom: 0px; height: 50px; width: 100%;">
   </div>
 
   <div id="popup-background" class="popup-background" style="z-index: 10; position: absolute; height: 100%; width: 100%;"></div>

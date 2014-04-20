@@ -37,6 +37,12 @@ function getFunctionName($s) {
     <div style="display: table-row; height: 5%;"></div>
     <p style="margin: 2px 5px;">group</p>
     <hr style="margin: 5px;">
+    <?php
+      $controls = [ 'Pads' ];
+      foreach ($controls as $control) {
+        echo '<input id="epc' . $control . '" type="button" class="button" onclick="epc_' . getFunctionName('group' . $control) . '()" value="' . $control . '" style="margin-left: 10px;">';
+      }
+    ?>
 
     <div style="display: table-row; height: 5%;"></div>
     <p style="margin: 2px 5px;">pad</p>

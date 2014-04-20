@@ -133,25 +133,45 @@ function epc_status(verbose) {
   ep_call('checkToken', undefined, verbose);
 }
 
-function epc_pads(verbose) {
+function epc_pads(data, verbose) {
   console.log('[debug|epc_pads]');
-  jsonData = ep_call('listAllPads', undefined, verbose)
+
+  if (data === undefined)
+    var data = 'global';
+
+  var jsonData = undefined;
+  switch (data) {
+    case 'global':
+      var func = 'listAllPads';
+      var args = [];
+      jsonData = ep_call(func, args, verbose);
+      break;
+    case 'group':
+      selected = $('#epPads :selected').map(function(){return this.value;}).get();
+      if (selected.length > 0) {
+        var func = "listPads";
+        var gid = selected[0].match('.*\\[(.*)\\].*')[1];
+        var args = [gid];
+        jsonData = ep_call(func, args, verbose);
+      }
+      break;
+  }
 
   // reset pads object
   pads = {};
   if (jsonData !== undefined) {
     // process
     if (jsonData['padIDs'].length > 0) {
-      $.each(jsonData['padIDs'], function(idx, padID) {
-        if (pads[padID] === undefined)
-          pads[padID] = {'id': padID};
-        var args = [padID]
+      $.each(jsonData['padIDs'], function(idx, id) {
+        if (pads[id] === undefined)
+          pads[id] = {'id': id};
+        var args = [id]
         jsonData2 = ep_call('getPublicStatus', args, false);
         if (jsonData2 !== undefined && jsonData2 !== null) {
           if (jsonData2)
-            pads[padID]['public'] = true;
+            pads[id]['public'] = true;
           else
-            pads[padID]['public'] = false;
+            pads[id]['public'] = false;
         }
       });
       // update select control
@@ -371,6 +391,10 @@ function epc_groupsRemove(verbose, data) {
       }
     }
   }
+}
+function epc_groupPads(verbose) {
+  console.log('[debug|epc_groupPads]');
+  epc_pads('group');
 }
 
 function epc_authors(verbose) {

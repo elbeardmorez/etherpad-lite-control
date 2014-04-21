@@ -69,6 +69,21 @@ function epxCall($func, $args = [],
             $jsonData = $data;
             $sData = var2str($jsonData);
             break;
+
+          case "deleteAuthor":
+            $aid = $args[0];
+            $queries = [
+              'delete from store where key like \'mapper2author:%\' and value = \'"' . $aid . '"\'',
+              'delete from store where key like \'globalAuthor:' . $aid . '\''];
+            foreach ($queries as $query) {
+              $data = dbQuery($dbSettings['type'], $dbConnectionString, $query);
+            }
+            # TODO:
+            # better error handling
+            $jsonData = $data;
+            $sData = var2str($jsonData);
+            break;
+
           case 'test':
             $query = 'select * from store limit 10';
             $data = dbQuery($dbSettings['type'], $dbConnectionString, $query);
@@ -76,6 +91,7 @@ function epxCall($func, $args = [],
                      var2str($data);
             $jsonData = $data;
             break;
+
           default:
             $sData = '[info] unsupported non-api function \'' . $func . '\'';
             error_log($sData);
@@ -130,8 +146,8 @@ function epCall($func, $args = [],
   return $sReturn;  
 }
 
-$aEpApi = [ 'checkToken', 'getHTML', 'getPublicStatus', 'deletePad', 'deleteGroup', 'listAllPads', 'listAllGroups', 'createGroupIfNotExistsFor', 'listAuthorsOfPad', 'getAuthorName' ];
-$aEpX = [ 'test', 'getGroupMappers' ];
+$aEpApi = [ 'checkToken', 'getHTML', 'getPublicStatus', 'deletePad', 'deleteGroup', 'listAllPads', 'listAllGroups', 'createGroupIfNotExistsFor', 'listAuthorsOfPad', 'getAuthorName', 'createAuthorIfNotExistsFor' ];
+$aEpX = [ 'test', 'getGroupMappers', 'deleteAuthor' ];
 
 if (!empty($_POST)) {
   if (!empty($_POST['func'])) {

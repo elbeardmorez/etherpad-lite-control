@@ -1,5 +1,6 @@
 
 var groups = {};
+var authors = {};
 var pads = {};
 
 function epc_test() {
@@ -46,6 +47,7 @@ function getServer() {
 
 function epx_call(func, args, verbose, append) {
   console.log('[debug|epx_call]');
+
   if (func === undefined)
     var func = "test";
   if (args === undefined)
@@ -54,6 +56,7 @@ function epx_call(func, args, verbose, append) {
     var verbose = true;
   if (append === undefined)
     var append = false;
+
   sSettingsPath = $('#epc_settingspath').attr('value');
   sData = '';
   jsonData = undefined;
@@ -87,6 +90,7 @@ function epx_call(func, args, verbose, append) {
 
 function ep_call(func, args, verbose, append) {
 // console.log('[debug|ep_call]');
+
   if (func === undefined)
     var func = "checkToken";
   if (args === undefined)
@@ -267,6 +271,7 @@ function epc_padsRemove(verbose, data) {
 }
 function epc_padContent(verbose) {
   console.log('[debug|epc_content]');
+
   selected = $('#epPads :selected').map(function(){return this.value;}).get();
   console.log('selected #: ' + selected.length + ', @: ' + selected.join(", "));
   if (selected.length > 0) {
@@ -282,6 +287,7 @@ function epc_padContent(verbose) {
 
 function epc_groups(verbose) {
   console.log('[debug|epc_groups]');
+
   // reset groups object
   groups = {};
   jsonData = ep_call('listAllGroups', undefined, verbose)
@@ -310,6 +316,7 @@ function epc_groups(verbose) {
 }
 function epc_groupsShow() {
   console.log('[debug|epc_groupsShow]');
+
   $('#epGroups').html('');
   $.each(groups, function(key, group) {
     if (group['name'] === undefined)
@@ -325,6 +332,7 @@ function epc_groupsShow() {
 }
 function epc_groupsAdd(verbose) {
   console.log('[debug|epc_groupsAdd]');
+
   name = $('#epGroupName').attr('value');
   args = [name];
   jsonData = ep_call('createGroupIfNotExistsFor', args, verbose);
@@ -346,6 +354,7 @@ function epc_groupsAdd(verbose) {
 }
 function epc_groupsRemove(verbose, data) {
   console.log('[debug|epc_groupsRemove]');
+
   selected = $('#epGroups :selected').map(function(){return this.value;}).get();
 //  console.log('selected #: ' + selected.length + ', @: ' + selected.join(", "));
   if (selected.length > 0) {
@@ -396,48 +405,152 @@ function epc_groupPads(verbose) {
   console.log('[debug|epc_groupPads]');
   epc_pads('group');
 }
+function epc_groupAuthors(verbose) {
+  console.log('[debug|epc_groupAuthors]');
+  epc_authors('group');
+}
 
-function epc_authors(verbose) {
+function epc_authors(data, verbose) {
   console.log('[debug|epc_authors]');
-  jsonData = ep_call('listAllPads', undefined, false);
+
+  if (data === undefined)
+    var data = 'global';
+
+  var jsonData = undefined;
+  switch (data) {
+    case 'global':
+      var func = 'listAllPads';
+      var args = [];
+      jsonData = ep_call(func, args, false);
+      break;
+    case 'group':
+      selected = $('#epGroups :selected').map(function(){return this.value;}).get();
+      if (selected.length > 0) {
+        var func = "listPads";
+        var gid = selected[0].match('.*\\[(.*)\\].*')[1];
+        var args = [gid];
+        jsonData = ep_call(func, args, false);
+      }
+      break;
+  }
+  // reset authors object
   authors = {};
-  authorNames = {};
+  // temp 'dictionary' for name mappings to avoid unnecessary
+  // (and very slow) api calls to 'getAuthorName'
+  var auth2name = {};
   $('#epStatus-inner').html('');
-  if (jsonData !== undefined) {
-    $.each(jsonData['padIDs'], function(idx, padID) {
-      var args = [padID];
+  if (jsonData !== undefined && jsonData !== null) {
+    $.each(jsonData['padIDs'], function(idx, pid) {
+      var args = [pid];
       jsonData2 = ep_call('listAuthorsOfPad', args, true, true);
       if (jsonData2 !== undefined) {
-        $.each(jsonData['authorIDs'], function(idx2, authorID) {
-          var authorName = authorNames[authorID];
-          if (authorName === undefined) {
-            var args2 = [authorID];
+        $.each(jsonData2['authorIDs'], function(idx2, id) {
+          authors[id] = { 'id': id };
+          var name = auth2name[id];
+          if (name === undefined) {
+            var args2 = [id];
             jsonData3 = undefined;
             jsonData3 = ep_call('getAuthorName', args2, true, true);
             if (jsonData3 !== undefined && jsonData3 !== null) {
-//              authorName = jsonData3['authorName'] // api bug?
-              authorName = jsonData3
-              authorNames[authorID] = authorName;
+//              name = jsonData3['authorName']; // api bug?
+              name = jsonData3;
+              authors[id]['name'] = name;
             }
           }
-          if (authorName !== undefined)
-            authors[authorID] = jsonData3 + ' [' + authorID + ']';
-          else
-            authors[authorID] = '[' + authorID + ']';
         });
       }
     });
   }
-  $('#epAuthors').html('<option value="0">All</option>');
-  $.each(authors, function(idx, value) {
-    $('#epAuthors').append('<option>' + value + '</option>');
-  });
+  // update select control
+  epc_authorsShow();
 }
-function epc_authorsAdd(verbose, data) {
+
+function epc_authorsShow() {
+  console.log('[debug|epc_authorsShow]');
+
+  $('#epAuthors').html('');
+  $.each(authors, function(key, author) {
+    if (author['name'] === undefined)
+      $('#epAuthors').append('<option>[' + author['id'] + ']</option>');
+    else
+      $('#epAuthors').append('<option>' + author['name'] + ' [' + author['id'] + ']</option>');
+  });
+  if ($('#epAuthors')[0].length > 0) {
+    $('#epAuthors').prepend('<option value="0">All</option>');
+    $('#epAuthorsTitle').html('authors (' + ($('#epAuthors')[0].length - 1) + ')');
+  } else
+    $('#epAuthorsTitle').html('authors (0)');
+}
+function epc_authorsAdd(verbose) {
   console.log('[debug|epc_authorsAdd]');
+
+  name = $('#epAuthorName').attr('value');
+  args = [name, name];
+  jsonData = ep_call('createAuthorIfNotExistsFor', args, verbose);
+  if (jsonData !== null) {
+    id = jsonData['authorID'];
+    author = authors[id];
+    if (author === undefined) {
+      authors[id] = { 'id': id, 'name': name };
+      console.log('[info] author name \'' + name + '\' added with id \'' + id + '\'');
+    } else
+      console.log('[info] author name \'' + name + '\' already exists with id \'' + id + '\'');
+
+    // reload author
+    epc_authorsShow();
+    // select added / existing
+//   $('#epAuthors option[innerHTML=\'' + id + '\']').attr('selected', 'selected');
+    $('#epAuthors option:contains(' + id + ')').attr('selected', 'selected');
+  }
 }
 function epc_authorsRemove(verbose, data) {
   console.log('[debug|epc_authorsRemove]');
+
+  selected = $('#epAuthors :selected').map(function(){return this.value;}).get();
+//  console.log('selected #: ' + selected.length + ', @: ' + selected.join(", "));
+  if (selected.length > 0) {
+    if (data === undefined) {
+      // confirmation message
+      console.log('[debug|epc_authorsRemove] confirmation message');
+      $('#popupTitle').html('warning: confirmation required');
+      suffix = ''
+      if (selected.length > 1)
+        suffix = 's';
+      sMessage = '<p>are you sure you want to permanently remove the following author' + suffix + ':</p>\n';
+      sMessage += '<ul>\n';
+      $.each(selected, function(key, value) {
+        sMessage += '<li>' + value + '</li>\n'
+      });
+      sMessage += '</ul>\n';
+      $('#popupContent').html(sMessage);
+      // set the click handler
+      $('#popup-button-ok').off("click");
+      $('#popup-button-ok').on('click', function() {epc_authorsRemove(true, true);});
+      popupToggle('yes|no');
+    } else {
+      // toggle popup
+      popupToggle();
+      // do deletion
+      if (data === true) {
+        selectedIndex = $("#epAuthors option:selected")[0].index;
+        $.each(selected, function(key, value) {
+          var id = value.match('.*\\[(.*)\\].*')[1];
+          var args = [id];
+          jsonData = epx_call('deleteAuthor', args, verbose);
+          if (jsonData)
+            console.log('[info] deleted author, id: \'' + id + '\'');
+            delete(authors[id]);
+          }
+        });
+        // reload author
+        epc_authorsShow();
+        // reselect
+        if (selectedIndex > $('#epAuthors')[0].length - 1)
+          selectedIndex = $('#epAuthors')[0].length - 1;
+        $('#epAuthors')[0].selectedIndex = selectedIndex;
+      }
+    }
+  }
 }
 
 function popupToggle(type) {

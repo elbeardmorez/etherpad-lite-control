@@ -38,9 +38,9 @@ function getFunctionName($s) {
     <p style="margin: 2px 5px;">group</p>
     <hr style="margin: 5px;">
     <?php
-      $controls = [ 'Pads' ];
+      $controls = [ 'Authors', 'Pads' ];
       foreach ($controls as $control) {
-        echo '<input id="epc' . $control . '" type="button" class="button" onclick="epc_' . getFunctionName('group' . $control) . '()" value="' . $control . '" style="margin-left: 10px;">';
+        echo '<input id="epcGroup' . $control . '" type="button" class="button" onclick="epc_' . getFunctionName('group' . $control) . '()" value="' . $control . '" style="margin-left: 10px;">';
       }
     ?>
 
@@ -154,7 +154,7 @@ function getFunctionName($s) {
         </div>
         <div style="position: absolute; bottom: 5px; left: 5px; right: 0px; height: 20px;">
           <div style="position: absolute; left: 0px; right: 42px;">
-            <input id="epAuthorName" type="text" style="width: 100%;" disabled>
+            <input id="epAuthorName" type="text" style="width: 100%;">
           </div>
           <div style="float: right; margin-right: 2px;">
             <input type="button" class="button button-remove" value="-" onclick="epc_authorsRemove();">

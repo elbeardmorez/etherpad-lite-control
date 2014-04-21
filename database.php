@@ -35,6 +35,8 @@ function dbQuery($dbType, $dbConnectionString, $query) {
         $result = pg_query($query)
                     or die('Query failed: ' . pg_last_error());
 
+        $data['code'] = 0;
+        $data['message'] = 'ok';
         # process result set
         if (pg_num_rows($result) > 0) {
           $data2 = [];
@@ -52,8 +54,6 @@ function dbQuery($dbType, $dbConnectionString, $query) {
             }
             $data2[] = $data3;
           }
-          $data['code'] = 0;
-          $data['message'] = 'ok';
           $data['data'] = $data2;
         }
 

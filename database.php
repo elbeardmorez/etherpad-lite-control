@@ -50,6 +50,7 @@ function dbQuery($dbType, $dbConnectionString, $query) {
             $data3 = [];
             foreach ($record as $field) {
               $data3[$headers[$l]] = $field;
+              error_log('field: ' . $headers[$l] . ', value: ' . $field);
               $l++;
             }
             $data2[] = $data3;

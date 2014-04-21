@@ -410,7 +410,31 @@ function epc_groupAuthors(verbose) {
   epc_authors('group');
 }
 
-function epc_authors(data, verbose) {
+function epc_authors(verbose) {
+  console.log('[debug|epc_authors]');
+
+  // reset authors object
+  authors = {};
+  jsonData = epx_call('listAllAuthors', undefined, verbose)
+  if (jsonData !== undefined)
+    // process
+    authors = jsonData;
+  // map external names where possible
+  jsonData = epx_call('getAuthorMappers', undefined, true, true);
+  if (jsonData !== undefined) {
+    // process
+    $.each(authors, function(key, author) {
+      if (authors['name'] === undefined &&
+        jsonData[key] !== undefined) {
+        author['name'] = jsonData[key]['name'];
+      }
+    });
+  }
+  // update select control
+  epc_authorsShow();
+}
+
+function epc_authorsOfPads(data, verbose) {
   console.log('[debug|epc_authors]');
 
   if (data === undefined)
@@ -537,7 +561,7 @@ function epc_authorsRemove(verbose, data) {
           var id = value.match('.*\\[(.*)\\].*')[1];
           var args = [id];
           jsonData = epx_call('deleteAuthor', args, verbose);
-          if (jsonData)
+          if (jsonData) {
             console.log('[info] deleted author, id: \'' + id + '\'');
             delete(authors[id]);
           }

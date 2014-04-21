@@ -58,12 +58,25 @@ function epxCall($func, $args = [],
                               'password=' . $dbSettings['settings']['password'];
         switch ($func) {
           case "getGroupMappers":
-            $query = 'select trim(value, \'\"\') as gid, replace(key, \'mapper2group:\', \'\') as name from store where key like \'mapper2group:%\'';
+            $query = 'select trim(value, \'\"\') as id, replace(key, \'mapper2group:\', \'\') as name from store where key like \'mapper2group:%\'';
             $data = dbQuery($dbSettings['type'], $dbConnectionString, $query);
             // create json data
             $data2 = [];
             foreach ($data['data'] as $arr) {
-              $data2[$arr['gid']] = $arr;
+              $data2[$arr['id']] = $arr;
+            }
+            $data['data'] = $data2;
+            $jsonData = $data;
+            $sData = var2str($jsonData);
+            break;
+
+          case "getAuthorMappers":
+            $query = 'select trim(value, \'\"\') as id, replace(key, \'mapper2author:\', \'\') as name from store where key like \'mapper2author:%\'';
+            $data = dbQuery($dbSettings['type'], $dbConnectionString, $query);
+            // create json data
+            $data2 = [];
+            foreach ($data['data'] as $arr) {
+              $data2[$arr['id']] = $arr;
             }
             $data['data'] = $data2;
             $jsonData = $data;
@@ -80,6 +93,21 @@ function epxCall($func, $args = [],
             }
             # TODO:
             # better error handling
+            $jsonData = $data;
+            $sData = var2str($jsonData);
+            break;
+
+          case "listAllAuthors":
+            $query = 'select replace(key, \'globalAuthor:\', \'\') as id, value from store where key like \'globalAuthor:%\'';
+            $data = dbQuery($dbSettings['type'], $dbConnectionString, $query);
+            // create json data
+            $data2 = [];
+            foreach ($data['data'] as $arr) {
+              $author = json_decode($arr['value'], true);
+              $author['id'] = $arr['id'];
+              $data2[$author['id']] = $author;
+            }
+            $data['data'] = $data2;
             $jsonData = $data;
             $sData = var2str($jsonData);
             break;
@@ -147,7 +175,7 @@ function epCall($func, $args = [],
 }
 
 $aEpApi = [ 'checkToken', 'getHTML', 'getPublicStatus', 'deletePad', 'deleteGroup', 'listAllPads', 'listAllGroups', 'createGroupIfNotExistsFor', 'listAuthorsOfPad', 'getAuthorName', 'createAuthorIfNotExistsFor' ];
-$aEpX = [ 'test', 'getGroupMappers', 'deleteAuthor' ];
+$aEpX = [ 'test', 'getGroupMappers', 'deleteAuthor', 'listAllAuthors', 'getAuthorMappers' ];
 
 if (!empty($_POST)) {
   if (!empty($_POST['func'])) {

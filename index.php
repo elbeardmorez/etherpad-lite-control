@@ -77,7 +77,6 @@ function getFunctionName($s) {
         <div style="position: absolute; top: 5px; bottom: 5px; left: 5px; right: 0px;">
           <p style="margin-top: 8px; margin-bottom: 5px;"><b>settings</b></p>
           <div style="position: absolute; top: 35px; bottom: 0px; left: 5px; right: 5px; overflow-y: scroll; overflow-x: hidden;">
-            <form id="etherpad-lite">
             <div style="display: block; margin-right: 10px;">
               <p style="margin-top: 2px; margin-bottom: 1px;">server:</p>
               <input id="epc_server" type=text onchange="if (this.value.length > 0) setCookie(this.id, this.value);" style="width: 100%;">
@@ -98,7 +97,6 @@ function getFunctionName($s) {
               <p style="margin-top: 2px; margin-bottom: 1px;">settings path:</p>
               <input id="epc_settingspath" type=text onchange="if (this.value.length > 0) setCookie(this.id, this.value);" style="width: 100%;">
             </div>
-            </form>
           </div>
         </div>
       </div>

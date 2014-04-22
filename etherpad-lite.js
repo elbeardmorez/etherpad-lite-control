@@ -34,15 +34,15 @@ function loadState() {
   for (idx in arr) {
     var sElement = arr[idx];
     console.log('restoring state for: \'' + sElement + '\'');
-    document.forms['etherpad-lite'][sElement].value = getCookie(sElement);
+    $('#' + sElement).attr('value', getCookie(sElement));
   }
 }
 
 function getServer() {
-  return document.forms['etherpad-lite']['epc_server'].value + ":" +
-         document.forms['etherpad-lite']['epc_port'].value +
-         (document.forms['etherpad-lite']['epc_basepath'].value ? "/" +
-         document.forms['etherpad-lite']['epc_basepath'].value : ""); 
+  return $('#epc_server').attr('value') + ":" +
+         $('#epc_port').attr('value') +
+         ($('#epc_basepath').attr('value') ? "/" +
+          $('#epc_basepath').attr('value') : "");
 }
 
 function epx_call(func, args, verbose, append) {

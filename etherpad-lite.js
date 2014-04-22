@@ -46,7 +46,7 @@ function getServer() {
 }
 
 function epx_call(func, args, verbose, append) {
-  console.log('[debug|epx_call]');
+//  console.log('[debug|epx_call]');
 
   if (func === undefined)
     var func = "test";
@@ -69,15 +69,22 @@ function epx_call(func, args, verbose, append) {
             'args' : args,
             'settingsPath' : sSettingsPath },
     success: function(data, textStatus, jqXHR) {
-      console.log('[debug|epx_call] success');
-      sData = data['raw'];
-      jsonData = data['data']['data'];
-      if (jsonData === null && data['data']['code'] == 0)
-        jsonData = true;
+      if ( data === null ) {
+        sData = '[debug|epx_call] failure, no data';
+        console.log(sData);
+      } else {
+        console.log('[debug|epx_call] success');
+        sData = data['raw'];
+        if (data['data']['code'] == 0) {
+          jsonData = data['data']['data'];
+          if (jsonData === null)
+            jsonData = true;
+        }
+      }
     },
     failure: function(data, textStatus, jqXHR) {
-      console.log('[debug|epx_call] failure');
-      sData = data['raw'];
+      sData = '[debug|epx_call] failure';
+      console.log(sData);
     }
   });
   if (verbose)
@@ -113,15 +120,22 @@ function ep_call(func, args, verbose, append) {
             'url' : sServer,
             'apiKeyPath' : sApiKeyPath },
     success: function(data, textStatus, jqXHR) {
-//      console.log('[debug|ep_call] success');
-      sData = data['raw'];
-      jsonData = data['data']['data'];
-      if (jsonData === null && data['data']['code'] == 0)
-        jsonData = true;
+      if ( data === null ) {
+        sData = '[debug|ep_call] failure, no data';
+        console.log(sData);
+      } else {
+        console.log('[debug|ep_call] success');
+        sData = data['raw'];
+        if (data['data']['code'] == 0) {
+          jsonData = data['data']['data'];
+          if (jsonData === null)
+            jsonData = true;
+        }
+      }
     },
     failure: function(data, textStatus, jqXHR) {
-//      console.log('[debug|ep_call] failure');
-      sData = data['raw'];
+      sData = '[debug|ep_call] failure';
+      console.log(sData);
     }
   });
   if (verbose)
@@ -171,7 +185,7 @@ function epc_pads(data, verbose) {
           pads[id] = {'id': id};
         var args = [id]
         jsonData2 = ep_call('getPublicStatus', args, false);
-        if (jsonData2 !== undefined && jsonData2 !== null) {
+        if (jsonData2 !== undefined) {
           if (jsonData2)
             pads[id]['public'] = true;
           else
@@ -336,7 +350,7 @@ function epc_groupsAdd(verbose) {
   name = $('#epGroupName').attr('value');
   args = [name];
   jsonData = ep_call('createGroupIfNotExistsFor', args, verbose);
-  if (jsonData !== null) {
+  if (jsonData !== undefined) {
     id = jsonData['groupID'];
     group = groups[id];
     if (group === undefined) {
@@ -463,7 +477,7 @@ function epc_authorsOfPads(data, verbose) {
   // (and very slow) api calls to 'getAuthorName'
   var auth2name = {};
   $('#epStatus-inner').html('');
-  if (jsonData !== undefined && jsonData !== null) {
+  if (jsonData !== undefined) {
     $.each(jsonData['padIDs'], function(idx, pid) {
       var args = [pid];
       jsonData2 = ep_call('listAuthorsOfPad', args, true, true);
@@ -475,7 +489,7 @@ function epc_authorsOfPads(data, verbose) {
             var args2 = [id];
             jsonData3 = undefined;
             jsonData3 = ep_call('getAuthorName', args2, true, true);
-            if (jsonData3 !== undefined && jsonData3 !== null) {
+            if (jsonData3 !== undefined) {
 //              name = jsonData3['authorName']; // api bug?
               name = jsonData3;
               authors[id]['name'] = name;
@@ -511,7 +525,7 @@ function epc_authorsAdd(verbose) {
   name = $('#epAuthorName').attr('value');
   args = [name, name];
   jsonData = ep_call('createAuthorIfNotExistsFor', args, verbose);
-  if (jsonData !== null) {
+  if (jsonData !== undefined) {
     id = jsonData['authorID'];
     author = authors[id];
     if (author === undefined) {

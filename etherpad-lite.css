@@ -41,7 +41,7 @@ body {
   background-color: #ddd;
   background-image: -webkit-gradient(linear, 0% 0%, 100% 0% from(#ddd), to(#151515));
   background-image: -moz-linear-gradient(-90deg, #ddd, #151515);
-  background-image: -webkit-linear-gradient(bottom, #ddd 100%, #151515 0%);
+  background-image: -webkit-linear-gradient(bottom, #151515 0%, #ddd 100%);
 }
 
 #title {

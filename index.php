@@ -70,10 +70,9 @@ function getFunctionName($s) {
   <div id="content-outer" style="position: absolute; top: 75px; right: 135px; bottom: 50px; left: 5px; min-width: 700px; overflow: hidden;">
   <div id="content-inner" style="position: relative; height: 100%; width: 95%; margin: auto;">
 
+    <div style="display: block; height: 35%; width: 100%;">
+      <div style="position: relative; float: left; display: block; height: 100%; width: 20%; min-width: 175px; max-width: 225px; padding-bottom: 45px;">
 
-    <div style="position: relative; height: 40%; width: 100%;">
-
-      <div style="float: left; position: relative; height: 100%; width: 200px;">
         <div style="position: absolute; top: 5px; bottom: 5px; left: 5px; right: 0px;">
           <p style="margin-top: 8px; margin-bottom: 5px;"><b>settings</b></p>
           <div style="position: absolute; top: 35px; bottom: 0px; left: 5px; right: 5px; overflow-y: scroll; overflow-x: hidden;">
@@ -99,9 +98,11 @@ function getFunctionName($s) {
             </div>
           </div>
         </div>
+
       </div>
 
-      <div style="float: right; position: relative; height: 100%; width: 30%; width: 175px;">
+      <div style="position: relative; float: right; display: block; height: 100%; width: 20%; min-width: 175px; max-width: 400px; padding-bottom: 45px;">
+
         <div style="position: absolute; top: 5px; bottom: 5px; left: 5px; right: 5px;">
           <p style="margin-top: 8px; margin-bottom: 5px;"><b>info</b></p>
           <div id="epInfo-outer" style="position: absolute; top: 35px; bottom: 0px; width: 100%; overflow: auto;">
@@ -109,21 +110,24 @@ function getFunctionName($s) {
           </div>
           </div>
         </div>
+
       </div>
 
-      <div style="position: relative; height: 100%; min-width: 200px; margin: 0px 175px 0px 200px;">
-        <div style="position: absolute; top: 5px; bottom: 5px; left: 5px; right: 5px;">
-          <p style="margin-top: 8px; margin-bottom: 5px;"><b>status</b></p>
-          <div id="epStatus-outer" style="position: absolute; top: 35px; bottom: 0px; width: 100%; overflow: auto;">
-          <div id="epStatus-inner" style="position: relative;">
-          </div>
-          </div>
+      <div style="display: block; bottom: 15px; height: 100%; width: auto; min-width: 200px; padding-bottom: 45px; overflow: hidden;">
+        <div style="display: block; width: auto; padding: 8px 0px 5px;">
+          <p style="margin-top: 5px; margin-bottom: 5px;"><b>status</b></p>
+        </div>
+        <div id="epStatus-outer" style="display: block; height: 100%;">
+        <div id="epStatus-inner" style="display: block; height: 100%; width: 96%; min-width: 300px; overflow-y: auto;">
+        </div>
         </div>
       </div>
 
     </div>
+    <div style="clear: both;"></div>
 
-    <div style="position: relative; height: 60%; width: 100%;">
+    <div style="position: relative; height: 65%; width: 100%; min-height: 150px; white-space: nowrap;">
+    <div style="position: absolute; top: 0px; bottom: 45px; width: 100%;">
 
       <div style="position: relative; float: left; height: 100%; width: 30%; min-width: 150px;">
         <p id="epGroupsTitle" style="margin-bottom: 5px; font-weight: bold;">groups</p>
@@ -188,6 +192,7 @@ function getFunctionName($s) {
           </div>
         </div>
       </div>
+    </div>
     </div>
 
   </div>

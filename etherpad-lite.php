@@ -57,6 +57,18 @@ function epxCall($func, $args = [],
                               'user=' . $dbSettings['settings']['user'] . ' ' .
                               'password=' . $dbSettings['settings']['password'];
         switch ($func) {
+          case "getPadCreated":
+            $pid = $args[0];
+            $query = 'select value from store where key = \'pad:' . $pid . ':revs:0\'';
+            $data = dbQuery($dbSettings['type'], $dbConnectionString, $query);
+            // create json data
+            $data2 = json_decode($data['data'][0]['value'], true);
+            $data2 = [ 'created' => $data2['meta']['timestamp'] ];
+            $data['data'] = $data2;
+            $jsonData = $data;
+            $sData = var2str($jsonData);
+            break;
+
           case "getGroupMappers":
             $query = 'select trim(value, \'\"\') as id, replace(key, \'mapper2group:\', \'\') as name from store where key like \'mapper2group:%\'';
             $data = dbQuery($dbSettings['type'], $dbConnectionString, $query);
@@ -174,8 +186,8 @@ function epCall($func, $args = [],
   return $sReturn;  
 }
 
-$aEpApi = [ 'checkToken', 'getHTML', 'getPublicStatus', 'deletePad', 'deleteGroup', 'listAllPads', 'listAllGroups', 'createGroupIfNotExistsFor', 'listAuthorsOfPad', 'getAuthorName', 'createAuthorIfNotExistsFor' ];
-$aEpX = [ 'test', 'getGroupMappers', 'deleteAuthor', 'listAllAuthors', 'getAuthorMappers' ];
+$aEpApi = [ 'checkToken', 'getHTML', 'getPublicStatus', 'deletePad', 'deleteGroup', 'listAllPads', 'listAllGroups', 'createGroupIfNotExistsFor', 'listAuthorsOfPad', 'getAuthorName', 'createAuthorIfNotExistsFor', 'getLastEdited' ];
+$aEpX = [ 'test', 'getGroupMappers', 'deleteAuthor', 'listAllAuthors', 'getAuthorMappers', 'getPadCreated' ];
 
 if (!empty($_POST)) {
   if (!empty($_POST['func'])) {

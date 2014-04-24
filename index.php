@@ -75,7 +75,7 @@ function getFunctionName($s) {
 
         <div style="position: absolute; top: 5px; bottom: 5px; left: 5px; right: 0px;">
           <p style="margin-top: 8px; margin-bottom: 5px;"><b>settings</b></p>
-          <div style="position: absolute; top: 35px; bottom: 0px; left: 5px; right: 5px; overflow-y: scroll; overflow-x: hidden;">
+          <div style="position: absolute; top: 35px; bottom: 0px; left: 0px; right: 5px; overflow-y: scroll; overflow-x: hidden;">
             <div style="display: block; margin-right: 10px;">
               <p style="margin-top: 2px; margin-bottom: 1px;">server:</p>
               <input id="epc_server" type=text onchange="if (this.value.length > 0) setCookie(this.id, this.value);" style="width: 100%;">
@@ -106,7 +106,7 @@ function getFunctionName($s) {
         <div style="position: absolute; top: 5px; bottom: 5px; left: 5px; right: 5px;">
           <p style="margin-top: 8px; margin-bottom: 5px;"><b>info</b></p>
           <div id="epInfo-outer" style="position: absolute; top: 35px; bottom: 0px; width: 100%; overflow: auto;">
-          <div id="epInfo-inner" style="position: relative;">
+          <div id="epInfo-inner" style="position: absolute; top: 5px; bottom: 5px; left: 5px; right: 0px;">
           </div>
           </div>
         </div>
@@ -177,7 +177,7 @@ function getFunctionName($s) {
           </select>
         </div>
         <div style="position: absolute; top: 55px; bottom: 26px; left: 5px; right: 2px;">
-          <select id="epPads" multiple="multiple" style="top: 20px; height: 100%; width: 100%;">
+          <select id="epPads" multiple="multiple" style="top: 20px; height: 100%; width: 100%;" onchange="epc_padsInfo()">
           </select>
         </div>
         <div style="position: absolute; bottom: 5px; left: 5px; right: 0px; height: 20px;">

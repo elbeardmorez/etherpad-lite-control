@@ -243,7 +243,7 @@ function epc_padsRemove(verbose, data) {
   console.log('[debug|epc_padsRemove]');
 
   selected = $('#epPads :selected').map(function(){return this.value;}).get();
-  console.log('selected #: ' + selected.length + ', @: ' + selected.join(", "));
+//  console.log('selected #: ' + selected.length + ', @: ' + selected.join(", "));
   if (selected.length > 0) {
     if (data === undefined) {
       // confirmation message
@@ -284,10 +284,9 @@ function epc_padsRemove(verbose, data) {
   }
 }
 function epc_padContent(verbose) {
-  console.log('[debug|epc_content]');
+  console.log('[debug|epc_padContent]');
 
   selected = $('#epPads :selected').map(function(){return this.value;}).get();
-  console.log('selected #: ' + selected.length + ', @: ' + selected.join(", "));
   if (selected.length > 0) {
     var args = [selected[0]];
     jsonData = ep_call('getHTML', args, verbose);
@@ -296,6 +295,55 @@ function epc_padContent(verbose) {
       $('#popupContent').html(jsonData['html']);
       popupToggle('ok');
     }
+  }
+}
+function epc_padsInfo(verbose) {
+  console.log('[debug|epc_padsInfo]');
+
+  selected = $('#epPads :selected').map(function(){return this.value;}).get();
+  if (selected.length > 0) {
+    id = selected[0];
+    pad = pads[id];
+    var infos = {};
+    infos['created'] = [ 'nonapi', 'getPadCreated', [ id ], 'created' ];
+    infos['updated'] = [ 'api', 'getLastEdited', [ id ], 'lastEdited' ];
+
+    if (pad['created'] === undefined) {
+      // collect info strings
+      var append = false;
+      $.each(infos, function(key, info) {
+        var type = info[0];
+        var func = info[1];
+        var args = info[2];
+        var dataKey = info[3];
+
+        if (type == "api")
+          jsonData = ep_call(func, args, verbose, append);
+        else
+          jsonData = epx_call(func, args, verbose, append);
+        append = true;
+
+        if (jsonData !== undefined) {
+          // add info to pad object
+          console.log("here!");
+          pad[key] = jsonData[dataKey];
+          // post processing
+          switch (key) {
+            case 'created':
+            case 'updated':
+              // convert date
+              pad[key] = new Date(pad[key]).toLocaleString();
+              break;
+          }
+        }
+      });
+    }
+    // construct html
+    html = '';
+    $.each(infos, function(key, info) {
+      html += "<p style='margin: 3px 0px 2px; font-size: 0.8em;'><b>" + key + ": </b><span style='font-size: 1.1em;'>" + ( pad[key] !== undefined ? pad[key] : '') + "</span></p>"
+    });
+    $('#epInfo-inner').html(html);
   }
 }
 

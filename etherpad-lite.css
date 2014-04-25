@@ -46,7 +46,7 @@ body {
 
 #title {
   color: black;
-  text-shadow: 1px 1px 1px white, 2px 2px 25px white;
+  text-shadow: 1px 1px 4px white, 1px 1px 5px #eee;
 }
 #control-background {
   background-color: #ddd;

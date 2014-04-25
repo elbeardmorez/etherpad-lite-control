@@ -17,8 +17,8 @@ function getFunctionName($s) {
 </head>
 <body onload="loadState();">
   <div id="header" style="z-index: 2; position: absolute; height: 75px; width: 100%;">
-    <div id="title" style="position: relative; top: 25px; left: 5px; right: 115px; margin: 0px 1%;">
-      <h2>Etherpad-Lite Control</h2>
+    <div id="title" style="position: relative; top: 20px; height: 25px; left: 5px; right: 115px; margin: 0px 1%;">
+       <p style="display: inline; font-size: 20px; font-weight: bold;"><img src="resources/icon.png" style="position: relative; bottom: 5px; height: 40px; opacity: 0.7; padding-right: 5px; vertical-align: middle;">Etherpad-Lite Control</p>
     </div>
   </div>
   <div id="control-background" style="z-index: 1; position: absolute; top: 75px; right: 0px; bottom: 55px; width: 120px;"></div>

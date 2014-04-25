@@ -89,9 +89,9 @@ function epx_call(func, args, verbose, append) {
   });
   if (verbose)
     if (append)
-      $('#epStatus-inner').append(sData);
+      $('#epStatus-inner').append('<br>' + sData);
     else
-      $('#epStatus-inner').html(sData);
+      $('#epStatus-inner').html('<br>' + sData);
   return jsonData;
 }
 
@@ -140,9 +140,9 @@ function ep_call(func, args, verbose, append) {
   });
   if (verbose)
     if (append)
-      $('#epStatus-inner').append(sData);
+      $('#epStatus-inner').append('<br>' + sData);
     else
-      $('#epStatus-inner').html(sData);
+      $('#epStatus-inner').html('<br>' + sData);
   return jsonData;
 }
 

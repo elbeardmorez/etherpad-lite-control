@@ -74,6 +74,7 @@ body {
 }
 
 #epPadName,
+#epSessionID,
 #epc_basepath {
  opacity: 0.5;
 }

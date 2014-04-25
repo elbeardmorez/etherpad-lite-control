@@ -28,7 +28,7 @@ function getFunctionName($s) {
     <p style="margin: 2px 5px;">global</p>
     <hr style="margin: 5px;">
     <?php
-      $controls = [ 'Groups', 'Authors', 'Pads' ];
+      $controls = [ 'Authors', 'Groups', 'Pads' ];
       foreach ($controls as $control) {
         echo '<input id="epc' . $control . '" type="button" class="button" onclick="epc_' . getFunctionName($control) . '()" value="' . $control . '" style="margin-left: 10px;">';
       }
@@ -126,10 +126,29 @@ function getFunctionName($s) {
     </div>
     <div style="clear: both;"></div>
 
-    <div style="position: relative; height: 65%; width: 100%; min-height: 150px; white-space: nowrap;">
+    <div style="position: relative; height: 65%; width: 100%; min-height: 150px;">
     <div style="position: absolute; top: 0px; bottom: 45px; width: 100%;">
 
-      <div style="position: relative; float: left; height: 100%; width: 30%; min-width: 150px;">
+      <div style="position: relative; float: left; height: 100%; width: 24%; min-width: 100px;">
+        <p id="epAuthorsTitle" style="margin-bottom: 5px; font-weight: bold;">authors</p>
+        <div style="position: absolute; top: 35px; bottom: 26px; left: 5px; right: 2px;">
+          <select id="epAuthors" multiple="multiple" style="height: 100%; width: 100%;">
+          </select>
+        </div>
+        <div style="position: absolute; bottom: 5px; left: 5px; right: 0px; height: 20px;">
+          <div style="position: absolute; left: 0px; right: 42px;">
+            <input id="epAuthorName" type="text" style="width: 100%;">
+          </div>
+          <div style="float: right; margin-right: 2px;">
+            <input type="button" class="button button-remove" value="-" onclick="epc_authorsRemove();">
+          </div>
+          <div style="float: right;">
+            <input type="button" class="button button-add" value="+" onclick="epc_authorsAdd();">
+          </div>
+        </div>
+      </div>
+
+      <div style="position: relative; float: left; height: 100%; width: 24%; min-width: 100px;">
         <p id="epGroupsTitle" style="margin-bottom: 5px; font-weight: bold;">groups</p>
         <div style="position: absolute; top: 35px; bottom: 26px; left: 5px; right: 2px;">
           <select id="epGroups" multiple="multiple" style="height: 100%; width: 100%;">
@@ -149,25 +168,6 @@ function getFunctionName($s) {
       </div>
 
       <div style="position: relative; float: left; height: 100%; width: 30%; min-width: 150px;">
-        <p id="epAuthorsTitle" style="margin-bottom: 5px; font-weight: bold;">authors</p>
-        <div style="position: absolute; top: 35px; bottom: 26px; left: 5px; right: 2px;">
-          <select id="epAuthors" multiple="multiple" style="height: 100%; width: 100%;">
-          </select>
-        </div>
-        <div style="position: absolute; bottom: 5px; left: 5px; right: 0px; height: 20px;">
-          <div style="position: absolute; left: 0px; right: 42px;">
-            <input id="epAuthorName" type="text" style="width: 100%;">
-          </div>
-          <div style="float: right; margin-right: 2px;">
-            <input type="button" class="button button-remove" value="-" onclick="epc_authorsRemove();">
-          </div>
-          <div style="float: right;">
-            <input type="button" class="button button-add" value="+" onclick="epc_authorsAdd();">
-          </div>
-        </div>
-      </div>
-
-      <div style="position: relative; float: left; height: 100%; width: 40%; min-width: 150px;">
         <p id="epPadsTitle" style="margin-bottom: 5px; font-weight: bold;">pads</p>
         <div style="position: absolute; top: 35px; bottom: 30px; left: 5px; right: 2px;">
           <select id="epPadsType" style="width: 100%;" onchange="epc_padsShow(this.value)">
@@ -192,6 +192,26 @@ function getFunctionName($s) {
           </div>
         </div>
       </div>
+
+      <div style="position: relative; float: left; height: 100%; width: 22%; min-width: 100px;">
+        <p id="epSessionsTitle" style="margin-bottom: 5px; font-weight: bold;">sessions</p>
+        <div style="position: absolute; top: 35px; bottom: 26px; left: 5px; right: 2px;">
+          <select id="epSessions" multiple="multiple" style="height: 100%; width: 100%;">
+          </select>
+        </div>
+        <div style="position: absolute; bottom: 5px; left: 5px; right: 0px; height: 20px;">
+          <div style="position: absolute; left: 0px; right: 42px;">
+            <input id="epSessionID" type="text" style="width: 100%;" disabled>
+          </div>
+          <div style="float: right; margin-right: 2px;">
+            <input type="button" class="button button-remove" value="-" onclick="epc_sessionsRemove();">
+          </div>
+          <div style="float: right;">
+            <input type="button" class="button button-add" value="+" onclick="epc_sessionsAdd();">
+          </div>
+        </div>
+      </div>
+
     </div>
     </div>
 

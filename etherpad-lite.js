@@ -151,6 +151,10 @@ function epc_status(verbose) {
   ep_call('checkToken', undefined, verbose);
 }
 
+//
+// pads
+//
+
 function epc_pads(data, verbose) {
   console.log('[debug|epc_pads]');
 
@@ -347,6 +351,27 @@ function epc_padsInfo(verbose) {
   }
 }
 
+//
+// sessions
+//
+
+function epc_sessions(verbose) {
+  console.log('[debug|epc_sessions]');
+}
+function epc_sessionsShow() {
+  console.log('[debug|epc_sessionsShow]');
+}
+function epc_sessionsAdd(verbose) {
+  console.log('[debug|epc_sessionsAdd]');
+}
+function epc_sessionsRemove(verbose, data) {
+  console.log('[debug|epc_sessionsRemove]');
+}
+
+//
+// groups
+//
+
 function epc_groups(verbose) {
   console.log('[debug|epc_groups]');
 
@@ -471,6 +496,10 @@ function epc_groupAuthors(verbose) {
   console.log('[debug|epc_groupAuthors]');
   epc_authors('group');
 }
+
+//
+// authors
+//
 
 function epc_authors(verbose) {
   console.log('[debug|epc_authors]');

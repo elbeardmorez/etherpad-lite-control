@@ -17,7 +17,7 @@ function getFunctionName($s) {
 </head>
 <body onload="loadState();">
   <div id="header" style="z-index: 2; position: absolute; height: 75px; width: 100%;">
-    <div id="title" style="position: relative; top: 25px; left: 5px; right: 135px; margin: 0px 2.5%;">
+    <div id="title" style="position: relative; top: 25px; left: 5px; right: 115px; margin: 0px 1%;">
       <h2>Etherpad-Lite Control</h2>
     </div>
   </div>
@@ -67,8 +67,8 @@ function getFunctionName($s) {
   </div>
   </div>
 
-  <div id="content-outer" style="position: absolute; top: 75px; right: 135px; bottom: 50px; left: 5px; min-width: 700px; overflow: hidden;">
-  <div id="content-inner" style="position: relative; height: 100%; width: 95%; margin: auto;">
+  <div id="content-outer" style="position: absolute; top: 75px; right: 115px; bottom: 50px; left: 5px; min-width: 750px; overflow: hidden;">
+  <div id="content-inner" style="position: relative; height: 100%; width: 98%; margin: auto;">
 
     <div style="display: block; height: 35%; width: 100%;">
       <div style="position: relative; float: left; display: block; height: 100%; width: 20%; min-width: 175px; max-width: 225px; padding-bottom: 45px;">
@@ -130,7 +130,7 @@ function getFunctionName($s) {
     <div style="position: absolute; top: 0px; bottom: 45px; width: 100%;">
 
       <div style="position: relative; float: left; height: 100%; width: 24%; min-width: 100px;">
-        <p id="epAuthorsTitle" style="margin-bottom: 5px; font-weight: bold;">authors</p>
+        <p id="epAuthorsTitle" style="padding: 0px 5px 0px 5px; font-weight: bold;">authors</p>
         <div style="position: absolute; top: 35px; bottom: 26px; left: 5px; right: 2px;">
           <select id="epAuthors" multiple="multiple" style="height: 100%; width: 100%;">
           </select>
@@ -149,7 +149,7 @@ function getFunctionName($s) {
       </div>
 
       <div style="position: relative; float: left; height: 100%; width: 24%; min-width: 100px;">
-        <p id="epGroupsTitle" style="margin-bottom: 5px; font-weight: bold;">groups</p>
+        <p id="epGroupsTitle" style="padding: 0px 5px 0px 5px; font-weight: bold;">groups</p>
         <div style="position: absolute; top: 35px; bottom: 26px; left: 5px; right: 2px;">
           <select id="epGroups" multiple="multiple" style="height: 100%; width: 100%;">
           </select>
@@ -168,7 +168,7 @@ function getFunctionName($s) {
       </div>
 
       <div style="position: relative; float: left; height: 100%; width: 30%; min-width: 150px;">
-        <p id="epPadsTitle" style="margin-bottom: 5px; font-weight: bold;">pads</p>
+        <p id="epPadsTitle" style="padding: 0px 5px 0px 5px; font-weight: bold;">pads</p>
         <div style="position: absolute; top: 35px; bottom: 30px; left: 5px; right: 2px;">
           <select id="epPadsType" style="width: 100%;" onchange="epc_padsShow(this.value)">
             <option>group (public)</option>
@@ -194,7 +194,7 @@ function getFunctionName($s) {
       </div>
 
       <div style="position: relative; float: left; height: 100%; width: 22%; min-width: 100px;">
-        <p id="epSessionsTitle" style="margin-bottom: 5px; font-weight: bold;">sessions</p>
+        <p id="epSessionsTitle" style="padding: 0px 5px 0px 5px; font-weight: bold;">sessions</p>
         <div style="position: absolute; top: 35px; bottom: 26px; left: 5px; right: 2px;">
           <select id="epSessions" multiple="multiple" style="height: 100%; width: 100%;">
           </select>

@@ -1,7 +1,7 @@
 <?php
 
 function var2str($v, $l = 3) {
-  $s = '';;
+  $s = '';
   $s .= '<pre>';
   ob_start();
   var_dump($v, $l);

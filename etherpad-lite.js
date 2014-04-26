@@ -186,14 +186,26 @@ function epc_pads(data, verbose) {
     if (jsonData['padIDs'].length > 0) {
       $.each(jsonData['padIDs'], function(idx, id) {
         if (pads[id] === undefined)
-          pads[id] = {'id': id};
+          pads[id] = {'id': id, 'name': id};
         var args = [id]
         jsonData2 = ep_call('getPublicStatus', args, false);
         if (jsonData2 !== undefined) {
+          // group pad
           if (jsonData2)
             pads[id]['public'] = true;
           else
             pads[id]['public'] = false;
+          if (pads[id]['name'] == pads[id]['id']) {
+            // modify name
+            var arr = pads[id]['id'].match('(.*)\\$(.*)');
+            var name = arr[2];
+            var gid = arr[1];
+            var group = groups[gid];
+            if (group !== undefined)
+              pads[id]['name'] = name + ' [' + group['name'] + ']';
+            else
+              pads[id]['name'] = name + ' [' + gid + ']';
+          }
         }
       });
       // update select control
@@ -218,19 +230,19 @@ function epc_padsShow(type) {
       break;
   }
   $('#epPads').html('');
-  $.each(pads, function(idx, value) {
+  $.each(pads, function(idx, pad) {
     switch (type) {
       case "group (private)":
-        if (value['public'] !== undefined && value['public'] !== true)
-          $('#epPads').append('<option>' + value['id'] + '</option>');
+        if (pad['public'] !== undefined && pad['public'] !== true)
+          $('#epPads').append('<option>' + pad['name'] + '</option>');
         break;
       case "group (public)":
-        if (value['public'] !== undefined && value['public'] === true)
-          $('#epPads').append('<option>' + value['id'] + '</option>');
+        if (pad['public'] !== undefined && pad['public'] === true)
+          $('#epPads').append('<option>' + pad['name'] + '</option>');
         break;
       case "regular":
-        if (value['public'] === undefined)
-          $('#epPads').append('<option>' + value['id'] + '</option>');
+        if (pad['public'] === undefined)
+          $('#epPads').append('<option>' + pad['name'] + '</option>');
         break;
     }
   });

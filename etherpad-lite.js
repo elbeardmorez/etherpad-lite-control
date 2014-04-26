@@ -207,29 +207,30 @@ function epc_padsShow(type) {
   if (type === undefined)
     type = $('#epPadsType').attr('value');
   switch (type) {
-    case "":
-      console.log("[debug|epc_padsShow] selected all pads");
+    case "group (private)":
+      console.log("[debug|epc_padsShow] selected private group pads");
       break;
-    case "Public":
-      console.log("[debug|epc_padsShow] selected public pads only");
+    case "group (public)":
+      console.log("[debug|epc_padsShow] selected public group pads");
       break;
-    case "Private":
-      console.log("[debug|epc_padsShow] selected private pads only");
+    case "regular":
+      console.log("[debug|epc_padsShow] selected regular pads");
       break;
   }
   $('#epPads').html('');
   $.each(pads, function(idx, value) {
     switch (type) {
-      case "group (public)":
-        if (value['public'] !== undefined && value['public'] === true)
-          $('#epPads').append('<option>' + value['id'] + '</option>');
-        break;
       case "group (private)":
         if (value['public'] !== undefined && value['public'] !== true)
           $('#epPads').append('<option>' + value['id'] + '</option>');
         break;
-      case "global":
-        $('#epPads').append('<option>' + value['id'] + '</option>');
+      case "group (public)":
+        if (value['public'] !== undefined && value['public'] === true)
+          $('#epPads').append('<option>' + value['id'] + '</option>');
+        break;
+      case "regular":
+        if (value['public'] === undefined)
+          $('#epPads').append('<option>' + value['id'] + '</option>');
         break;
     }
   });

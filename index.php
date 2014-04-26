@@ -182,7 +182,7 @@ function getFunctionName($s) {
         </div>
         <div style="position: absolute; bottom: 5px; left: 5px; right: 0px; height: 20px;">
           <div style="position: absolute; left: 0px; right: 42px;">
-            <input id="epPadName" type="text" style="width: 100%;" disabled>
+            <input id="epPadName" type="text" style="width: 100%;">
           </div>
           <div style="float: right; margin-right: 2px;">
             <input type="button" class="button button-remove" value="-" onclick="epc_padsRemove();">

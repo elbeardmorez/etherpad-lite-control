@@ -242,6 +242,37 @@ function epc_padsShow(type) {
 }
 function epc_padsAdd(verbose, data) {
   console.log('[debug|epc_padsAdd]');
+
+  var func = '';
+  var args = [];
+  var name = $('#epPadName').attr('value');
+
+  selected = $('#epGroups :selected').map(function() { return this.value; }).get();
+  if (selected.length > 0) {
+    // create a group pad
+    func = 'createGroupPad';
+    args = [selected[0].match('.*\\[(.*)\\].*')[1], name];
+  } else {
+    // create a regular pad
+    func = 'createPad';
+    args = [name];
+  }
+  jsonData = ep_call(func, args, verbose);
+  if (jsonData !== undefined) {
+    if (jsonData === true) {
+      pad = pads[name];
+      if (pad === undefined) {
+        pad[name] = { 'id': name };
+        console.log('[info] pad name \'' + name + '\' added');
+      } else
+        console.log('[info] pad name \'' + name + '\' already exists');
+    }
+  }
+
+  // reload group
+  epc_padsShow();
+  // select added / existing
+  $('#epGroups option:contains(' + name + ')').attr('selected', 'selected');
 }
 function epc_padsRemove(verbose, data) {
   console.log('[debug|epc_padsRemove]');

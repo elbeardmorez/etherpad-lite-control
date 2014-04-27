@@ -1,7 +1,8 @@
 
-var groups = {};
 var authors = {};
+var groups = {};
 var pads = {};
+var sessions = {};
 
 function epc_test() {
   console.log('[debug|epc_test]');
@@ -407,6 +408,50 @@ function epc_sessionsShow() {
 }
 function epc_sessionsAdd(verbose) {
   console.log('[debug|epc_sessionsAdd]');
+
+  var aAuthors = $('#epAuthors :selected').map(function() { return this.value; }).get();
+  var aGroups = $('#epGroups :selected').map(function() { return this.value; }).get();
+  if (aAuthors.length == 0) {
+    alert("[user] no author(s) selected");
+    return;
+  }
+  if (aGroups.length == 0) {
+    alert("[user] no pad group(s) selected");
+    return;
+  }
+
+  var expiry = $('#epSessionExpiry').val();
+  if (expiry === undefined || expiry == '') {
+    // default to 'infinity'
+    expiry = sessionExpiry(10, "year(s)");
+  } else {
+    expiry = expiry.match('\s*([0-9]+(?:\.[0-9]+|))\s*');
+    if (expiry === null) {
+      alert("[user] non-numeric session expiry specified");
+      return;
+    } else
+      expiry = sessionExpiry($('#epSessionExpiry').val(), $('#epSessionExpiry2').val());
+  }
+
+  // create session(s) for author <-> group-pad(s)
+  $('#epStatus-inner').html('');
+  $.each(aAuthors, function(idx, author) {
+    var aid = author.match('.*\\[(.*)\\].*')[1];
+    $.each(aGroups, function(idx, group) {
+      var gid = group.match('.*\\[(.*)\\].*')[1];
+      args = [gid, aid, expiry];
+      jsonData = ep_call('createSession', args, verbose, true);
+      if (jsonData !== undefined) {
+        id = jsonData['sessionID'];
+        session = sessions[id];
+        if (session === undefined) {
+          sessions[id] = { 'id': id };
+          console.log('[info] session added with id \'' + id + '\'');
+        } else
+          console.log('[info] session already exists with id \'' + id + '\'');
+      }
+    });
+  });
 }
 function epc_sessionsRemove(verbose, data) {
   console.log('[debug|epc_sessionsRemove]');
@@ -710,6 +755,57 @@ function epc_authorsRemove(verbose, data) {
       }
     }
   }
+}
+
+function sessionExpiry(quantity, unit) {
+
+  var expiry;
+
+  if (quantity === undefined || quantity == '') {
+    expiry = undefined;
+  } else {
+    var multiplier = 1;
+    var dNow = new Date();
+    switch (unit) {
+      case 'year(s)':
+      case 'month(s)':
+      case 'week(s)':
+        // convert quantity to days
+        var dExpiry = new Date();
+        var dExpiry2 = new Date();
+        var days = 0;
+        switch (unit) {
+          case 'year(s)':
+            dExpiry2 = new Date(dExpiry.toUTCString());
+            dExpiry.setYear(dExpiry.getFullYear() + Math.floor(quantity));
+            quantity = quantity - Math.floor(quantity);
+            if (quantity > 0)
+              quantity *= 12;
+            days += Math.round((Date.UTC(dExpiry.getFullYear(), dExpiry.getMonth(), dExpiry.getDate()) - Date.UTC(dExpiry2.getFullYear(), dExpiry2.getMonth(), dExpiry2.getDate())) / (1000 * 60 * 60 * 24));
+          case 'month(s)':
+            dExpiry2 = new Date(dExpiry.toUTCString());
+            dExpiry.setMonth(dExpiry.getMonth() + Math.floor(quantity));
+            quantity = quantity - Math.floor(quantity);
+            if (quantity > 0)
+              quantity *= ((new Date(dExpiry.getFullYear(), dExpiry.getMonth() + 1, 1) - new Date(dExpiry.getFullYear(), dExpiry.getMonth(), 1)) / (1000 * 60 * 60 * 24));
+            days += Math.round((Date.UTC(dExpiry.getFullYear(), dExpiry.getMonth(), dExpiry.getDate()) - Date.UTC(dExpiry2.getFullYear(), dExpiry2.getMonth(), dExpiry2.getDate())) / (1000 * 60 * 60 * 24));
+            break;
+          case 'week(s)':
+            days += quantity * 7;
+            break;
+        }
+        quantity = days;
+      case 'day(s)':
+        multiplier *= 24;
+      case 'hour(s)':
+        multiplier *= 60;
+      case 'minute(s)':
+        multiplier *= 60;
+        break;
+    }
+    expiry = (Date.UTC(dNow.getFullYear(), dNow.getMonth(), dNow.getDate(), dNow.getHours(), dNow.getMinutes(), dNow.getSeconds() ) + Math.ceil(quantity * multiplier) * 1000) / 1000;
+  }
+  return expiry;
 }
 
 function popupToggle(type) {

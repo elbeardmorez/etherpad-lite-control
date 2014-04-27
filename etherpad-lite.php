@@ -186,7 +186,7 @@ function epCall($func, $args = [],
   return $sReturn;  
 }
 
-$aEpApi = [ 'checkToken', 'getHTML', 'getPublicStatus', 'deletePad', 'deleteGroup', 'listAllPads', 'listAllGroups', 'createGroupIfNotExistsFor', 'listAuthorsOfPad', 'getAuthorName', 'createAuthorIfNotExistsFor', 'getLastEdited', 'createPad', 'createGroupPad' ];
+$aEpApi = [ 'checkToken', 'getHTML', 'getPublicStatus', 'deletePad', 'deleteGroup', 'listAllPads', 'listAllGroups', 'createGroupIfNotExistsFor', 'listAuthorsOfPad', 'getAuthorName', 'createAuthorIfNotExistsFor', 'getLastEdited', 'createPad', 'createGroupPad', 'createSession' ];
 $aEpX = [ 'test', 'getGroupMappers', 'deleteAuthor', 'listAllAuthors', 'getAuthorMappers', 'getPadCreated' ];
 
 if (!empty($_POST)) {

@@ -200,13 +200,25 @@ function getFunctionName($s) {
           </select>
         </div>
         <div style="position: absolute; bottom: 5px; left: 5px; right: 0px; height: 20px;">
-          <div style="position: absolute; left: 0px; right: 42px;">
-            <input id="epSessionID" type="text" style="width: 100%;" disabled>
-          </div>
-          <div style="float: right; margin-right: 2px;">
+          <div style="float: left; margin-right: 2px;">
             <input type="button" class="button button-remove" value="-" onclick="epc_sessionsRemove();">
           </div>
-          <div style="float: right;">
+          <div style="position: absolute; left: 21px; right: 21px;">
+            <div style="position: relative; float: left; width: 32%; margin-right: -5px;">
+              <input id="epSessionExpiry" type="text" style="width: 100%; text-align: right;">
+            </div>
+            <div style="position: relative; float: right; width: 65%; margin-right: -1px;">
+              <select id="epSessionExpiry2" style="width: 100%;">
+                <option>minute(s)</option>
+                <option>hour(s)</option>
+                <option>day(s)</option>
+                <option>week(s)</option>
+                <option>month(s)</option>
+                <option>year(s)</option>
+             </select>
+            </div>
+          </div>
+          <div style="float: right; margin-right: 2px;">
             <input type="button" class="button button-add" value="+" onclick="epc_sessionsAdd();">
           </div>
         </div>

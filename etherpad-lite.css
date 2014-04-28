@@ -9,7 +9,7 @@ body {
   color: white !important;
   border-radius: 3px;
   min-width: 100px;
-  padding: 4px 15px;
+  padding: 2px 15px;
   margin: 2px;
   background-color: #313131;
   background-image: -webkit-gradient(linear, 0% 0%, 0% 100% from(#666), to(#151515));

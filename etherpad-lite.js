@@ -402,9 +402,28 @@ function epc_padsInfo(verbose) {
 
 function epc_sessions(verbose) {
   console.log('[debug|epc_sessions]');
+
+  // reset sessions object
+  sessions = {};
+  jsonData = epx_call('listAllSessions', undefined, verbose)
+  if (jsonData !== undefined) {
+    sessions = jsonData;
+  }
+  // update select control
+  epc_sessionsShow();
 }
 function epc_sessionsShow() {
   console.log('[debug|epc_sessionsShow]');
+
+  $('#epSessions').html('');
+  $.each(sessions, function(key, session) {
+    $('#epSessions').append('<option>' + session['id'] + '</option>');
+  });
+  if ($('#epSessions')[0].length > 0) {
+    $('#epSessions').prepend('<option value="0">All</option>');
+    $('#epSessionsTitle').html('sessions (' + ($('#epSessions')[0].length - 1) + ')');
+  } else
+    $('#epSessionsTitle').html('sessions (0)');
 }
 function epc_sessionsAdd(verbose) {
   console.log('[debug|epc_sessionsAdd]');
@@ -447,14 +466,66 @@ function epc_sessionsAdd(verbose) {
         if (session === undefined) {
           sessions[id] = { 'id': id };
           console.log('[info] session added with id \'' + id + '\'');
-        } else
+        } else {
           console.log('[info] session already exists with id \'' + id + '\'');
+          // select added / existing
+          $('#epSessions option:contains(' + id + ')').attr('selected', 'selected');
+        }
       }
     });
   });
+
+  // reload session
+  epc_sessionsShow();
+
 }
 function epc_sessionsRemove(verbose, data) {
   console.log('[debug|epc_sessionsRemove]');
+
+  selected = $('#epSessions :selected').map(function(){return this.value;}).get();
+//  console.log('selected #: ' + selected.length + ', @: ' + selected.join(", "));
+  if (selected.length > 0) {
+    if (data === undefined) {
+      // confirmation message
+      console.log('[debug|epc_sessionsRemove] confirmation message');
+      $('#popupTitle').html('warning: confirmation required');
+      suffix = '';
+      if (selected.length > 1)
+        suffix = 's';
+      sMessage = '<p>are you sure you want to permanently remove the following session' + suffix + ':</p>\n';
+      sMessage += '<ul>\n';
+      $.each(selected, function(key, value) {
+        sMessage += '<li>' + value + '</li>\n'
+      });
+      sMessage += '</ul>\n';
+      $('#popupContent').html(sMessage);
+      // set the click handler
+      $('#popup-button-ok').off("click");
+      $('#popup-button-ok').on('click', function() {epc_sessionsRemove(true, true);});
+      popupToggle('yes|no');
+    } else {
+      // toggle popup
+      popupToggle();
+      // do deletion
+      if (data === true) {
+        selectedIndex = $("#epSessions option:selected")[0].index;
+        $.each(selected, function(idx, id) {
+          var args = [id];
+          jsonData = ep_call('deleteSession', args, verbose);
+          if (jsonData) {
+            console.log('[info] deleted session, id: \'' + id + '\'');
+            delete(sessions[id]);
+          }
+        });
+        // reload session
+        epc_sessionsShow();
+        // reselect
+        if (selectedIndex > $('#epSessions')[0].length - 1)
+          selectedIndex = $('#epSessions')[0].length - 1;
+        $('#epSessions')[0].selectedIndex = selectedIndex;
+      }
+    }
+  }
 }
 
 //

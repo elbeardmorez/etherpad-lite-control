@@ -124,6 +124,21 @@ function epxCall($func, $args = [],
             $sData = var2str($jsonData);
             break;
 
+          case "listAllSessions":
+            $query = 'select replace(key, \'session:\', \'\') as id, value from store where key like \'session:%\'';
+            $data = dbQuery($dbSettings['type'], $dbConnectionString, $query);
+            // create json data
+            $data2 = [];
+            foreach ($data['data'] as $arr) {
+              $session = json_decode($arr['value'], true);
+              $session['id'] = $arr['id'];
+              $data2[$session['id']] = $session;
+            }
+            $data['data'] = $data2;
+            $jsonData = $data;
+            $sData = var2str($jsonData);
+            break;
+
           case 'test':
             $query = 'select * from store limit 10';
             $data = dbQuery($dbSettings['type'], $dbConnectionString, $query);
@@ -186,8 +201,8 @@ function epCall($func, $args = [],
   return $sReturn;  
 }
 
-$aEpApi = [ 'checkToken', 'getHTML', 'getPublicStatus', 'deletePad', 'deleteGroup', 'listAllPads', 'listAllGroups', 'createGroupIfNotExistsFor', 'listAuthorsOfPad', 'getAuthorName', 'createAuthorIfNotExistsFor', 'getLastEdited', 'createPad', 'createGroupPad', 'createSession' ];
-$aEpX = [ 'test', 'getGroupMappers', 'deleteAuthor', 'listAllAuthors', 'getAuthorMappers', 'getPadCreated' ];
+$aEpApi = [ 'checkToken', 'getHTML', 'getPublicStatus', 'deletePad', 'deleteGroup', 'listAllPads', 'listAllGroups', 'createGroupIfNotExistsFor', 'listAuthorsOfPad', 'getAuthorName', 'createAuthorIfNotExistsFor', 'getLastEdited', 'createPad', 'createGroupPad', 'createSession', 'deleteSession' ];
+$aEpX = [ 'test', 'getGroupMappers', 'deleteAuthor', 'listAllAuthors', 'getAuthorMappers', 'getPadCreated', 'listAllSessions' ];
 
 if (!empty($_POST)) {
   if (!empty($_POST['func'])) {

@@ -444,6 +444,7 @@ function epc_sessionsShow() {
     $('#epSessionsTitle').html('sessions (' + ($('#epSessions')[0].length - 1) + ')');
   } else
     $('#epSessionsTitle').html('sessions (0)');
+
 }
 function epc_sessionsAdd(verbose) {
   console.log('[debug|epc_sessionsAdd]');
@@ -474,6 +475,7 @@ function epc_sessionsAdd(verbose) {
 
   // create session(s) for author <-> group-pad(s)
   $('#epStatus-inner').html('');
+  var id = '';
   $.each(aAuthors, function(idx, author) {
     var aid = author.match('.*\\[(.*)\\].*')[1];
     $.each(aGroups, function(idx, group) {
@@ -488,8 +490,6 @@ function epc_sessionsAdd(verbose) {
           console.log('[info] session added with id \'' + id + '\'');
         } else {
           console.log('[info] session already exists with id \'' + id + '\'');
-          // select added / existing
-          $('#epSessions option:contains(' + id + ')').attr('selected', 'selected');
         }
       }
     });
@@ -497,6 +497,8 @@ function epc_sessionsAdd(verbose) {
 
   // reload session
   epc_sessionsShow();
+  // select added / existing
+  $('#epSessions option:contains(' + id + ')').attr('selected', 'selected');
 
 }
 function epc_sessionsRemove(verbose, data) {
@@ -794,7 +796,6 @@ function epc_authorsAdd(verbose) {
     // reload author
     epc_authorsShow();
     // select added / existing
-//   $('#epAuthors option[innerHTML=\'' + id + '\']').attr('selected', 'selected');
     $('#epAuthors option:contains(' + id + ')').attr('selected', 'selected');
   }
 }

@@ -58,7 +58,7 @@ function getFunctionName($s) {
     <p style="margin: 2px 5px;">misc</p>
     <hr style="margin: 5px;">
     <?php
-      $controls = [ 'Status' , 'Test' ];
+      $controls = [ 'Status' , 'Test', 'Clean' ];
       foreach ($controls as $control) {
         echo '<input id="epc' . $control . '" type="button" class="button" onclick="epc_' . getFunctionName($control) . '()" value="' . $control . '" style="margin-left: 10px;">';
       }

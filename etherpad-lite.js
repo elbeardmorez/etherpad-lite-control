@@ -76,7 +76,7 @@ function epx_call(func, args, verbose, append) {
       } else {
         console.log('[debug|epx_call] success');
         sData = data['raw'];
-        if (data['data']['code'] == 0) {
+        if (data['data']['code'] == 0 || typeof data['data']['code'] == "object") {
           jsonData = data['data']['data'];
           if (jsonData === null)
             jsonData = true;
@@ -150,6 +150,26 @@ function ep_call(func, args, verbose, append) {
 function epc_status(verbose) {
   console.log('[debug|epc_status]');
   ep_call('checkToken', undefined, verbose);
+}
+function epc_clean(verbose) {
+  console.log('[debug|epc_clean]');
+
+  jsonData = epx_call('cleanDatabase', undefined, verbose);
+  if (jsonData !== undefined) {
+    // process
+    sMessage = '';
+    $.each(jsonData, function(idx, data) {
+      if (data['info'] != '')
+        sMessage += '<li>' + data['info'] + '</li>\n';
+    });
+    if (sMessage == '')
+      sMessage = '<p>nothing to do!</p>';
+    else
+      sMessage = '<ul>\n' + sMessage + '</ul>\n';
+    $('#popupTitle').html('Database clean-up');
+    $('#popupContent').html(sMessage);
+    popupToggle();
+  }
 }
 
 //

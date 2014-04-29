@@ -56,6 +56,8 @@ function dbQuery($dbType, $dbConnectionString, $query) {
             $data2[] = $data3;
           }
           $data['data'] = $data2;
+        } else {
+          $data['data'] = [ 'affected' => pg_affected_rows($result) ];
         }
 
         # clean up

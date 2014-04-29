@@ -139,6 +139,26 @@ function epxCall($func, $args = [],
             $sData = var2str($jsonData);
             break;
 
+          case "cleanDatabase":
+            # cleanup
+            # 1|deleteStorage: remove session storage records
+            # append each query result details
+            $data = [];
+            $data['code'] = [];
+            $data['message'] = [];
+            $data['data'] = [];
+            # remove session storage records
+            # see issue: https://github.com/ether/etherpad-lite/issues/1659
+            $query = 'delete from store where key like \'sessionstorage:%\'';
+            $qData = dbQuery($dbSettings['type'], $dbConnectionString, $query);
+            $data['code']['deleteStorage'] = $qData['code'];
+            $data['message']['deleteStorage'] = $qData['message'];
+            $data['data']['deleteStorage'] = $qData['data'];
+            $data['data']['deleteStorage']['info'] = ($qData['data']['affected'] == 0 ? '' : $qData['data']['affected'] . ' sessionstorage records deleted' );
+            $jsonData = $data;
+            $sData = var2str($jsonData);
+            break;
+
           case 'test':
             $query = 'select * from store limit 10';
             $data = dbQuery($dbSettings['type'], $dbConnectionString, $query);
@@ -202,7 +222,7 @@ function epCall($func, $args = [],
 }
 
 $aEpApi = [ 'checkToken', 'getHTML', 'getPublicStatus', 'deletePad', 'deleteGroup', 'listAllPads', 'listAllGroups', 'createGroupIfNotExistsFor', 'listAuthorsOfPad', 'getAuthorName', 'createAuthorIfNotExistsFor', 'getLastEdited', 'createPad', 'createGroupPad', 'createSession', 'deleteSession' ];
-$aEpX = [ 'test', 'getGroupMappers', 'deleteAuthor', 'listAllAuthors', 'getAuthorMappers', 'getPadCreated', 'listAllSessions' ];
+$aEpX = [ 'test', 'getGroupMappers', 'deleteAuthor', 'listAllAuthors', 'getAuthorMappers', 'getPadCreated', 'listAllSessions', 'cleanDatabase' ];
 
 if (!empty($_POST)) {
   if (!empty($_POST['func'])) {

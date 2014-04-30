@@ -376,6 +376,13 @@ function epc_padsInfo(verbose) {
   selected = $('#epPads :selected').map(function(){return this.value;}).get();
   if (selected.length > 0) {
     id = selected[0];
+    if (matches = id.match(/(.*?) \[(.*)\]/)) {
+      // group name to id
+      console.log('id:' + id);
+      id = $.map(groups, function(group) { if (group['name'] == matches[2]) return group['id']; }).join('') + "$" + matches[1];
+      console.log('id:' + id);
+    }
+
     pad = pads[id];
     if (pad === undefined) {
       if (id != 'All')

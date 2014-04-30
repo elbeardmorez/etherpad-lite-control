@@ -269,7 +269,7 @@ function epc_padsShow(type) {
   });
 
   if ($('#epPads')[0].length > 0) {
-    $('#epPads').prepend('<option value="0">All</option>');
+    $('#epPads').prepend('<option value="All">All</option>');
     $('#epPadsTitle').html('pads (' + ($('#epPads')[0].length - 1) + ')');
   } else
     $('#epPadsTitle').html('pads (0)');
@@ -369,10 +369,19 @@ function epc_padContent(verbose) {
 function epc_padsInfo(verbose) {
   console.log('[debug|epc_padsInfo]');
 
+  // clear last info
+  $('#epInfo-inner').html('');
+
+  // get selected
   selected = $('#epPads :selected').map(function(){return this.value;}).get();
   if (selected.length > 0) {
     id = selected[0];
     pad = pads[id];
+    if (pad === undefined) {
+      if (id != 'All')
+        console.log('[debug] broken pad reference key');
+      return;
+    }
     var infos = {};
     infos['created'] = [ 'nonapi', 'getPadCreated', [ id ], 'created' ];
     infos['updated'] = [ 'api', 'getLastEdited', [ id ], 'lastEdited' ];
@@ -440,7 +449,7 @@ function epc_sessionsShow() {
     $('#epSessions').append('<option>' + session['id'] + '</option>');
   });
   if ($('#epSessions')[0].length > 0) {
-    $('#epSessions').prepend('<option value="0">All</option>');
+    $('#epSessions').prepend('<option value="All">All</option>');
     $('#epSessionsTitle').html('sessions (' + ($('#epSessions')[0].length - 1) + ')');
   } else
     $('#epSessionsTitle').html('sessions (0)');
@@ -594,7 +603,7 @@ function epc_groupsShow() {
       $('#epGroups').append('<option>' + group['name'] + ' [' + group['id'] + ']</option>');
   });
   if ($('#epGroups')[0].length > 0) {
-    $('#epGroups').prepend('<option value="0">All</option>');
+    $('#epGroups').prepend('<option value="All">All</option>');
     $('#epGroupsTitle').html('groups (' + ($('#epGroups')[0].length - 1) + ')');
   } else
     $('#epGroupsTitle').html('groups (0)');
@@ -773,7 +782,7 @@ function epc_authorsShow() {
       $('#epAuthors').append('<option>' + author['name'] + ' [' + author['id'] + ']</option>');
   });
   if ($('#epAuthors')[0].length > 0) {
-    $('#epAuthors').prepend('<option value="0">All</option>');
+    $('#epAuthors').prepend('<option value="All">All</option>');
     $('#epAuthorsTitle').html('authors (' + ($('#epAuthors')[0].length - 1) + ')');
   } else
     $('#epAuthorsTitle').html('authors (0)');

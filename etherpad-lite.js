@@ -306,7 +306,7 @@ function epc_padsAdd(verbose, data) {
   // reload group
   epc_padsShow();
   // select added / existing
-  $('#epGroups option:contains(' + name + ')').attr('selected', 'selected');
+  $('#epPads option:contains(' + name + ')').attr('selected', 'selected');
 }
 function epc_padsRemove(verbose, data) {
   console.log('[debug|epc_padsRemove]');
@@ -633,7 +633,6 @@ function epc_groupsAdd(verbose) {
     // reload group
     epc_groupsShow();
     // select added / existing
-//   $('#epGroups option[innerHTML=\'' + id + '\']').attr('selected', 'selected');
     $('#epGroups option:contains(' + id + ')').attr('selected', 'selected');
   }
 }

@@ -190,7 +190,7 @@ function epc_pads(data, verbose) {
       jsonData = ep_call(func, args, verbose);
       break;
     case 'group':
-      selected = $('#epPads :selected').map(function(){return this.value;}).get();
+      selected = $('#epGroups :selected').map(function(){return this.value;}).get();
       if (selected.length > 0) {
         var func = "listPads";
         var gid = selected[0].match('.*\\[(.*)\\].*')[1];

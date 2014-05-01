@@ -1,8 +1,8 @@
 
-var authors = {};
-var groups = {};
-var pads = {};
-var sessions = {};
+var authors = undefined;
+var groups = undefined;
+var pads = undefined;
+var sessions = undefined;
 
 function epc_test() {
   console.log('[debug|epc_test]');
@@ -379,7 +379,12 @@ function epc_padsInfo(verbose) {
     if (matches = id.match(/(.*?) \[(.*)\]/)) {
       // group name to id
       console.log('id:' + id);
-      id = $.map(groups, function(group) { if (group['name'] == matches[2]) return group['id']; }).join('') + "$" + matches[1];
+      if (groups !== undefined)
+        // resolve name
+        id = $.map(groups, function(group) { if (group['name'] == matches[2]) return group['id']; }).join('') + "$" + matches[1];
+      else
+        id = matches[2] + "$" + matches[1];
+
       console.log('id:' + id);
     }
 

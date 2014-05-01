@@ -176,12 +176,32 @@ function epc_clean(verbose) {
 // pads
 //
 
+function epc_padName2Id(data) {
+  // display string to id
+
+  id = data;
+  if (matches = id.match(/(.*?) \[(.*)\]/)) {
+    // group name to id
+    if (groups !== undefined) {
+      group = groups[matches[2]];
+      if (group !== undefined)
+        id = matches[2] + "$" + matches[1];
+      else
+        // resolve name to id?
+        id = $.map(groups, function(group) { if (group['name'] == matches[2]) return group['id']; }).join('') + "$" + matches[1];
+    } else
+      id = matches[2] + "$" + matches[1];
+  }
+  return id;
+}
+
 function epc_pads(data, verbose) {
   console.log('[debug|epc_pads]');
 
   if (data === undefined)
     var data = 'global';
 
+  selected = $('#epPads :selected').map(function(){return this.value;}).get();
   var jsonData = undefined;
   switch (data) {
     case 'global':
@@ -190,10 +210,10 @@ function epc_pads(data, verbose) {
       jsonData = ep_call(func, args, verbose);
       break;
     case 'group':
-      selected = $('#epGroups :selected').map(function(){return this.value;}).get();
-      if (selected.length > 0) {
+      selectedGids = $('#epGroups :selected').map(function(){return this.value;}).get();
+      if (selectedGids.length > 0) {
         var func = "listPads";
-        var gid = selected[0].match('.*\\[(.*)\\].*')[1];
+        var gid = selectedGids[0].match('.*\\[(.*)\\].*')[1];
         var args = [gid];
         jsonData = ep_call(func, args, verbose);
       }
@@ -232,6 +252,11 @@ function epc_pads(data, verbose) {
       epc_padsShow();
     }
   }
+  // reselect selected
+  $.each(selected, function(idx, sPad) {
+    id = epc_padName2Id(sPad);
+    $('#epPads option:contains(' + pads[id]['name'] + ')').attr('selected', 'selected');
+  });
 }
 function epc_padsShow(type) {
   console.log('[debug|epc_padsShow]');
@@ -371,22 +396,10 @@ function epc_padsInfo(verbose) {
   // clear last info
   $('#epInfo-inner').html('');
 
-  // get selected
+  // get selected id
   selected = $('#epPads :selected').map(function(){return this.value;}).get();
   if (selected.length > 0) {
-    id = selected[0];
-    if (matches = id.match(/(.*?) \[(.*)\]/)) {
-      // group name to id
-      console.log('id:' + id);
-      if (groups !== undefined)
-        // resolve name
-        id = $.map(groups, function(group) { if (group['name'] == matches[2]) return group['id']; }).join('') + "$" + matches[1];
-      else
-        id = matches[2] + "$" + matches[1];
-
-      console.log('id:' + id);
-    }
-
+    id = epc_padName2Id(selected[0]);
     pad = pads[id];
     if (pad === undefined) {
       if (id != 'All')
@@ -602,6 +615,9 @@ function epc_groups(verbose) {
   }
   // update select control
   epc_groupsShow();
+  // update pads list
+  if (pads !== undefined)
+    epc_pads();
 }
 function epc_groupsShow() {
   console.log('[debug|epc_groupsShow]');

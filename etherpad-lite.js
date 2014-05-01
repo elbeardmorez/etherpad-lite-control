@@ -221,9 +221,8 @@ function epc_pads(data, verbose) {
             var arr = pads[id]['id'].match('(.*)\\$(.*)');
             var name = arr[2];
             var gid = arr[1];
-            var group = groups[gid];
-            if (group !== undefined)
-              pads[id]['name'] = name + ' [' + group['name'] + ']';
+            if (groups !== undefined)
+              pads[id]['name'] = name + ' [' + groups[gid]['name'] + ']';
             else
               pads[id]['name'] = name + ' [' + gid + ']';
           }

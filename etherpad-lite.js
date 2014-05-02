@@ -581,6 +581,66 @@ function epc_sessionsRemove(verbose, data) {
     }
   }
 }
+function epc_sessionsInfo(verbose) {
+  console.log('[debug|epc_sessionsInfo]');
+
+  // clear last info
+  $('#epInfo-inner').html('');
+
+  // get selected id
+  selected = $('#epSessions :selected').map(function(){return this.value;}).get();
+  if (selected.length > 0) {
+    id = selected[0];
+    session = sessions[id];
+    if (session === undefined) {
+      if (id != 'All')
+        console.log('[debug] broken session reference key');
+      return;
+    }
+    var infos = ['author', 'group', 'expiry'];
+
+    // collect info strings
+    $.each(infos, function(idx, info) {
+      switch (info) {
+        case 'author':
+          if (session['author'] === undefined ||  session['author'] == session['authorID']) {
+            session['author'] = session['authorID'];
+            if (authors !== undefined) {
+              // resolve id
+              author = authors[session['authorID']];
+              if (author !== undefined)
+                session['author'] = author['name'] + ' [' + author['id'] + ']';
+            }
+          }
+          break;
+        case 'group':
+          if (session['group'] === undefined ||  session['group'] == session['groupID']) {
+            session['group'] = session['groupID'];
+            if (groups !== undefined) {
+              // resolve id
+              group = groups[session['groupID']];
+              if (group !== undefined)
+                session['group'] = group['name'] + ' [' + group['id'] + ']';
+            }
+          }
+          break;
+        case 'expiry':
+          console.log('validUntil: ' + session['validUntil']);
+          if (session['expiry'] === undefined)
+            // convert date
+            session['expiry'] = new Date(session['validUntil']).toLocaleString();
+          break;
+      }
+    });
+
+    // construct html
+    html = '';
+    $.each(infos, function(idx, info) {
+      html += "<p style='margin: 3px 0px 2px; font-size: 0.8em;'><b>" + info + ": </b><span style='font-size: 1.1em;'>" + ( session[info] !== undefined ? session[info] : '') + "</span></p>"
+    });
+    $('#epInfo-inner').html(html);
+  }
+}
 
 //
 // groups

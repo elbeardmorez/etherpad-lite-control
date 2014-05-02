@@ -188,7 +188,7 @@ function epxCall($func, $args = [],
 }
 
 function epCall($func, $args = [],
-                $url = 'http://localhost:9001', 
+                $url = 'http://localhost:9001',
                 $apiKeyPath = '/var/www/etherpad-lite/APIKEY.txt') {
   error_log('[debug|epCall]');
 
@@ -203,7 +203,7 @@ function epCall($func, $args = [],
     try {
       # create client
       $client = new \EtherpadLite\Client($sApiKey, $url);
-      # make call  
+      # make call
       $response = $client->__call($func, $args);
       $sData = var2str($response);
       $jsonData = [ 'code' => $response->getCode(),
@@ -218,7 +218,7 @@ function epCall($func, $args = [],
 
   $sReturn = '{"raw":' . $sData . ', "data":' . $jsonData . '}';
   error_log('$sReturn: ' . $sReturn);
-  return $sReturn;  
+  return $sReturn;
 }
 
 $aEpApi = [ 'checkToken', 'getHTML', 'getPublicStatus', 'deletePad', 'deleteGroup', 'listAllPads', 'listPads', 'listAllGroups', 'createGroupIfNotExistsFor', 'listAuthorsOfPad', 'getAuthorName', 'createAuthorIfNotExistsFor', 'getLastEdited', 'createPad', 'createGroupPad', 'createSession', 'deleteSession' ];

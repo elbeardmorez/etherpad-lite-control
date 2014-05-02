@@ -113,7 +113,7 @@ function ep_call(func, args, verbose, append) {
   jsonData = undefined;
   $.ajax({
     url: './etherpad-lite.php',
-    type: 'POST',  
+    type: 'POST',
     async: false,
     dataType: 'json',
     data: { 'func' : func,
@@ -427,7 +427,6 @@ function epc_padsInfo(verbose) {
 
         if (jsonData !== undefined) {
           // add info to pad object
-          console.log("here!");
           pad[key] = jsonData[dataKey];
           // post processing
           switch (key) {

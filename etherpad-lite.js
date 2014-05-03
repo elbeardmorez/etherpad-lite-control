@@ -331,6 +331,8 @@ function epc_padsAdd(verbose, data) {
   epc_padsShow();
   // select added / existing
   $('#epPads option:contains(' + name + ')').attr('selected', 'selected');
+  // update info
+  epc_padsInfo();
 }
 function epc_padsRemove(verbose, data) {
   console.log('[debug|epc_padsRemove]');
@@ -372,6 +374,8 @@ function epc_padsRemove(verbose, data) {
         if (selectedIndex > $('#epPads')[0].length)
           selectedIndex = $('#epPads')[0].length;
         $('#epPads')[0].selectedIndex = selectedIndex;
+        // update info
+        epc_padsInfo();
       }
     }
   }
@@ -532,6 +536,8 @@ function epc_sessionsAdd(verbose) {
   epc_sessionsShow();
   // select added / existing
   $('#epSessions option:contains(' + id + ')').attr('selected', 'selected');
+  // update info
+  epc_sessionsInfo();
 
 }
 function epc_sessionsRemove(verbose, data) {
@@ -578,6 +584,8 @@ function epc_sessionsRemove(verbose, data) {
         if (selectedIndex > $('#epSessions')[0].length - 1)
           selectedIndex = $('#epSessions')[0].length - 1;
         $('#epSessions')[0].selectedIndex = selectedIndex;
+        // update info
+        epc_sessionsInfo();
       }
     }
   }

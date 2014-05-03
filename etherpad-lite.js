@@ -989,7 +989,7 @@ function sessionExpiry(quantity, unit) {
         multiplier *= 60;
         break;
     }
-    expiry = (Date.UTC(dNow.getFullYear(), dNow.getMonth(), dNow.getDate(), dNow.getHours(), dNow.getMinutes(), dNow.getSeconds() ) + Math.ceil(quantity * multiplier) * 1000) / 1000;
+    expiry = Date.UTC(dNow.getFullYear(), dNow.getMonth(), dNow.getDate(), dNow.getHours(), dNow.getMinutes(), dNow.getSeconds() ) + Math.ceil(quantity * multiplier) * 1000;
   }
   return expiry;
 }

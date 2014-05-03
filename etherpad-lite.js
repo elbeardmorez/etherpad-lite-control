@@ -393,12 +393,13 @@ function epc_padContent(verbose) {
 function epc_padsInfo(verbose) {
   console.log('[debug|epc_padsInfo]');
 
-  // clear last info
-  $('#epInfo-inner').html('');
-
   // get selected id
   selected = $('#epPads :selected').map(function(){return this.value;}).get();
   if (selected.length > 0) {
+
+  // clear last info
+  $('#epInfo-inner').html('');
+
     id = epc_padName2Id(selected[0]);
     pad = pads[id];
     if (pad === undefined) {
@@ -584,12 +585,13 @@ function epc_sessionsRemove(verbose, data) {
 function epc_sessionsInfo(verbose) {
   console.log('[debug|epc_sessionsInfo]');
 
-  // clear last info
-  $('#epInfo-inner').html('');
-
   // get selected id
   selected = $('#epSessions :selected').map(function(){return this.value;}).get();
   if (selected.length > 0) {
+
+    // clear last info
+    $('#epInfo-inner').html('');
+
     id = selected[0];
     session = sessions[id];
     if (session === undefined) {

@@ -438,7 +438,7 @@ function epc_padsInfo(verbose) {
             case 'created':
             case 'updated':
               // convert date
-              pad[key] = new Date(pad[key]).toLocaleString();
+              pad[key] = getDateString(new Date(pad[key]));
               break;
           }
         }
@@ -638,7 +638,7 @@ function epc_sessionsInfo(verbose) {
           console.log('validUntil: ' + session['validUntil']);
           if (session['expiry'] === undefined)
             // convert date
-            session['expiry'] = new Date(session['validUntil']).toLocaleString();
+            session['expiry'] = getDateString(new Date(session['validUntil']));
           break;
       }
     });
@@ -1002,6 +1002,11 @@ function sessionExpiry(quantity, unit) {
     expiry = Date.UTC(dNow.getFullYear(), dNow.getMonth(), dNow.getDate(), dNow.getHours(), dNow.getMinutes(), dNow.getSeconds() ) + Math.ceil(quantity * multiplier) * 1000;
   }
   return expiry;
+}
+
+function getDateString(dt) {
+  var months = [ 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec' ];
+  return ("0" + dt.getDate() + " " + months[dt.getMonth()] + " " + dt.getFullYear() + " 0" + dt.getHours() + ":0" + dt.getMinutes() + ":0"+ dt.getSeconds()).replace(/(^|\ |:)+0([0-9]{2})/g, "$1$2");
 }
 
 function popupToggle(type) {

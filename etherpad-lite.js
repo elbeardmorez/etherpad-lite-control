@@ -609,7 +609,18 @@ function epc_sessionsInfo(verbose) {
     }
     var infos = ['author', 'group', 'expiry'];
 
-    // collect info strings
+    // get info strings
+    if (session['authorID'] === undefined) {
+      jsonData = ep_call('getSessionInfo', [id], verbose, true);
+      if (jsonData !== undefined) {
+        $.each(jsonData, function(key, value) {
+          // add info to session object
+          session[key] = value;
+        });
+      }
+    }
+
+    // set info strings
     $.each(infos, function(idx, info) {
       switch (info) {
         case 'author':

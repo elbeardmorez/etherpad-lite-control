@@ -16,13 +16,9 @@ function getFunctionName($s) {
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 </head>
 <body onload="loadState();">
-  <div id="header" style="z-index: 2; position: absolute; height: 75px; width: 100%;">
-    <div id="title" style="position: relative; top: 20px; height: 25px; left: 5px; right: 115px; margin: 0px 1%;">
-       <p style="display: inline; font-size: 20px; font-weight: bold;"><img src="resources/icon.png" style="position: relative; bottom: 5px; height: 40px; opacity: 0.7; padding-right: 5px; vertical-align: middle;">Etherpad-Lite Control</p>
-    </div>
-  </div>
-  <div id="control-background" style="z-index: 1; position: absolute; top: 75px; right: 0px; bottom: 55px; width: 120px;"></div>
-  <div id="control-outer" style="z-index: 1; position: absolute; top: 75px; right: 0px; bottom: 55px; width: 120px; overflow: hidden;">
+  <div id="header" class="fadeIn" style="z-index: 2; position: absolute; height: 15px; width: 100%;"></div>
+  <div id="control-background" style="z-index: 1; position: absolute; top: 15px; right: 0px; bottom: 25px; width: 120px;"></div>
+  <div id="control-outer" style="z-index: 2; position: absolute; top: 15px; right: 0px; bottom: 25px; width: 120px; overflow: hidden;">
   <div id="control-inner" style="position: relative; display: table; height: 100%; width: 100%;">
 
     <p style="margin: 2px 5px;">global</p>
@@ -67,10 +63,11 @@ function getFunctionName($s) {
   </div>
   </div>
 
-  <div id="content-outer" style="position: absolute; top: 75px; right: 115px; bottom: 50px; left: 5px; min-width: 750px; overflow: hidden;">
-  <div id="content-inner" style="position: relative; height: 100%; width: 98%; margin: auto;">
+  <div id="content-outer" style="position: absolute; top: 15px; bottom: 15px; width: 100%; min-width: 750px; overflow: hidden;">
+  <div id="content-inner" style="position: relative; height: 100%; width: 100%; margin: auto;">
 
-    <div style="display: block; height: 35%; width: 100%;">
+    <div style="position: relative; height: 20%; width: 99%;">
+    <div style="position: absolute; top: 0px; bottom: 0px; left: 15px; right: 115px;">
       <div style="position: relative; float: left; display: block; height: 100%; width: 20%; min-width: 175px; max-width: 225px; padding-bottom: 45px;">
 
         <div style="position: absolute; top: 5px; bottom: 5px; left: 5px; right: 0px;">
@@ -124,10 +121,22 @@ function getFunctionName($s) {
       </div>
 
     </div>
+    </div>
     <div style="clear: both;"></div>
 
-    <div style="position: relative; height: 65%; width: 100%; min-height: 150px;">
-    <div style="position: absolute; top: 0px; bottom: 45px; width: 100%;">
+
+    <!-- banner -->
+    <div id="banner" style="position: relative; top: 45px; height: 10%; min-height: 75px; width: 100%; background-color: #151515;">
+      <div class="fadeOut" style="position: absolute; top: 0px; height: 35%; width: 100%;"></div>
+      <div class="fadeIn" style="position: absolute; bottom: 0px; height: 35%; width: 100%;"></div>
+      <div id="title" style="position: absolute; top: 0px; bottom: 0px; height: 35px; left: 15px; right: 115px; margin: auto;">
+         <p style="font-size: 20px; font-weight: bold; text-align: center; margin: auto;"><img src="resources/icon.png" style="position: relative; bottom: 5px; height: 40px; opacity: 0.7; padding-right: 5px; vertical-align: middle;">Etherpad-Lite Control</p>
+      </div>
+    </div>
+
+
+    <div style="position: relative; height: 70%; width: 99%; min-height: 150px;">
+    <div style="position: absolute; top: 35px; bottom: 35px; left: 15px; right: 115px;">
 
       <div style="position: relative; float: left; height: 100%; width: 24%; min-width: 100px;">
         <p id="epAuthorsTitle" style="padding: 0px 5px 0px 5px; font-weight: bold;">authors</p>
@@ -230,7 +239,7 @@ function getFunctionName($s) {
   </div>
   </div>
 
-  <div id="footer" style="z-index: 2; position: absolute; bottom: 0px; height: 50px; width: 100%;">
+  <div id="footer" class="fadeOut" style="z-index: 2; position: absolute; bottom: 0px; height: 15px; width: 100%;">
   </div>
 
   <div id="popup-background" class="popup-background" style="z-index: 10; position: absolute; height: 100%; width: 100%;"></div>

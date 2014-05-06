@@ -17,8 +17,8 @@ function getFunctionName($s) {
 </head>
 <body onload="loadState();">
   <div id="header" class="fadeIn" style="z-index: 2; position: absolute; height: 15px; width: 100%;"></div>
-  <div id="control-background" style="z-index: 1; position: absolute; top: 15px; right: 0px; bottom: 25px; width: 120px;"></div>
-  <div id="control-outer" style="z-index: 2; position: absolute; top: 15px; right: 0px; bottom: 25px; width: 120px; overflow: hidden;">
+  <div id="control-background" style="z-index: 10; position: absolute; top: 15px; right: 0px; bottom: 25px; width: 120px;"></div>
+  <div id="control-outer" style="z-index: 11; position: absolute; top: 15px; right: 0px; bottom: 25px; width: 120px; overflow: hidden;">
   <div id="control-inner" style="position: relative; display: table; height: 100%; width: 100%;">
 
     <p style="margin: 2px 5px;">global</p>
@@ -126,11 +126,13 @@ function getFunctionName($s) {
 
 
     <!-- banner -->
-    <div id="banner" style="position: relative; top: 45px; height: 10%; min-height: 75px; width: 100%; background-color: #151515;">
+    <div id="banner" style="z-index: 1; position: relative; top: 45px; height: 10%; min-height: 75px; width: 100%; background-color: #151515;">
       <div class="fadeOut" style="position: absolute; top: 0px; height: 35%; width: 100%;"></div>
       <div class="fadeIn" style="position: absolute; bottom: 0px; height: 35%; width: 100%;"></div>
-      <div id="title" style="position: absolute; top: 0px; bottom: 0px; height: 35px; left: 15px; right: 115px; margin: auto;">
-         <p style="font-size: 20px; font-weight: bold; text-align: center; margin: auto;"><img src="resources/icon.png" style="position: relative; bottom: 5px; height: 40px; opacity: 0.7; padding-right: 5px; vertical-align: middle;">Etherpad-Lite Control</p>
+      <div style="position: absolute; top: 0px; bottom: 0px; height: 35px; left: 15px; right: 115px; margin: auto;">
+        <div style="position: relative; width: 250px; margin: auto;">
+          <p id="title" style="font-size: 20px; font-weight: bold; text-align: center; margin: auto;" onclick="location.reload(true);"><img src="resources/icon.png" style="position: relative; bottom: 5px; height: 40px; opacity: 0.7; padding-right: 5px; vertical-align: middle;">Etherpad-Lite Control</p>
+        </div>
       </div>
     </div>
 

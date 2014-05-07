@@ -162,7 +162,7 @@ function getFunctionName($s) {
       <div style="position: relative; float: left; height: 100%; width: 24%; min-width: 100px;">
         <p id="epGroupsTitle" style="padding: 0px 5px 0px 5px; font-weight: bold;">groups</p>
         <div style="position: absolute; top: 35px; bottom: 26px; left: 5px; right: 2px;">
-          <select id="epGroups" multiple="multiple" style="height: 100%; width: 100%;">
+          <select id="epGroups" multiple="multiple" style="height: 100%; width: 100%;" onchange="epc_pads('group');">
           </select>
         </div>
         <div style="position: absolute; bottom: 5px; left: 5px; right: 0px; height: 20px;">

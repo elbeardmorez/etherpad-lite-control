@@ -222,6 +222,7 @@ function epc_pads(data, verbose) {
 
   // reset pads object
   pads = {};
+  $('#epPads').html('');
   if (jsonData !== undefined) {
     // process
     if (jsonData['padIDs'].length > 0) {

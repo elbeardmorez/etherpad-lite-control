@@ -1058,3 +1058,13 @@ function popupToggle(type) {
   }
 }
 
+function selectAll(select) {
+  $.each(select.options, function(idx, option) {
+    option.selected = true;
+  });
+  //select.options[0].selected = false; // assumption on position
+  //$('#' + select.id +  ' option:contains(\'All\')').attr('selected', false); // loose match
+  //$('option[value=All]', select).attr('selected', false);  // multiple exact matches set
+  $('option[value=All]', select)[0].selected = false;  // first and only exact match set
+}
+

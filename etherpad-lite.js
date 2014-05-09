@@ -202,20 +202,26 @@ function epc_pads(data, verbose) {
     var data = 'global';
 
   selected = $('#epPads :selected').map(function(){return this.value;}).get();
-  var jsonData = undefined;
+  var jsonData = [];
+  var result;
   switch (data) {
     case 'global':
       var func = 'listAllPads';
       var args = [];
-      jsonData = ep_call(func, args, verbose);
+      result = ep_call(func, args, verbose);
+      if (result !== undefined)
+        jsonData.push(result);
       break;
     case 'group':
       selectedGids = $('#epGroups :selected').map(function(){return this.value;}).get();
       if (selectedGids.length > 0) {
         var func = "listPads";
-        var gid = selectedGids[0].match('.*\\[(.*)\\].*')[1];
-        var args = [gid];
-        jsonData = ep_call(func, args, verbose);
+        $.each(selectedGids, function(idx, sGid) {
+          var args = [sGid.match('.*\\[(.*)\\].*')[1]];
+          result = ep_call(func, args, verbose);
+          if (result !== undefined)
+            jsonData.push(result);
+        });
       }
       break;
   }
@@ -223,35 +229,37 @@ function epc_pads(data, verbose) {
   // reset pads object
   pads = {};
   $('#epPads').html('');
-  if (jsonData !== undefined) {
+  if (jsonData.length > 0) {
     // process
-    if (jsonData['padIDs'].length > 0) {
-      $.each(jsonData['padIDs'], function(idx, id) {
-        if (pads[id] === undefined)
-          pads[id] = {'id': id, 'name': id};
-        var args = [id]
-        jsonData2 = ep_call('getPublicStatus', args, false);
-        if (jsonData2 !== undefined) {
-          // group pad
-          if (jsonData2)
-            pads[id]['public'] = true;
-          else
-            pads[id]['public'] = false;
-          if (pads[id]['name'] == pads[id]['id']) {
-            // modify name
-            var arr = pads[id]['id'].match('(.*)\\$(.*)');
-            var name = arr[2];
-            var gid = arr[1];
-            if (groups !== undefined)
-              pads[id]['name'] = name + ' [' + groups[gid]['name'] + ']';
+    $.each(jsonData, function(idx, result) {
+      if (result['padIDs'].length > 0) {
+        $.each(result['padIDs'], function(idx2, id) {
+          if (pads[id] === undefined)
+            pads[id] = {'id': id, 'name': id};
+          var args = [id]
+          var result2 = ep_call('getPublicStatus', args, false);
+          if (result2 !== undefined) {
+            // group pad
+            if (result2)
+              pads[id]['public'] = true;
             else
-              pads[id]['name'] = name + ' [' + gid + ']';
+              pads[id]['public'] = false;
+            if (pads[id]['name'] == pads[id]['id']) {
+              // modify name
+              var arr = pads[id]['id'].match('(.*)\\$(.*)');
+              var name = arr[2];
+              var gid = arr[1];
+              if (groups !== undefined)
+                pads[id]['name'] = name + ' [' + groups[gid]['name'] + ']';
+              else
+                pads[id]['name'] = name + ' [' + gid + ']';
+            }
           }
-        }
-      });
-      // update select control
-      epc_padsShow();
-    }
+        });
+      }
+    });
+    // update select control
+    epc_padsShow();
   }
   // reselect selected
   $.each(selected, function(idx, sPad) {

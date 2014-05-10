@@ -410,9 +410,9 @@ function epc_padsInfo(verbose) {
   selected = $('#epPads :selected').map(function(){return this.value;}).get();
   if (selected.length > 0) {
 
-  // clear last info
-  $('#epInfo-inner').html('');
-  $('#epInfo-title').html('info');
+    // clear last info
+    $('#epInfo-inner').html('');
+    $('#epInfo-title').html('info');
 
     id = epc_padName2Id(selected[0]);
     pad = pads[id];
@@ -621,9 +621,10 @@ function epc_sessionsInfo(verbose) {
         console.log('[debug] broken session reference key');
       return;
     }
+
     var props = ['id', 'author', 'group', 'expiry'];
 
-    // get info strings
+    // ensure info
     if (session['authorID'] === undefined) {
       jsonData = ep_call('getSessionInfo', [id], verbose, true);
       if (jsonData !== undefined) {
@@ -633,12 +634,10 @@ function epc_sessionsInfo(verbose) {
         });
       }
     }
-
-    // set info strings
     $.each(props, function(idx, prop) {
       switch (prop) {
         case 'author':
-          if (session['author'] === undefined ||  session['author'] == session['authorID']) {
+          if (session['author'] === undefined || session['author'] == session['authorID']) {
             session['author'] = session['authorID'];
             if (authors !== undefined) {
               // resolve id
@@ -649,7 +648,7 @@ function epc_sessionsInfo(verbose) {
           }
           break;
         case 'group':
-          if (session['group'] === undefined ||  session['group'] == session['groupID']) {
+          if (session['group'] === undefined || session['group'] == session['groupID']) {
             session['group'] = session['groupID'];
             if (groups !== undefined) {
               // resolve id
@@ -660,7 +659,6 @@ function epc_sessionsInfo(verbose) {
           }
           break;
         case 'expiry':
-          console.log('validUntil: ' + session['validUntil']);
           if (session['expiry'] === undefined)
             // convert date
             session['expiry'] = getDateString(new Date(session['validUntil']));
@@ -668,10 +666,25 @@ function epc_sessionsInfo(verbose) {
       }
     });
 
+    // build html
+    var sessionHTML = {};
+    var propHTMLSuffix = "<span style='font-size: 1.1em;'>"
+    var propHTMLPostfix = "</span>";
+
+    $.each(props, function(idx, prop) {
+      switch (prop) {
+        case 'expiry':
+          if (session['validUntil'] < Date.now())
+            // comparison is in UTC
+            sessionHTML[prop] = '<span style="color: red; font-size: 1.1em;">' + session[prop] + '</span>';
+          break;
+      }
+    });
+
     // construct html
     html = '';
     $.each(props, function(idx, prop) {
-      html += "<p style='margin: 3px 0px 2px; font-size: 0.8em;'><b>" + prop + ": </b><span style='font-size: 1.1em;'>" + ( session[prop] !== undefined ? session[prop] : '') + "</span></p>"
+      html += '<p style="margin: 3px 0px 2px; font-size: 0.8em;"><b>' + prop + ': </b>' + (sessionHTML[prop] ? sessionHTML[prop] : propHTMLSuffix + (session[prop] ? session[prop] : '') + propHTMLPostfix) + '</p>';
     });
     $('#epInfo-inner').html(html);
     $('#epInfo-title').html('info (session)');

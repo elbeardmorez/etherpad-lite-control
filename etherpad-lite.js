@@ -412,6 +412,7 @@ function epc_padsInfo(verbose) {
 
   // clear last info
   $('#epInfo-inner').html('');
+  $('#epInfo-title').html('info');
 
     id = epc_padName2Id(selected[0]);
     pad = pads[id];
@@ -420,6 +421,8 @@ function epc_padsInfo(verbose) {
         console.log('[debug] broken pad reference key');
       return;
     }
+
+    var props = ['name', 'created', 'updated'];
     var infos = {};
     infos['created'] = [ 'nonapi', 'getPadCreated', [ id ], 'created' ];
     infos['updated'] = [ 'api', 'getLastEdited', [ id ], 'lastEdited' ];
@@ -455,10 +458,11 @@ function epc_padsInfo(verbose) {
     }
     // construct html
     html = '';
-    $.each(infos, function(key, info) {
-      html += "<p style='margin: 3px 0px 2px; font-size: 0.8em;'><b>" + key + ": </b><span style='font-size: 1.1em;'>" + ( pad[key] !== undefined ? pad[key] : '') + "</span></p>"
+    $.each(props, function(idx, prop) {
+      html += "<p style='margin: 3px 0px 2px; font-size: 0.8em;'><b>" + prop + ": </b><span style='font-size: 1.1em;'>" + ( pad[prop] !== undefined ? pad[prop] : '') + "</span></p>"
     });
     $('#epInfo-inner').html(html);
+    $('#epInfo-title').html('info (pad)');
   }
 }
 
@@ -608,6 +612,7 @@ function epc_sessionsInfo(verbose) {
 
     // clear last info
     $('#epInfo-inner').html('');
+    $('#epInfo-title').html('info');
 
     id = selected[0];
     session = sessions[id];
@@ -616,7 +621,7 @@ function epc_sessionsInfo(verbose) {
         console.log('[debug] broken session reference key');
       return;
     }
-    var infos = ['author', 'group', 'expiry'];
+    var props = ['id', 'author', 'group', 'expiry'];
 
     // get info strings
     if (session['authorID'] === undefined) {
@@ -630,8 +635,8 @@ function epc_sessionsInfo(verbose) {
     }
 
     // set info strings
-    $.each(infos, function(idx, info) {
-      switch (info) {
+    $.each(props, function(idx, prop) {
+      switch (prop) {
         case 'author':
           if (session['author'] === undefined ||  session['author'] == session['authorID']) {
             session['author'] = session['authorID'];
@@ -665,10 +670,11 @@ function epc_sessionsInfo(verbose) {
 
     // construct html
     html = '';
-    $.each(infos, function(idx, info) {
-      html += "<p style='margin: 3px 0px 2px; font-size: 0.8em;'><b>" + info + ": </b><span style='font-size: 1.1em;'>" + ( session[info] !== undefined ? session[info] : '') + "</span></p>"
+    $.each(props, function(idx, prop) {
+      html += "<p style='margin: 3px 0px 2px; font-size: 0.8em;'><b>" + prop + ": </b><span style='font-size: 1.1em;'>" + ( session[prop] !== undefined ? session[prop] : '') + "</span></p>"
     });
     $('#epInfo-inner').html(html);
+    $('#epInfo-title').html('info (session)');
   }
 }
 

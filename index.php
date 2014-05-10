@@ -101,7 +101,7 @@ function getFunctionName($s) {
       <div style="position: relative; float: right; display: block; height: 100%; width: 20%; min-width: 175px; max-width: 400px; padding-bottom: 45px;">
 
         <div style="position: absolute; top: 5px; bottom: 5px; left: 5px; right: 5px;">
-          <p style="margin-top: 8px; margin-bottom: 5px;"><b>info</b></p>
+          <p id="epInfo-title" style="font-weight: bold; margin-top: 8px; margin-bottom: 5px;">info</p>
           <div id="epInfo-outer" style="position: absolute; top: 35px; bottom: 0px; width: 100%; overflow: auto;">
           <div id="epInfo-inner" style="position: absolute; top: 5px; bottom: 5px; left: 5px; right: 0px;">
           </div>

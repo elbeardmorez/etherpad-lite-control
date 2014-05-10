@@ -1025,7 +1025,7 @@ function sessionExpiry(quantity, unit) {
         multiplier *= 60;
         break;
     }
-    expiry = Date.UTC(dNow.getFullYear(), dNow.getMonth(), dNow.getDate(), dNow.getHours(), dNow.getMinutes(), dNow.getSeconds() ) + Math.ceil(quantity * multiplier) * 1000;
+    expiry = Date.UTC(dNow.getUTCFullYear(), dNow.getUTCMonth(), dNow.getUTCDate(), dNow.getUTCHours(), dNow.getUTCMinutes(), dNow.getUTCSeconds() ) + Math.ceil(quantity * multiplier) * 1000;
   }
   return expiry;
 }

@@ -317,6 +317,8 @@ function epc_padsAdd(verbose, data) {
   jsonData = ep_call(func, args, verbose);
   if (jsonData !== undefined) {
     if (jsonData === null) {
+      if (pads === undefined)
+        pads = {};
       pad = pads[name];
       if (pad === undefined) {
         pad[name] = { 'id': name };
@@ -525,6 +527,8 @@ function epc_sessionsAdd(verbose) {
       jsonData = ep_call('createSession', args, verbose, true);
       if (jsonData !== undefined) {
         id = jsonData['sessionID'];
+        if (sessions === undefined)
+          sessions = {};
         session = sessions[id];
         if (session === undefined) {
           sessions[id] = { 'id': id };
@@ -743,6 +747,8 @@ function epc_groupsAdd(verbose) {
   jsonData = ep_call('createGroupIfNotExistsFor', args, verbose);
   if (jsonData !== undefined) {
     id = jsonData['groupID'];
+    if (groups === undefined)
+      groups = {};
     group = groups[id];
     if (group === undefined) {
       groups[id] = { 'id': id, 'name': name };
@@ -922,6 +928,8 @@ function epc_authorsAdd(verbose) {
   jsonData = ep_call('createAuthorIfNotExistsFor', args, verbose);
   if (jsonData !== undefined) {
     id = jsonData['authorID'];
+    if (authors === undefined)
+      authors = {};
     author = authors[id];
     if (author === undefined) {
       authors[id] = { 'id': id, 'name': name };

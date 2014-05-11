@@ -74,8 +74,11 @@ function epxCall($func, $args = [],
             $data = dbQuery($dbSettings['type'], $dbConnectionString, $query);
             // create json data
             $data2 = [];
-            foreach ($data['data'] as $arr) {
-              $data2[$arr['id']] = $arr;
+            if (isSet($data['data']['affected']))
+              $data2 = null;
+            else {
+              foreach ($data['data'] as $arr)
+                $data2[$arr['id']] = $arr;
             }
             $data['data'] = $data2;
             $jsonData = $data;
@@ -87,8 +90,11 @@ function epxCall($func, $args = [],
             $data = dbQuery($dbSettings['type'], $dbConnectionString, $query);
             // create json data
             $data2 = [];
-            foreach ($data['data'] as $arr) {
-              $data2[$arr['id']] = $arr;
+            if (isSet($data['data']['affected']))
+              $data2 = null;
+            else {
+              foreach ($data['data'] as $arr)
+                $data2[$arr['id']] = $arr;
             }
             $data['data'] = $data2;
             $jsonData = $data;
@@ -114,10 +120,14 @@ function epxCall($func, $args = [],
             $data = dbQuery($dbSettings['type'], $dbConnectionString, $query);
             // create json data
             $data2 = [];
-            foreach ($data['data'] as $arr) {
-              $author = json_decode($arr['value'], true);
-              $author['id'] = $arr['id'];
-              $data2[$author['id']] = $author;
+            if (isSet($data['data']['affected']))
+              $data2 = null;
+            else {
+              foreach ($data['data'] as $arr) {
+                $author = json_decode($arr['value'], true);
+                $author['id'] = $arr['id'];
+                $data2[$author['id']] = $author;
+              }
             }
             $data['data'] = $data2;
             $jsonData = $data;
@@ -129,10 +139,14 @@ function epxCall($func, $args = [],
             $data = dbQuery($dbSettings['type'], $dbConnectionString, $query);
             // create json data
             $data2 = [];
-            foreach ($data['data'] as $arr) {
-              $session = json_decode($arr['value'], true);
-              $session['id'] = $arr['id'];
-              $data2[$session['id']] = $session;
+            if (isSet($data['data']['affected']))
+              $data2 = null;
+            else {
+              foreach ($data['data'] as $arr) {
+                $session = json_decode($arr['value'], true);
+                $session['id'] = $arr['id'];
+                $data2[$session['id']] = $session;
+              }
             }
             $data['data'] = $data2;
             $jsonData = $data;

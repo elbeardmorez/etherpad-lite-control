@@ -46,6 +46,9 @@ function getServer() {
           $('#epc_basepath').attr('value') : "");
 }
 
+/*
+ return 'undefined' for erroneous and unsuccessful. 'null' used for successful queries, e.g. empty lists
+*/
 function epx_call(func, args, verbose, append) {
 //  console.log('[debug|epx_call]');
 
@@ -70,18 +73,10 @@ function epx_call(func, args, verbose, append) {
             'args' : args,
             'settingsPath' : sSettingsPath },
     success: function(data, textStatus, jqXHR) {
-      if ( data === null ) {
-        sData = '[debug|epx_call] failure, no data';
-        console.log(sData);
-      } else {
-        console.log('[debug|epx_call] success');
-        sData = data['raw'];
-        if (data['data']['code'] == 0 || typeof data['data']['code'] == "object") {
-          jsonData = data['data']['data'];
-          if (jsonData === null)
-            jsonData = true;
-        }
-      }
+      console.log('[debug|epx_call] success');
+      sData = data['raw'];
+      if (data['data']['code'] == 0 || typeof data['data']['code'] == "object")
+        jsonData = data['data']['data'];
     },
     failure: function(data, textStatus, jqXHR) {
       sData = '[debug|epx_call] failure';
@@ -96,6 +91,9 @@ function epx_call(func, args, verbose, append) {
   return jsonData;
 }
 
+/*
+ return 'undefined' for erroneous and unsuccessful. 'null' used for successful queries, e.g. empty lists
+*/
 function ep_call(func, args, verbose, append) {
 // console.log('[debug|ep_call]');
 
@@ -121,18 +119,10 @@ function ep_call(func, args, verbose, append) {
             'url' : sServer,
             'apiKeyPath' : sApiKeyPath },
     success: function(data, textStatus, jqXHR) {
-      if ( data === null ) {
-        sData = '[debug|ep_call] failure, no data';
-        console.log(sData);
-      } else {
-        console.log('[debug|ep_call] success');
-        sData = data['raw'];
-        if (data['data']['code'] == 0) {
-          jsonData = data['data']['data'];
-          if (jsonData === null)
-            jsonData = true;
-        }
-      }
+      console.log('[debug|ep_call] success');
+      sData = data['raw'];
+      if (data['data']['code'] == 0)
+        jsonData = data['data']['data'];
     },
     failure: function(data, textStatus, jqXHR) {
       sData = '[debug|ep_call] failure';
@@ -155,7 +145,7 @@ function epc_clean(verbose) {
   console.log('[debug|epc_clean]');
 
   jsonData = epx_call('cleanDatabase', undefined, verbose);
-  if (jsonData !== undefined) {
+  if (jsonData !== undefined && jsonData !== null) {
     // process
     sMessage = '';
     $.each(jsonData, function(idx, data) {
@@ -209,7 +199,7 @@ function epc_pads(data, verbose) {
       var func = 'listAllPads';
       var args = [];
       result = ep_call(func, args, verbose);
-      if (result !== undefined)
+      if (result !== undefined && result !== null)
         jsonData.push(result);
       break;
     case 'group':
@@ -219,7 +209,7 @@ function epc_pads(data, verbose) {
         $.each(selectedGids, function(idx, sGid) {
           var args = [sGid.match('.*\\[(.*)\\].*')[1]];
           result = ep_call(func, args, verbose);
-          if (result !== undefined)
+          if (result !== undefined && result !== null)
             jsonData.push(result);
         });
       }
@@ -326,7 +316,7 @@ function epc_padsAdd(verbose, data) {
   }
   jsonData = ep_call(func, args, verbose);
   if (jsonData !== undefined) {
-    if (jsonData === true) {
+    if (jsonData === null) {
       pad = pads[name];
       if (pad === undefined) {
         pad[name] = { 'id': name };
@@ -372,10 +362,11 @@ function epc_padsRemove(verbose, data) {
         $.each(selected, function(key, value) {
           var args = [value];
           jsonData = ep_call('deletePad', args, verbose);
-          if (jsonData) {
+          if (jsonData !== undefined && jsonData['affected'] == 1) {
             console.log('[info] deleted pad, id: \'' + value + '\'');
             delete(pads[value]);
-          }
+          } else
+            console.log('[debug] issue deleting pad, id: \'' + value + '\'');
         });
         // reload pads
         epc_padsShow();
@@ -476,7 +467,7 @@ function epc_sessions(verbose) {
   // reset sessions object
   sessions = {};
   jsonData = epx_call('listAllSessions', undefined, verbose)
-  if (jsonData !== undefined) {
+  if (jsonData !== undefined && jsonData !== null) {
     sessions = jsonData;
   }
   // update select control
@@ -586,10 +577,11 @@ function epc_sessionsRemove(verbose, data) {
         $.each(selected, function(idx, id) {
           var args = [id];
           jsonData = ep_call('deleteSession', args, verbose);
-          if (jsonData) {
+          if (jsonData !== undefined && jsonData['affected'] == 1) {
             console.log('[info] deleted session, id: \'' + id + '\'');
             delete(sessions[id]);
-          }
+          } else
+            console.log('[debug] issue deleting session, id: \'' + id + '\'');
         });
         // reload session
         epc_sessionsShow();
@@ -701,7 +693,7 @@ function epc_groups(verbose) {
   // reset groups object
   groups = {};
   jsonData = ep_call('listAllGroups', undefined, verbose)
-  if (jsonData !== undefined) {
+  if (jsonData !== undefined && jsonData !== null) {
     // process
     if (jsonData['groupIDs'].length > 0) {
       $.each(jsonData['groupIDs'], function(idx, id) {
@@ -712,7 +704,7 @@ function epc_groups(verbose) {
   }
   // map external names where possible
   jsonData = epx_call('getGroupMappers', undefined, true, true);
-  if (jsonData !== undefined) {
+  if (jsonData !== undefined && jsonData !== null) {
     // process
     $.each(groups, function(key, group) {
       if (groups['name'] === undefined &&
@@ -798,10 +790,11 @@ function epc_groupsRemove(verbose, data) {
           var id = value.match('.*\\[(.*)\\].*')[1];
           var args = [id];
           jsonData = ep_call('deleteGroup', args, verbose);
-          if (jsonData) {
+          if (jsonData !== undefined && jsonData['affected'] == 1) {
             console.log('[info] deleted group, id: \'' + id + '\'');
             delete(groups[id]);
-          }
+          } else
+            console.log('[debug] issue deleting group, id: \'' + id + '\'');
         });
         // reload group
         epc_groupsShow();
@@ -832,12 +825,12 @@ function epc_authors(verbose) {
   // reset authors object
   authors = {};
   jsonData = epx_call('listAllAuthors', undefined, verbose)
-  if (jsonData !== undefined)
+  if (jsonData !== undefined && jsonData !== null)
     // process
     authors = jsonData;
   // map external names where possible
   jsonData = epx_call('getAuthorMappers', undefined, true, true);
-  if (jsonData !== undefined) {
+  if (jsonData !== undefined && jsonData !== null) {
     // process
     $.each(authors, function(key, author) {
       if (authors['name'] === undefined &&
@@ -879,11 +872,11 @@ function epc_authorsOfPads(data, verbose) {
   // (and very slow) api calls to 'getAuthorName'
   var auth2name = {};
   $('#epStatus-inner').html('');
-  if (jsonData !== undefined) {
+  if (jsonData !== undefined && jsonData !== null) {
     $.each(jsonData['padIDs'], function(idx, pid) {
       var args = [pid];
       jsonData2 = ep_call('listAuthorsOfPad', args, true, true);
-      if (jsonData2 !== undefined) {
+      if (jsonData2 !== undefined && jsonData2 !== null) {
         $.each(jsonData2['authorIDs'], function(idx2, id) {
           authors[id] = { 'id': id };
           var name = auth2name[id];
@@ -976,10 +969,11 @@ function epc_authorsRemove(verbose, data) {
           var id = value.match('.*\\[(.*)\\].*')[1];
           var args = [id];
           jsonData = epx_call('deleteAuthor', args, verbose);
-          if (jsonData) {
+          if (jsonData !== undefined && jsonData['affected'] == 1) {
             console.log('[info] deleted author, id: \'' + id + '\'');
             delete(authors[id]);
-          }
+          } else
+            console.log('[debug] issue deleting author, id: \'' + id + '\'');
         });
         // reload author
         epc_authorsShow();

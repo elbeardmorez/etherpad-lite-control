@@ -83,11 +83,12 @@ function epx_call(func, args, verbose, append) {
       console.log(sData);
     }
   });
-  if (verbose)
+  if (verbose) {
     if (append)
       $('#epStatus-inner').append('<br>' + sData);
     else
       $('#epStatus-inner').html('<br>' + sData);
+  }
   return jsonData;
 }
 
@@ -129,11 +130,12 @@ function ep_call(func, args, verbose, append) {
       console.log(sData);
     }
   });
-  if (verbose)
+  if (verbose) {
     if (append)
       $('#epStatus-inner').append('<br>' + sData);
     else
       $('#epStatus-inner').html('<br>' + sData);
+  }
   return jsonData;
 }
 

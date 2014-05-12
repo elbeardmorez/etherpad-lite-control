@@ -323,7 +323,7 @@ function epc_padsAdd(verbose, data) {
         pads = {};
       pad = pads[name];
       if (pad === undefined) {
-        pad[name] = { 'id': name };
+        pads[name] = { 'id': name, 'name': name };
         console.log('[info] pad name \'' + name + '\' added');
       } else
         console.log('[info] pad name \'' + name + '\' already exists');

@@ -208,8 +208,8 @@ function epc_pads(data, verbose) {
       selectedGids = $('#epGroups :selected').map(function(){return this.value;}).get();
       if (selectedGids.length > 0) {
         var func = "listPads";
-        $.each(selectedGids, function(idx, sGid) {
-          var args = [sGid.match('.*\\[(.*)\\].*')[1]];
+        $.each(selectedGids, function(idx, gid) {
+          var args = [gid];
           result = ep_call(func, args, verbose);
           if (result !== undefined && result !== null)
             jsonData.push(result);
@@ -254,9 +254,9 @@ function epc_pads(data, verbose) {
     epc_padsShow();
   }
   // reselect selected
-  $.each(selected, function(idx, sPad) {
-    id = epc_padName2Id(sPad);
-    $('#epPads option:contains(' + pads[id]['name'] + ')').attr('selected', 'selected');
+  $.each(selected, function(idx, id) {
+//    console.log('re-selecting id: ' + id);
+    $('#epPads option[value="' + id + '"]').attr('selected', true);
   });
 }
 function epc_padsShow(type) {
@@ -280,15 +280,15 @@ function epc_padsShow(type) {
     switch (type) {
       case "group (private)":
         if (pad['public'] !== undefined && pad['public'] !== true)
-          $('#epPads').append('<option>' + pad['name'] + '</option>');
+          $('#epPads').append('<option value="' + pad['id'] + '">' + pad['name'] + '</option>');
         break;
       case "group (public)":
         if (pad['public'] !== undefined && pad['public'] === true)
-          $('#epPads').append('<option>' + pad['name'] + '</option>');
+          $('#epPads').append('<option value="' + pad['id'] + '">' + pad['name'] + '</option>');
         break;
       case "regular":
         if (pad['public'] === undefined)
-          $('#epPads').append('<option>' + pad['name'] + '</option>');
+          $('#epPads').append('<option value="' + pad['id'] + '">' + pad['name'] + '</option>');
         break;
     }
   });
@@ -310,7 +310,7 @@ function epc_padsAdd(verbose, data) {
   if (selected.length > 0) {
     // create a group pad
     func = 'createGroupPad';
-    args = [selected[0].match('.*\\[(.*)\\].*')[1], name];
+    args = [selected[0], name];
   } else {
     // create a regular pad
     func = 'createPad';
@@ -333,7 +333,7 @@ function epc_padsAdd(verbose, data) {
   // reload group
   epc_padsShow();
   // select added / existing
-  $('#epPads option:contains(' + name + ')').attr('selected', 'selected');
+  $('#epPads option[value="' + name + '"]').attr('selected', true);
   // update info
   epc_padsInfo();
 }
@@ -409,7 +409,7 @@ function epc_padsInfo(verbose) {
     $('#epInfo-inner').html('');
     $('#epInfo-title').html('info');
 
-    id = epc_padName2Id(selected[0]);
+    id = selected[0];
     pad = pads[id];
     if (pad === undefined) {
       if (id != 'All')
@@ -468,6 +468,7 @@ function epc_padsInfo(verbose) {
 function epc_sessions(verbose) {
   console.log('[debug|epc_sessions]');
 
+  selected = $('#epSessions :selected').map(function(){return this.value;}).get();
   // reset sessions object
   sessions = {};
   jsonData = epx_call('listAllSessions', undefined, verbose)
@@ -476,20 +477,24 @@ function epc_sessions(verbose) {
   }
   // update select control
   epc_sessionsShow();
+  // reselect selected
+  $.each(selected, function(idx, id) {
+//    console.log('reselecting id: ' + id);
+    $('#epSessions option[value="' + id + '"]').attr('selected', true);
+  });
 }
 function epc_sessionsShow() {
   console.log('[debug|epc_sessionsShow]');
 
   $('#epSessions').html('');
   $.each(sessions, function(key, session) {
-    $('#epSessions').append('<option>' + session['id'] + '</option>');
+    $('#epSessions').append('<option value="' + session['id'] + '">' + session['id'] + '</option>');
   });
   if ($('#epSessions')[0].length > 0) {
     $('#epSessions').prepend('<option value="All">All</option>');
     $('#epSessionsTitle').html('sessions (' + ($('#epSessions')[0].length - 1) + ')');
   } else
     $('#epSessionsTitle').html('sessions (0)');
-
 }
 function epc_sessionsAdd(verbose) {
   console.log('[debug|epc_sessionsAdd]');
@@ -521,10 +526,8 @@ function epc_sessionsAdd(verbose) {
   // create session(s) for author <-> group-pad(s)
   $('#epStatus-inner').html('');
   var id = '';
-  $.each(aAuthors, function(idx, author) {
-    var aid = author.match('.*\\[(.*)\\].*')[1];
-    $.each(aGroups, function(idx, group) {
-      var gid = group.match('.*\\[(.*)\\].*')[1];
+  $.each(aAuthors, function(idx, aid) {
+    $.each(aGroups, function(idx, gid) {
       args = [gid, aid, expiry];
       jsonData = ep_call('createSession', args, verbose, true);
       if (jsonData !== undefined) {
@@ -545,7 +548,7 @@ function epc_sessionsAdd(verbose) {
   // reload session
   epc_sessionsShow();
   // select added / existing
-  $('#epSessions option:contains(' + id + ')').attr('selected', 'selected');
+  $('#epSessions option[value="' + id + '"]').attr('selected', true);
   // update info
   epc_sessionsInfo();
 
@@ -696,6 +699,7 @@ function epc_sessionsInfo(verbose) {
 function epc_groups(verbose) {
   console.log('[debug|epc_groups]');
 
+  selected = $('#epGroups :selected').map(function(){return this.value;}).get();
   // reset groups object
   groups = {};
   jsonData = ep_call('listAllGroups', undefined, verbose)
@@ -721,6 +725,11 @@ function epc_groups(verbose) {
   }
   // update select control
   epc_groupsShow();
+  // reselect selected
+  $.each(selected, function(idx, id) {
+//    console.log('reselecting id: ' + id);
+    $('#epGroups option[value="' + id + '"]').attr('selected', true);
+  });
   // update pads list
   if (pads !== undefined)
     epc_pads();
@@ -731,9 +740,9 @@ function epc_groupsShow() {
   $('#epGroups').html('');
   $.each(groups, function(key, group) {
     if (group['name'] === undefined)
-      $('#epGroups').append('<option>[' + group['id'] + ']</option>');
+      $('#epGroups').append('<option value="' + group['id'] + '">[' + group['id'] + ']</option>');
     else
-      $('#epGroups').append('<option>' + group['name'] + ' [' + group['id'] + ']</option>');
+      $('#epGroups').append('<option value="' + group['id'] + '">' + group['name'] + ' [' + group['id'] + ']</option>');
   });
   if ($('#epGroups')[0].length > 0) {
     $('#epGroups').prepend('<option value="All">All</option>');
@@ -761,7 +770,7 @@ function epc_groupsAdd(verbose) {
     // reload group
     epc_groupsShow();
     // select added / existing
-    $('#epGroups option:contains(' + id + ')').attr('selected', 'selected');
+    $('#epGroups option[value="' + id + '"]').attr('selected', true);
   }
 }
 function epc_groupsRemove(verbose, data) {
@@ -794,8 +803,7 @@ function epc_groupsRemove(verbose, data) {
       // do deletion
       if (data === true) {
         selectedIndex = $("#epGroups option:selected")[0].index;
-        $.each(selected, function(key, value) {
-          var id = value.match('.*\\[(.*)\\].*')[1];
+        $.each(selected, function(idx, id) {
           var args = [id];
           jsonData = ep_call('deleteGroup', args, verbose);
           if (jsonData !== undefined && jsonData['affected'] == 1) {
@@ -830,6 +838,7 @@ function epc_groupAuthors(verbose) {
 function epc_authors(verbose) {
   console.log('[debug|epc_authors]');
 
+  selected = $('#epAuthors :selected').map(function(){return this.value;}).get();
   // reset authors object
   authors = {};
   jsonData = epx_call('listAllAuthors', undefined, verbose)
@@ -849,6 +858,11 @@ function epc_authors(verbose) {
   }
   // update select control
   epc_authorsShow();
+  // reselect selected
+  $.each(selected, function(idx, id) {
+//    console.log('reselecting id: ' + id);
+    $('#epAuthors option[value="' + id + '"]').attr('selected', true);
+  });
 }
 
 function epc_authorsOfPads(data, verbose) {
@@ -868,7 +882,7 @@ function epc_authorsOfPads(data, verbose) {
       selected = $('#epGroups :selected').map(function(){return this.value;}).get();
       if (selected.length > 0) {
         var func = "listPads";
-        var gid = selected[0].match('.*\\[(.*)\\].*')[1];
+        var gid = selected[0];
         var args = [gid];
         jsonData = ep_call(func, args, false);
       }
@@ -912,9 +926,9 @@ function epc_authorsShow() {
   $('#epAuthors').html('');
   $.each(authors, function(key, author) {
     if (author['name'] === undefined)
-      $('#epAuthors').append('<option>[' + author['id'] + ']</option>');
+      $('#epAuthors').append('<option value="' + author['id'] + '">[' + author['id'] + ']</option>');
     else
-      $('#epAuthors').append('<option>' + author['name'] + ' [' + author['id'] + ']</option>');
+      $('#epAuthors').append('<option value="' + author['id'] + '">' + author['name'] + ' [' + author['id'] + ']</option>');
   });
   if ($('#epAuthors')[0].length > 0) {
     $('#epAuthors').prepend('<option value="All">All</option>');
@@ -942,7 +956,7 @@ function epc_authorsAdd(verbose) {
     // reload author
     epc_authorsShow();
     // select added / existing
-    $('#epAuthors option:contains(' + id + ')').attr('selected', 'selected');
+    $('#epAuthors option[value="' + id + '"]').attr('selected', true);
   }
 }
 function epc_authorsRemove(verbose, data) {
@@ -976,7 +990,6 @@ function epc_authorsRemove(verbose, data) {
       if (data === true) {
         selectedIndex = $("#epAuthors option:selected")[0].index;
         $.each(selected, function(key, value) {
-          var id = value.match('.*\\[(.*)\\].*')[1];
           var args = [id];
           jsonData = epx_call('deleteAuthor', args, verbose);
           if (jsonData !== undefined && jsonData['affected'] == 1) {

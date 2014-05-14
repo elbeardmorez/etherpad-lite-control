@@ -220,7 +220,6 @@ function epc_pads(data, verbose) {
 
   // reset pads object
   pads = {};
-  $('#epPads').html('');
   if (jsonData.length > 0) {
     // process
     $.each(jsonData, function(idx, result) {
@@ -252,12 +251,13 @@ function epc_pads(data, verbose) {
     });
     // update select control
     epc_padsShow();
-  }
-  // reselect selected
-  $.each(selected, function(idx, id) {
-//    console.log('re-selecting id: ' + id);
-    $('#epPads option[value="' + id + '"]').attr('selected', true);
-  });
+    // reselect selected
+    $.each(selected, function(idx, id) {
+//      console.log('re-selecting id: ' + id);
+      $('#epPads option[value="' + id + '"]').attr('selected', true);
+    });
+  } else
+    $('#epPads').html('');
 }
 function epc_padsShow(type) {
   console.log('[debug|epc_padsShow]');

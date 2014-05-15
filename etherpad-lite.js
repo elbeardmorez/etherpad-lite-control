@@ -672,6 +672,7 @@ function epc_sessionsInfo(verbose) {
     var propHTMLSuffix = "<span style='font-size: 1.1em;'>"
     var propHTMLPostfix = "</span>";
 
+    // prop specific styling
     $.each(props, function(idx, prop) {
       switch (prop) {
         case 'expiry':
@@ -1006,6 +1007,47 @@ function epc_authorsRemove(verbose, data) {
         $('#epAuthors')[0].selectedIndex = selectedIndex;
       }
     }
+  }
+}
+function epc_authorsInfo(verbose) {
+  console.log('[debug|epc_authorsInfo]');
+
+  // get selected id
+  selected = $('#epAuthors :selected').map(function(){return this.value;}).get();
+  if (selected.length > 0) {
+
+    // clear last info
+    $('#epInfo-inner').html('');
+    $('#epInfo-title').html('info');
+
+    id = selected[0];
+    author = authors[id];
+    if (author === undefined) {
+      if (id != 'All')
+        console.log('[debug] broken author reference key');
+      return;
+    }
+
+    var props = ['id', 'name'];
+
+    // build html
+    var authorHTML = {};
+    var propHTMLSuffix = "<span style='font-size: 1.1em;'>"
+    var propHTMLPostfix = "</span>";
+
+    // prop specific styling
+    $.each(props, function(idx, prop) {
+      switch (prop) {
+      }
+    });
+
+    // construct html
+    html = '';
+    $.each(props, function(idx, prop) {
+      html += '<p style="margin: 3px 0px 2px; font-size: 0.8em;"><b>' + prop + ': </b>' + (authorHTML[prop] ? authorHTML[prop] : propHTMLSuffix + (author[prop] ? author[prop] : '') + propHTMLPostfix) + '</p>';
+    });
+    $('#epInfo-inner').html(html);
+    $('#epInfo-title').html('info (author)');
   }
 }
 

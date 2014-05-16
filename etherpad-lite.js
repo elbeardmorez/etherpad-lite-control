@@ -843,18 +843,22 @@ function epc_authors(verbose) {
   // reset authors object
   authors = {};
   jsonData = epx_call('listAllAuthors', undefined, verbose)
-  if (jsonData !== undefined && jsonData !== null)
+  if (jsonData !== undefined && jsonData !== null) {
     // process
     authors = jsonData;
+    $.each(authors, function(key, author) {
+      author['mapped'] = false;
+    });
+  }
   // map external names where possible
   jsonData = epx_call('getAuthorMappers', undefined, true, true);
   if (jsonData !== undefined && jsonData !== null) {
     // process
-    $.each(authors, function(key, author) {
-      if (author['name'] === undefined &&
-        jsonData[key] !== undefined) {
-        author['name'] = jsonData[key]['name'];
-      }
+    $.each(jsonData, function(id, data) {
+      author = authors[id];
+      author['mapped'] = true;
+      if (author['name'] === undefined)
+        author['name'] = data['name'];
     });
   }
   // update select control
@@ -949,7 +953,7 @@ function epc_authorsAdd(verbose) {
       authors = {};
     author = authors[id];
     if (author === undefined) {
-      authors[id] = { 'id': id, 'name': name };
+      authors[id] = { 'id': id, 'name': name, 'mapped': true };
       console.log('[info] author name \'' + name + '\' added with id \'' + id + '\'');
     } else
       console.log('[info] author name \'' + name + '\' already exists with id \'' + id + '\'');
@@ -1028,7 +1032,7 @@ function epc_authorsInfo(verbose) {
       return;
     }
 
-    var props = ['id', 'name'];
+    var props = ['id', 'name', 'mapped'];
 
     // build html
     var authorHTML = {};
@@ -1044,7 +1048,7 @@ function epc_authorsInfo(verbose) {
     // construct html
     html = '';
     $.each(props, function(idx, prop) {
-      html += '<p style="margin: 3px 0px 2px; font-size: 0.8em;"><b>' + prop + ': </b>' + (authorHTML[prop] ? authorHTML[prop] : propHTMLSuffix + (author[prop] ? author[prop] : '') + propHTMLPostfix) + '</p>';
+      html += '<p style="margin: 3px 0px 2px; font-size: 0.8em;"><b>' + prop + ': </b>' + (authorHTML[prop] ? authorHTML[prop] : propHTMLSuffix + (author[prop] !== undefined ? author[prop] : '') + propHTMLPostfix) + '</p>';
     });
     $('#epInfo-inner').html(html);
     $('#epInfo-title').html('info (author)');

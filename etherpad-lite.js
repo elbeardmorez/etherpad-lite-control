@@ -851,7 +851,7 @@ function epc_authors(verbose) {
   if (jsonData !== undefined && jsonData !== null) {
     // process
     $.each(authors, function(key, author) {
-      if (authors['name'] === undefined &&
+      if (author['name'] === undefined &&
         jsonData[key] !== undefined) {
         author['name'] = jsonData[key]['name'];
       }

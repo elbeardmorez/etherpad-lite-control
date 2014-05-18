@@ -425,41 +425,71 @@ function epc_padsInfo(verbose) {
       return;
     }
 
-    var props = ['name', 'created', 'updated'];
+    var props = ['name', 'created', 'updated', 'author(s)']
     var infos = {};
     infos['created'] = [ 'nonapi', 'getPadCreated', [ id ], 'created' ];
     infos['updated'] = [ 'api', 'getLastEdited', [ id ], 'lastEdited' ];
+    infos['author(s)'] = [ 'api', 'listAuthorsOfPad', [ id ], 'authorIDs' ];
 
-    if (pad['created'] === undefined) {
       // collect info strings
-      var append = false;
-      $.each(infos, function(key, info) {
-        var type = info[0];
-        var func = info[1];
-        var args = info[2];
-        var dataKey = info[3];
+    var append = false;
+    $.each(infos, function(key, info) {
+      var type = info[0];
+      var func = info[1];
+      var args = info[2];
+      var dataKey = info[3];
 
-        var jsonData;
-        if (type == "api")
+      var bUpdate = true;
+      var bProcess = true;
+
+      // pre-processing
+      switch (key) {
+        case 'created':
+        case 'updated':
+          if (pad['created'] !== undefined)
+            bUpdate = bProcess = false;
+          break;
+        case 'author(s)':
+          if (pad['authors'] !== undefined)
+            bUpdate = false;
+          break;
+      }
+
+      var jsonData;
+      if (bUpdate) {
+        if (type === "api")
           jsonData = ep_call(func, args, verbose, append);
         else
           jsonData = epx_call(func, args, verbose, append);
+        // append any further status messages
         append = true;
-
-        if (jsonData !== undefined) {
+        if (jsonData !== undefined)
           // add info to pad object
           pad[key] = jsonData[dataKey];
-          // post processing
-          switch (key) {
-            case 'created':
-            case 'updated':
-              // convert date
-              pad[key] = getDateString(new Date(pad[key]));
-              break;
-          }
+      }
+
+      if (bProcess) {
+        // post processing
+        switch (key) {
+          case 'created':
+          case 'updated':
+            // convert date
+            pad[key] = getDateString(new Date(pad[key]));
+            break;
+          case 'author(s)':
+            if (pad[key] !== undefined) {
+              if ($.isArray(pad[key]))
+                // flatten
+                pad[key] = pad[key].map(function(s){return '? [' + s + ']';}).join(', ');
+              if (authors !== undefined && pad[key].match(/\?/))
+                // resolve unresolved
+                pad[key] = pad[key].split(',').map(function(s){ var author = authors[s.match(/^.*?\[(.*?)\]\s*$/)[1]]; return (author !== undefined ? author['name'] + ' [' + author['id'] + ']' : s.trim()); }).join(', ');
+            }
+            break;
         }
-      });
-    }
+      }
+    });
+
     // construct html
     var html = '';
     $.each(props, function(idx, prop) {
@@ -895,59 +925,9 @@ function epc_authors(verbose) {
   $.each(selected, function(idx, id) {
     $('#epAuthors option[value="' + id + '"]').attr('selected', true);
   });
-}
-
-function epc_authorsOfPads(data, verbose) {
-  console.log('[debug|epc_authors]');
-
-  if (data === undefined)
-    var data = 'global';
-
-  var jsonData;
-  switch (data) {
-    case 'global':
-      var func = 'listAllPads';
-      var args = [];
-      jsonData = ep_call(func, args, false);
-      break;
-    case 'group':
-      selectedGids = $('#epGroups :selected').map(function(){return this.value;}).get();
-      if (selectedGids.length > 0) {
-        var func = "listPads";
-        var args = [selectedGids[0]];
-        jsonData = ep_call(func, args, false);
-      }
-      break;
-  }
-  // reset authors object
-  authors = {};
-  // temp 'dictionary' for name mappings to avoid unnecessary
-  // (and very slow) api calls to 'getAuthorName'
-  var auth2name = {};
-  $('#epStatus-inner').html('');
-  if (jsonData !== undefined && jsonData !== null) {
-    $.each(jsonData['padIDs'], function(idx, pid) {
-      var args = [pid];
-      var jsonData2 = ep_call('listAuthorsOfPad', args, true, true);
-      if (jsonData2 !== undefined && jsonData2 !== null) {
-        $.each(jsonData2['authorIDs'], function(idx2, id) {
-          authors[id] = { 'id': id };
-          var name = auth2name[id];
-          if (name === undefined) {
-            var args2 = [id];
-            var jsonData3 = ep_call('getAuthorName', args2, true, true);
-            if (jsonData3 !== undefined) {
-//              name = jsonData3['authorName']; // api bug?
-              name = jsonData3;
-              authors[id]['name'] = name;
-            }
-          }
-        });
-      }
-    });
-  }
-  // update select control
-  epc_authorsShow();
+  // update pad info
+  if ($('#epInfo-title:contains("(pad)")')[0] !== undefined)
+    epc_padsInfo();
 }
 
 function epc_authorsShow() {

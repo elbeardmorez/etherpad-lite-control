@@ -236,12 +236,19 @@ function epc_pads(data, verbose) {
           var pad = pads[id];
           var args = [id]
           var res2 = ep_call('getPublicStatus', args, false);
-          if (res2 !== undefined) {
+          if (res2 === undefined)
+            // regular pad
+            pad['type'] = 'regular';
+          else {
             // group pad
-            if (res2)
+            // set public status
+            if (res) {
               pad['public'] = true;
-            else
+              pad['type'] = 'public group';
+            } else {
               pad['public'] = false;
+              pad['type'] = 'private group';
+            }
             if (pad['name'] == pad['id']) {
               // modify name
               var arr = pad['id'].match('(.*)\\$(.*)');
@@ -284,15 +291,15 @@ function epc_padsShow(type) {
   $.each(pads, function(idx, pad) {
     switch (type) {
       case "group (private)":
-        if (pad['public'] !== undefined && pad['public'] !== true)
+        if (pad['type'] === 'private group')
           $('#epPads').append('<option value="' + pad['id'] + '">' + pad['name'] + '</option>');
         break;
       case "group (public)":
-        if (pad['public'] !== undefined && pad['public'] === true)
+        if (pad['type'] === 'public group')
           $('#epPads').append('<option value="' + pad['id'] + '">' + pad['name'] + '</option>');
         break;
       case "regular":
-        if (pad['public'] === undefined)
+        if (pad['type'] === 'regular')
           $('#epPads').append('<option value="' + pad['id'] + '">' + pad['name'] + '</option>');
         break;
     }
@@ -425,25 +432,21 @@ function epc_padsInfo(verbose) {
       return;
     }
 
-    var props = ['name', 'created', 'updated', 'author(s)']
+    var props = ['name', 'created', 'updated', 'type', 'author(s)']
     var infos = {};
     infos['created'] = [ 'nonapi', 'getPadCreated', [ id ], 'created' ];
     infos['updated'] = [ 'api', 'getLastEdited', [ id ], 'lastEdited' ];
     infos['author(s)'] = [ 'api', 'listAuthorsOfPad', [ id ], 'authorIDs' ];
 
-      // collect info strings
+    // collect info strings
     var append = false;
-    $.each(infos, function(key, info) {
-      var type = info[0];
-      var func = info[1];
-      var args = info[2];
-      var dataKey = info[3];
+    $.each(props, function(idx, prop) {
 
       var bUpdate = true;
       var bProcess = true;
 
       // pre-processing
-      switch (key) {
+      switch (prop) {
         case 'created':
         case 'updated':
           if (pad['created'] !== undefined)
@@ -455,8 +458,14 @@ function epc_padsInfo(verbose) {
           break;
       }
 
-      var jsonData;
-      if (bUpdate) {
+      if (bUpdate && infos[prop] !== undefined) {
+        var info = infos[prop];
+        var type = info[0];
+        var func = info[1];
+        var args = info[2];
+        var dataKey = info[3];
+
+        var jsonData;
         if (type === "api")
           jsonData = ep_call(func, args, verbose, append);
         else
@@ -465,25 +474,25 @@ function epc_padsInfo(verbose) {
         append = true;
         if (jsonData !== undefined)
           // add info to pad object
-          pad[key] = jsonData[dataKey];
+          pad[prop] = jsonData[dataKey];
       }
 
       if (bProcess) {
         // post processing
-        switch (key) {
+        switch (prop) {
           case 'created':
           case 'updated':
             // convert date
-            pad[key] = getDateString(new Date(pad[key]));
+            pad[prop] = getDateString(new Date(pad[prop]));
             break;
           case 'author(s)':
-            if (pad[key] !== undefined) {
-              if ($.isArray(pad[key]))
+            if (pad[prop] !== undefined) {
+              if ($.isArray(pad[prop]))
                 // flatten
-                pad[key] = pad[key].map(function(s){return '? [' + s + ']';}).join(', ');
-              if (authors !== undefined && pad[key].match(/\?/))
+                pad[prop] = pad[prop].map(function(s){return '? [' + s + ']';}).join(', ');
+              if (authors !== undefined && pad[prop].match(/\?/))
                 // resolve unresolved
-                pad[key] = pad[key].split(',').map(function(s){ var author = authors[s.match(/^.*?\[(.*?)\]\s*$/)[1]]; return (author !== undefined ? author['name'] + ' [' + author['id'] + ']' : s.trim()); }).join(', ');
+                pad[prop] = pad[prop].split(',').map(function(s){ var author = authors[s.match(/^.*?\[(.*?)\]\s*$/)[1]]; return (author !== undefined ? author['name'] + ' [' + author['id'] + ']' : s.trim()); }).join(', ');
             }
             break;
         }

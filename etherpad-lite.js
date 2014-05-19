@@ -913,6 +913,7 @@ function epc_authors(verbose) {
     // process
     authors = jsonData;
     $.each(authors, function(key, author) {
+      author['map'] = null;
       author['mapped'] = false;
     });
   }
@@ -923,9 +924,7 @@ function epc_authors(verbose) {
     $.each(jsonData, function(id, data) {
       var author = authors[id];
       author['mapped'] = true;
-      if (author['name'] === undefined ||
-          author['name'] === null)
-        author['name'] = data['name'];
+      author['map'] = data['name'];
     });
   }
 
@@ -945,10 +944,10 @@ function epc_authorsShow() {
 
   $('#epAuthors').html('');
   $.each(authors, function(key, author) {
-    if (author['name'] === undefined)
+    if (author['map'] === undefined)
       $('#epAuthors').append('<option value="' + author['id'] + '">[' + author['id'] + ']</option>');
     else
-      $('#epAuthors').append('<option value="' + author['id'] + '">' + author['name'] + ' [' + author['id'] + ']</option>');
+      $('#epAuthors').append('<option value="' + author['id'] + '">' + author['map'] + ' [' + author['id'] + ']</option>');
   });
   if ($('#epAuthors')[0].length > 0) {
     $('#epAuthors').prepend('<option value="All">All</option>');
@@ -960,8 +959,8 @@ function epc_authorsShow() {
 function epc_authorsAdd(verbose) {
   console.log('[debug|epc_authorsAdd]');
 
-  var name = $('#epAuthorName').val();
-  var args = [name, name];
+  var map = $('#epAuthorName').val();
+  var args = [map, map];
   var jsonData = ep_call('createAuthorIfNotExistsFor', args, verbose);
   if (jsonData !== undefined) {
     var id = jsonData['authorID'];
@@ -969,10 +968,10 @@ function epc_authorsAdd(verbose) {
       authors = {};
     var author = authors[id];
     if (author === undefined) {
-      authors[id] = { 'id': id, 'name': name, 'mapped': true };
-      console.log('[info] author name \'' + name + '\' added with id \'' + id + '\'');
+      authors[id] = { 'id': id, 'map': map, 'name': map, 'mapped': true };
+      console.log('[info] author name \'' + map + '\' added with id \'' + id + '\'');
     } else
-      console.log('[info] author name \'' + name + '\' already exists with id \'' + id + '\'');
+      console.log('[info] author name \'' + map + '\' already exists with id \'' + id + '\'');
 
     // reload author
     epc_authorsShow();
@@ -1049,7 +1048,7 @@ function epc_authorsInfo(verbose) {
       return;
     }
 
-    var props = ['id', 'name', 'mapped'];
+    var props = ['id', 'map', 'name', 'mapped'];
 
     // build html
     var authorHTML = {};

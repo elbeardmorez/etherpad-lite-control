@@ -923,7 +923,8 @@ function epc_authors(verbose) {
     $.each(jsonData, function(id, data) {
       var author = authors[id];
       author['mapped'] = true;
-      if (author['name'] === undefined)
+      if (author['name'] === undefined ||
+          author['name'] === null)
         author['name'] = data['name'];
     });
   }

@@ -1071,6 +1071,36 @@ function epc_authorsInfo(verbose) {
   }
 }
 
+function epc_authorMap(verbose, data) {
+  console.log('[debug|epc_authorMap]');
+
+  var selected = $('#epAuthors :selected').map(function() { return this.value; }).get();
+  if (selected.length == 0) {
+    alert("[user] no author(s) selected");
+    return;
+  }
+
+  $.each(selected, function(idx, id) {
+    var author = authors[id];
+    alert("[debug] processing author id: " + id);
+  });
+}
+
+function epc_authorName(verbose, data) {
+  console.log('[debug|epc_authorName]');
+
+  var selected = $('#epAuthors :selected').map(function() { return this.value; }).get();
+  if (selected.length == 0) {
+    alert("[user] no author(s) selected");
+    return;
+  }
+
+  $.each(selected, function(idx, id) {
+    var author = authors[id];
+    alert("[debug] processing author id: " + id);
+  });
+}
+
 function sessionExpiry(quantity, unit) {
 
   var expiry;

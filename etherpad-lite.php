@@ -182,13 +182,13 @@ function epxCall($func, $args = [],
             break;
 
           default:
-            $sData = '[info] unsupported non-api function \'' . $func . '\'';
+            $sData = '[error] unsupported non-api function \'' . $func . '\'';
             error_log($sData);
             break;
         }
         break;
       default:
-        $sData = '[info] unsupported database type \'' . $dbSettings['dbType'] . '\'';
+        $sData = '[error] unsupported database type \'' . $dbSettings['dbType'] . '\'';
         error_log($sData);
         break;
     }
@@ -265,6 +265,15 @@ if (!empty($_POST)) {
 
       error_log('$_POST[\'settingsPath\'] set as: \'' . $settingsPath . '\'');
       echo epxCall ($func, $args, $settingsPath);
+    } else {
+      # unsupported call
+      $sData = '[error] unsupported function \'' . $func . '\'';
+      $jsonData = [ 'code' => 1 ];
+      $sData = json_encode($sData);
+      $jsonData = json_encode($jsonData);
+      $sReturn = '{"raw":' . $sData . ', "data":' . $jsonData . '}';
+      error_log('$sReturn: ' . $sReturn);
+      echo $sReturn;
     }
   }
 }

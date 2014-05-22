@@ -258,11 +258,16 @@ function getFunctionName($s) {
   <div id="popup-outer" class="popup-outer" style="z-index: 11; position: absolute; height: 100%; width: 100%;">
   <div id="popup-inner" class="popup-inner" style="position: relative; top: 50%; left: 50%; width: 500px; margin-top: -200px; margin-left: -250px;">
     <h2 id=popupTitle></h2>
-    <div id="popupContent" style="position: relative; margin: 5px 5px 40px 5px; max-height: 325px; overflow: auto; border-width: 0px 0px 2px 0px; border-color: #aaa;">
+    <div style="position: relative; margin: 5px 0px 40px 0px; max-height: 325px; overflow: auto; border-width: 0px; border-color: #aaa;">
+      <div id="popupContent" style="position: relative;">
+      </div>
+      <div id="popupInput" style="position: relative; height: 30px; width: 100%; margin: 0px;">
+        <input id="popup-input" type="input" style="width: 98%; margin: 0px auto;">
+      </div>
     </div>
-    <div id="popupContent" style="position: absolute; bottom: 15px; height: 30px;">
-      <input id="popup-button-ok" type="button" class="button">
-      <input id="popup-button-cancel" type="button" class="button">
+    <div id="popupButtons" style="position: absolute; bottom: 15px; height: 30px;">
+      <input id="popup-button-1" type="button" class="button">
+      <input id="popup-button-2" type="button" class="button">
     </div>
   </div>
   </div>

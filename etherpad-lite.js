@@ -367,9 +367,9 @@ function epc_padsRemove(verbose, data) {
       sMessage += '</ul>\n';
       $('#popupContent').html(sMessage);
       // set the click handler
-      $('#popup-button-ok').off("click");
-      $('#popup-button-ok').on('click', function() {epc_padsRemove(true, true);});
-      popupToggle('yes|no');
+      $('#popup-button-1').off("click");
+      $('#popup-button-1').on('click', function() {epc_padsRemove(true, true);});
+      popupToggle('info', 'yes|no');
     } else {
       // toggle popup
       popupToggle();
@@ -409,7 +409,7 @@ function epc_padContent(verbose) {
     if (jsonData !== undefined) {
       $('#popupTitle').html(selected[0]);
       $('#popupContent').html(jsonData['html']);
-      popupToggle('ok');
+      popupToggle();
     }
   }
 }
@@ -626,9 +626,9 @@ function epc_sessionsRemove(verbose, data) {
       sMessage += '</ul>\n';
       $('#popupContent').html(sMessage);
       // set the click handler
-      $('#popup-button-ok').off("click");
-      $('#popup-button-ok').on('click', function() {epc_sessionsRemove(true, true);});
-      popupToggle('yes|no');
+      $('#popup-button-1').off("click");
+      $('#popup-button-1').on('click', function() {epc_sessionsRemove(true, true);});
+      popupToggle('info', 'yes|no');
     } else {
       // toggle popup
       popupToggle();
@@ -854,9 +854,9 @@ function epc_groupsRemove(verbose, data) {
       sMessage += '</ul>\n';
       $('#popupContent').html(sMessage);
       // set the click handler
-      $('#popup-button-ok').off("click");
-      $('#popup-button-ok').on('click', function() {epc_groupsRemove(true, true);});
-      popupToggle('yes|no');
+      $('#popup-button-1').off("click");
+      $('#popup-button-1').on('click', function() {epc_groupsRemove(true, true);});
+      popupToggle('info', 'yes|no');
     } else {
       // toggle popup
       popupToggle();
@@ -1000,9 +1000,9 @@ function epc_authorsRemove(verbose, data) {
       sMessage += '</ul>\n';
       $('#popupContent').html(sMessage);
       // set the click handler
-      $('#popup-button-ok').off("click");
-      $('#popup-button-ok').on('click', function() {epc_authorsRemove(true, true);});
-      popupToggle('yes|no');
+      $('#popup-button-1').off("click");
+      $('#popup-button-1').on('click', function() {epc_authorsRemove(true, true);});
+      popupToggle('info', 'yes|no');
     } else {
       // toggle popup
       popupToggle();
@@ -1096,8 +1096,8 @@ function epc_authorName(verbose, data) {
   }
 
   $.each(selected, function(idx, id) {
-    var author = authors[id];
     alert("[debug] processing author id: " + id);
+    var author = authors[id];
   });
 }
 
@@ -1155,33 +1155,43 @@ function getDateString(dt) {
   return ("0" + dt.getDate() + " " + months[dt.getMonth()] + " " + dt.getFullYear() + " 0" + dt.getHours() + ":0" + dt.getMinutes() + ":0"+ dt.getSeconds()).replace(/(^|\ |:)+0([0-9]{2})/g, "$1$2");
 }
 
-function popupToggle(type) {
+function popupToggle(type, buttons) {
   if (type === undefined)
-    var type = "ok";
+    var type = "info";
+  if (buttons === undefined)
+    var buttons = "ok";
 
   switch (type) {
+    case "info":
+      $('#popupInput').css('display', 'none');
+      break;
+    case "input":
+      $('#popupInput').css('display', 'block');
+      break;
+  }
+  switch (buttons) {
     case "ok":
-      $('#popup-button-ok').css('opacity', 1.0);
-      $('#popup-button-ok').val('ok');
-      $('#popup-button-ok').off("click");
-      $('#popup-button-ok').on('click', function(){ popupToggle(); });
-      $('#popup-button-cancel').css('opacity', 0.0);
+      $('#popup-button-1').css('opacity', 1.0);
+      $('#popup-button-1').val('ok');
+      $('#popup-button-1').off("click");
+      $('#popup-button-1').on('click', function(){ popupToggle(); });
+      $('#popup-button-2').css('opacity', 0.0);
       break;
     case "ok|cancel":
-      $('#popup-button-ok').css('opacity', 1.0);
-      $('#popup-button-ok').val('ok');
-      $('#popup-button-cancel').css('opacity', 1.0);
-      $('#popup-button-cancel').val('cancel');
-      $('#popup-button-cancel').off("click");
-      $('#popup-button-cancel').on("click", function(){ popupToggle(); });
+      $('#popup-button-1').css('opacity', 1.0);
+      $('#popup-button-1').val('ok');
+      $('#popup-button-2').css('opacity', 1.0);
+      $('#popup-button-2').val('cancel');
+      $('#popup-button-2').off("click");
+      $('#popup-button-2').on("click", function(){ popupToggle(); });
       break;
     case "yes|no":
-      $('#popup-button-ok').css('opacity', 1.0);
-      $('#popup-button-ok').val('yes');
-      $('#popup-button-cancel').css('opacity', 1.0);
-      $('#popup-button-cancel').val('no');
-      $('#popup-button-cancel').off("click");
-      $('#popup-button-cancel').on("click", function(){ popupToggle(); });
+      $('#popup-button-1').css('opacity', 1.0);
+      $('#popup-button-1').val('yes');
+      $('#popup-button-2').css('opacity', 1.0);
+      $('#popup-button-2').val('no');
+      $('#popup-button-2').off("click");
+      $('#popup-button-2').on("click", function(){ popupToggle(); });
       break;
   }
   if ($('#popup-background').css('display') === 'none') {
@@ -1190,6 +1200,12 @@ function popupToggle(type) {
   } else {
     $('#popup-background').css('display', 'none');
     $('#popup-outer').css('display', 'none');
+  }
+
+  // input selection (must be last)
+  if (type == "input") {
+    $('#popup-input').focus();
+    $('#popup-input').select();
   }
 }
 

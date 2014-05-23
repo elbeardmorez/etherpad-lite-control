@@ -1074,31 +1074,143 @@ function epc_authorsInfo(verbose) {
 function epc_authorMap(verbose, data) {
   console.log('[debug|epc_authorMap]');
 
-  var selected = $('#epAuthors :selected').map(function() { return this.value; }).get();
-  if (selected.length == 0) {
-    alert("[user] no author(s) selected");
-    return;
+  if (data === undefined) {
+    var selected = $('#epAuthors :selected').map(function() { return this.value; }).get();
+    if (selected.length == 0) {
+      alert("[user] no author(s) selected");
+      return;
+    }
+    var data = { 'pool': selected, 'set': false };
   }
 
-  $.each(selected, function(idx, id) {
+  if (data['pool'].length > 0) {
+    var id = data['pool'][0];
     var author = authors[id];
-    alert("[debug] processing author id: " + id);
-  });
+    console.log("[debug|epc_authorMap] processing author id: " + id);
+
+    if (!data['set']) {
+      console.log("[debug|epc_authorMap] not set");
+
+      var sMessage = '<p><b>author</b><br>\nid: ' + id + '<br>\nmap: <b>' + author['map'] + '</b><br>\nname: ' + author['name'] + '<br>\n<br>\n';
+      $('#popupTitle').html('input: map name');
+      if (author['map']) {
+        sMessage += 'please modify the desired \'map\' name below';
+        $('#popup-input').val(author['map']);
+      } else
+        sMessage += 'please set the desired \'map\' name below</p>\n';
+      sMessage += '</p>\n';
+      $('#popupContent').html(sMessage);
+      // set the click handler
+      $('#popup-button-1').off("click");
+      $('#popup-button-1').on('click', function() {
+        data['set'] = true;
+        epc_authorMap(true, data);
+      });
+      popupToggle('input', 'ok|cancel');
+    } else {
+      console.log("[debug|epc_authorMap] set");
+
+      // recover input
+      var map = $('#popup-input').val();
+
+      // toggle popup
+      popupToggle();
+
+      if (author['map'] !== map) {
+        // set data
+        var args = [id, map];
+        var jsonData = epx_call('setAuthorMap', args, verbose);
+        if (jsonData !== undefined && jsonData !== null) {
+          console.log('[info|epc_authorMap] map set to \'' + map + '\' for author id \'' + id + '\'');
+          author['map'] = map;
+          data['pool'].shift();
+          // reset popup
+          $('#popup-input').val('');
+        } else {
+          console.log('[debug|epc_authorMap] cannot set author map \'' + map + '\' for author id \'' + id + '\'');
+          alert('[error] cannot set author map \'' + map + '\' for author id \'' + id + '\'');          }
+      }
+      if (data['pool'].length > 0) {
+        data['set'] = false;
+        epc_authorMap(verbose, data);
+      }
+    }
+  } else {
+    // update author info
+    if ($('#epInfo-title:contains("(author)")')[0] !== undefined)
+      epc_authorsInfo();
+  }
 }
 
 function epc_authorName(verbose, data) {
   console.log('[debug|epc_authorName]');
 
-  var selected = $('#epAuthors :selected').map(function() { return this.value; }).get();
-  if (selected.length == 0) {
-    alert("[user] no author(s) selected");
-    return;
+  if (data === undefined) {
+    var selected = $('#epAuthors :selected').map(function() { return this.value; }).get();
+    if (selected.length == 0) {
+      alert("[user] no author(s) selected");
+      return;
+    }
+    var data = { 'pool': selected, 'set': false };
   }
 
-  $.each(selected, function(idx, id) {
-    alert("[debug] processing author id: " + id);
+  if (data['pool'].length > 0) {
+    var id = data['pool'][0];
     var author = authors[id];
-  });
+    console.log("[debug|epc_authorName] processing author id: " + id);
+
+    if (!data['set']) {
+      console.log("[debug|epc_authorName] not set");
+
+      var sMessage = '<p><b>author</b><br>\nid: ' + id + '<br>\nmap: ' + author['map'] + '<br>\nname: <b>' + author['name'] + '</b><br>\n<br>\n';
+      $('#popupTitle').html('input: display name');
+      if (author['name']) {
+        sMessage += 'please modify the desired \'display\' name below';
+        $('#popup-input').val(author['name']);
+      } else
+        sMessage += 'please set the desired \'display\' name below</p>\n';
+      sMessage += '</p>\n';
+      $('#popupContent').html(sMessage);
+      // set the click handler
+      $('#popup-button-1').off("click");
+      $('#popup-button-1').on('click', function() {
+        data['set'] = true;
+        epc_authorName(true, data);
+      });
+      popupToggle('input', 'ok|cancel');
+    } else {
+      console.log("[debug|epc_authorName] set");
+
+      // recover input
+      var name = $('#popup-input').val();
+
+      // toggle popup
+      popupToggle();
+
+      if (author['name'] !== name) {
+        // set data
+        var args = [id, name];
+        var jsonData = epx_call('setAuthorName', args, verbose);
+        if (jsonData !== undefined && jsonData !== null) {
+          console.log('[info|epc_authorName] name set to \'' + name + '\' for author id \'' + id + '\'');
+          author['name'] = name;
+          data['pool'].shift();
+          // reset popup
+          $('#popup-input').val('');
+        } else {
+          console.log('[debug|epc_authorName] cannot set author name \'' + name + '\' for author id \'' + id + '\'');
+          alert('[error] cannot set author name \'' + name + '\' for author id \'' + id + '\'');          }
+      }
+      if (data['pool'].length > 0) {
+        data['set'] = false;
+        epc_authorName(verbose, data);
+      }
+    }
+  } else {
+    // update author info
+    if ($('#epInfo-title:contains("(author)")')[0] !== undefined)
+      epc_authorsInfo();
+  }
 }
 
 function sessionExpiry(quantity, unit) {

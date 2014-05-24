@@ -366,10 +366,7 @@ function epc_padsRemove(verbose, data) {
       });
       sMessage += '</ul>\n';
       $('#popupContent').html(sMessage);
-      // set the click handler
-      $('#popup-button-1').off("click");
-      $('#popup-button-1').on('click', function() {epc_padsRemove(true, true);});
-      popupToggle('info', 'yes|no');
+      popupToggle('info', 'yes|no', [function() {epc_padsRemove(true, true);}]);
     } else {
       // toggle popup
       popupToggle();
@@ -625,10 +622,7 @@ function epc_sessionsRemove(verbose, data) {
       });
       sMessage += '</ul>\n';
       $('#popupContent').html(sMessage);
-      // set the click handler
-      $('#popup-button-1').off("click");
-      $('#popup-button-1').on('click', function() {epc_sessionsRemove(true, true);});
-      popupToggle('info', 'yes|no');
+      popupToggle('info', 'yes|no', [function() {epc_sessionsRemove(true, true);}]);
     } else {
       // toggle popup
       popupToggle();
@@ -853,10 +847,7 @@ function epc_groupsRemove(verbose, data) {
       });
       sMessage += '</ul>\n';
       $('#popupContent').html(sMessage);
-      // set the click handler
-      $('#popup-button-1').off("click");
-      $('#popup-button-1').on('click', function() {epc_groupsRemove(true, true);});
-      popupToggle('info', 'yes|no');
+      popupToggle('info', 'yes|no', [function() {epc_groupsRemove(true, true);}]);
     } else {
       // toggle popup
       popupToggle();
@@ -999,10 +990,7 @@ function epc_authorsRemove(verbose, data) {
       });
       sMessage += '</ul>\n';
       $('#popupContent').html(sMessage);
-      // set the click handler
-      $('#popup-button-1').off("click");
-      $('#popup-button-1').on('click', function() {epc_authorsRemove(true, true);});
-      popupToggle('info', 'yes|no');
+      popupToggle('info', 'yes|no', [function() {epc_authorsRemove(true, true);}]);
     } else {
       // toggle popup
       popupToggle();
@@ -1100,13 +1088,9 @@ function epc_authorMap(verbose, data) {
         sMessage += 'please set the desired \'map\' name below</p>\n';
       sMessage += '</p>\n';
       $('#popupContent').html(sMessage);
-      // set the click handler
-      $('#popup-button-1').off("click");
-      $('#popup-button-1').on('click', function() {
-        data['set'] = true;
-        epc_authorMap(true, data);
-      });
-      popupToggle('input', 'ok|cancel');
+      popupToggle('input', 'ok|cancel', [function() {
+                                          data['set'] = true;
+                                          epc_authorMap(true, data);}]);
     } else {
       console.log("[debug|epc_authorMap] set");
 
@@ -1171,13 +1155,9 @@ function epc_authorName(verbose, data) {
         sMessage += 'please set the desired \'display\' name below</p>\n';
       sMessage += '</p>\n';
       $('#popupContent').html(sMessage);
-      // set the click handler
-      $('#popup-button-1').off("click");
-      $('#popup-button-1').on('click', function() {
-        data['set'] = true;
-        epc_authorName(true, data);
-      });
-      popupToggle('input', 'ok|cancel');
+      popupToggle('input', 'ok|cancel', [function() {
+                                        data['set'] = true;
+                                        epc_authorName(true, data)}]);
     } else {
       console.log("[debug|epc_authorName] set");
 
@@ -1267,11 +1247,18 @@ function getDateString(dt) {
   return ("0" + dt.getDate() + " " + months[dt.getMonth()] + " " + dt.getFullYear() + " 0" + dt.getHours() + ":0" + dt.getMinutes() + ":0"+ dt.getSeconds()).replace(/(^|\ |:)+0([0-9]{2})/g, "$1$2");
 }
 
-function popupToggle(type, buttons) {
+function popupToggle(type, buttons, cbs) {
   if (type === undefined)
     var type = "info";
   if (buttons === undefined)
     var buttons = "ok";
+  if (cbs === undefined)
+    var cbs = [];
+
+  while (cbs.length < 2) {
+    // pad with default callbacks
+    cbs.push(function(){popupToggle();})
+  }
 
   switch (type) {
     case "info":
@@ -1281,12 +1268,13 @@ function popupToggle(type, buttons) {
       $('#popupInput').css('display', 'block');
       break;
   }
+
+  $('#popup-button-1').off("click");
+  $('#popup-button-1').on('click', cbs[0]);
   switch (buttons) {
     case "ok":
       $('#popup-button-1').css('opacity', 1.0);
       $('#popup-button-1').val('ok');
-      $('#popup-button-1').off("click");
-      $('#popup-button-1').on('click', function(){ popupToggle(); });
       $('#popup-button-2').css('opacity', 0.0);
       break;
     case "ok|cancel":
@@ -1295,7 +1283,7 @@ function popupToggle(type, buttons) {
       $('#popup-button-2').css('opacity', 1.0);
       $('#popup-button-2').val('cancel');
       $('#popup-button-2').off("click");
-      $('#popup-button-2').on("click", function(){ popupToggle(); });
+      $('#popup-button-2').on("click", cbs[1]);
       break;
     case "yes|no":
       $('#popup-button-1').css('opacity', 1.0);
@@ -1303,7 +1291,7 @@ function popupToggle(type, buttons) {
       $('#popup-button-2').css('opacity', 1.0);
       $('#popup-button-2').val('no');
       $('#popup-button-2').off("click");
-      $('#popup-button-2').on("click", function(){ popupToggle(); });
+      $('#popup-button-2').on("click", cbs[1]);
       break;
   }
   if ($('#popup-background').css('display') === 'none') {

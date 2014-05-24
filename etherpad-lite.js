@@ -1255,11 +1255,6 @@ function popupToggle(type, buttons, cbs) {
   if (cbs === undefined)
     var cbs = [];
 
-  while (cbs.length < 2) {
-    // pad with default callbacks
-    cbs.push(function(){popupToggle();})
-  }
-
   switch (type) {
     case "info":
       $('#popupInput').css('display', 'none');
@@ -1269,31 +1264,20 @@ function popupToggle(type, buttons, cbs) {
       break;
   }
 
-  $('#popup-button-1').off("click");
-  $('#popup-button-1').on('click', cbs[0]);
-  switch (buttons) {
-    case "ok":
-      $('#popup-button-1').css('opacity', 1.0);
-      $('#popup-button-1').val('ok');
-      $('#popup-button-2').css('opacity', 0.0);
-      break;
-    case "ok|cancel":
-      $('#popup-button-1').css('opacity', 1.0);
-      $('#popup-button-1').val('ok');
-      $('#popup-button-2').css('opacity', 1.0);
-      $('#popup-button-2').val('cancel');
-      $('#popup-button-2').off("click");
-      $('#popup-button-2').on("click", cbs[1]);
-      break;
-    case "yes|no":
-      $('#popup-button-1').css('opacity', 1.0);
-      $('#popup-button-1').val('yes');
-      $('#popup-button-2').css('opacity', 1.0);
-      $('#popup-button-2').val('no');
-      $('#popup-button-2').off("click");
-      $('#popup-button-2').on("click", cbs[1]);
-      break;
+  // setup buttons
+  while (cbs.length < 2) {
+    // pad with default callbacks
+    cbs.push(function(){popupToggle();})
   }
+  $('#popupButtons input[type="button"]').css('opacity', 0.0);
+  $.each(buttons.split('|'), function(idx, button) {
+    $('#popup-button-' + (idx + 1)).val(button);
+    $('#popup-button-' + (idx + 1)).off('click');
+    $('#popup-button-' + (idx + 1)).on('click', cbs[idx]);
+    $('#popup-button-' + (idx + 1)).css('opacity', 1.0);
+  });
+
+  // toggle visibility
   if ($('#popup-background').css('display') === 'none') {
     $('#popup-background').css('display', 'block');
     $('#popup-outer').css('display', 'block');
@@ -1303,7 +1287,7 @@ function popupToggle(type, buttons, cbs) {
   }
 
   // input selection (must be last)
-  if (type == "input") {
+  if (type === "input") {
     $('#popup-input').focus();
     $('#popup-input').select();
   }

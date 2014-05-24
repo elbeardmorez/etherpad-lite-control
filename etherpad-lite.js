@@ -1063,6 +1063,7 @@ function epc_authorMap(verbose, data) {
   console.log('[debug|epc_authorMap]');
 
   if (data === undefined) {
+    $('#epStatus-inner').html('');
     var selected = $('#epAuthors :selected').map(function() { return this.value; }).get();
     if (selected.length == 0) {
       alert("[user] no author(s) selected");
@@ -1103,7 +1104,7 @@ function epc_authorMap(verbose, data) {
       if (author['map'] !== map) {
         // set data
         var args = [id, map];
-        var jsonData = epx_call('setAuthorMap', args, verbose);
+        var jsonData = epx_call('setAuthorMap', args, verbose, true);
         if (jsonData !== undefined && jsonData !== null) {
           console.log('[info|epc_authorMap] map set to \'' + map + '\' for author id \'' + id + '\'');
           author['map'] = map;
@@ -1130,6 +1131,7 @@ function epc_authorName(verbose, data) {
   console.log('[debug|epc_authorName]');
 
   if (data === undefined) {
+    $('#epStatus-inner').html('');
     var selected = $('#epAuthors :selected').map(function() { return this.value; }).get();
     if (selected.length == 0) {
       alert("[user] no author(s) selected");
@@ -1170,7 +1172,7 @@ function epc_authorName(verbose, data) {
       if (author['name'] !== name) {
         // set data
         var args = [id, name];
-        var jsonData = epx_call('setAuthorName', args, verbose);
+        var jsonData = epx_call('setAuthorName', args, verbose, true);
         if (jsonData !== undefined && jsonData !== null) {
           console.log('[info|epc_authorName] name set to \'' + name + '\' for author id \'' + id + '\'');
           author['name'] = name;

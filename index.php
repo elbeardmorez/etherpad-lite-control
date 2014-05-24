@@ -268,6 +268,7 @@ function getFunctionName($s) {
     <div id="popupButtons" style="position: absolute; bottom: 15px; height: 30px;">
       <input id="popup-button-1" type="button" class="button">
       <input id="popup-button-2" type="button" class="button">
+      <input id="popup-button-3" type="button" class="button">
     </div>
   </div>
   </div>

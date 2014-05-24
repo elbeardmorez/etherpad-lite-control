@@ -1089,9 +1089,9 @@ function epc_authorMap(verbose, data) {
         sMessage += 'please set the desired \'map\' name below</p>\n';
       sMessage += '</p>\n';
       $('#popupContent').html(sMessage);
-      popupToggle('input', 'ok|cancel', [function() {
-                                          data['set'] = true;
-                                          epc_authorMap(true, data);}]);
+      popupToggle('input', 'ok|skip|cancel',
+        [function() {data['set'] = true; epc_authorMap(verbose, data);},
+         function() {$('#popup-input').val(''); popupToggle(); data['pool'].shift(); epc_authorMap(verbose, data);}]);
     } else {
       console.log("[debug|epc_authorMap] set");
 
@@ -1157,9 +1157,9 @@ function epc_authorName(verbose, data) {
         sMessage += 'please set the desired \'display\' name below</p>\n';
       sMessage += '</p>\n';
       $('#popupContent').html(sMessage);
-      popupToggle('input', 'ok|cancel', [function() {
-                                        data['set'] = true;
-                                        epc_authorName(true, data)}]);
+      popupToggle('input', 'ok|skip|cancel',
+        [function() {data['set'] = true; epc_authorName(verbose, data);},
+         function() {$('#popup-input').val(''); popupToggle(); data['pool'].shift(); epc_authorName(verbose, data);}]);
     } else {
       console.log("[debug|epc_authorName] set");
 
@@ -1267,7 +1267,8 @@ function popupToggle(type, buttons, cbs) {
   }
 
   // setup buttons
-  while (cbs.length < 2) {
+  var lButtons = $('#popupButtons input[type="button"]').length;
+  while (cbs.length < lButtons) {
     // pad with default callbacks
     cbs.push(function(){popupToggle();})
   }

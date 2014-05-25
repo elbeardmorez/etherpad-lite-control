@@ -1070,6 +1070,7 @@ function epc_authorMap(verbose, data) {
       return;
     }
     var data = { 'pool': selected, 'set': false };
+    $('#popup-input').val('');
   }
 
   if (data['pool'].length > 0) {
@@ -1139,6 +1140,7 @@ function epc_authorName(verbose, data) {
       return;
     }
     var data = { 'pool': selected, 'set': false };
+    $('#popup-input').val('');
   }
 
   if (data['pool'].length > 0) {

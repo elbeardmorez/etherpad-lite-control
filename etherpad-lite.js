@@ -489,7 +489,7 @@ function epc_padsInfo(verbose) {
                 pad[prop] = pad[prop].map(function(s){return '? [' + s + ']';}).join(', ');
               if (authors !== undefined && pad[prop].match(/\?/))
                 // resolve unresolved
-                pad[prop] = pad[prop].split(',').map(function(s){ var author = authors[s.match(/^.*?\[(.*?)\]\s*$/)[1]]; return (author !== undefined ? author['name'] + ' [' + author['id'] + ']' : s.trim()); }).join(', ');
+                pad[prop] = pad[prop].split(',').map(function(s){ var author = authors[s.match(/^.*?\[(.*?)\]\s*$/)[1]]; return (author !== undefined ? (author['map'] ? author['map'] : author['name']) + ' [' + author['id'] + ']' : s.trim()); }).join(', ');
             }
             break;
         }
@@ -691,7 +691,7 @@ function epc_sessionsInfo(verbose) {
               // resolve id
               author = authors[session['authorID']];
               if (author !== undefined)
-                session['author'] = author['name'] + ' [' + author['id'] + ']';
+                session['author'] = (author['map'] ? author['map'] : author['name']) + ' [' + author['id'] + ']';
             }
           }
           break;

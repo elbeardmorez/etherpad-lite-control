@@ -1084,7 +1084,8 @@ function epc_authorMap(verbose, data) {
       $('#popupTitle').html('input: map name');
       if (author['map']) {
         sMessage += 'please modify the desired \'map\' name below';
-        $('#popup-input').val(author['map']);
+        if (!$('#popup-input').val())
+          $('#popup-input').val(author['map']);
       } else
         sMessage += 'please set the desired \'map\' name below</p>\n';
       sMessage += '</p>\n';
@@ -1152,7 +1153,8 @@ function epc_authorName(verbose, data) {
       $('#popupTitle').html('input: display name');
       if (author['name']) {
         sMessage += 'please modify the desired \'display\' name below';
-        $('#popup-input').val(author['name']);
+        if (!$('#popup-input').val())
+          $('#popup-input').val(author['name']);
       } else
         sMessage += 'please set the desired \'display\' name below</p>\n';
       sMessage += '</p>\n';

@@ -1116,7 +1116,12 @@ function epc_authorMap(verbose, data) {
         } else {
           console.log('[debug|epc_authorMap] cannot set author map \'' + map + '\' for author id \'' + id + '\'');
           alert('[error] cannot set author map \'' + map + '\' for author id \'' + id + '\'');          }
+      } else {
+        // skip
+        data['pool'].shift();
+        $('#popup-input').val('');
       }
+
       if (data['pool'].length > 0) {
         data['set'] = false;
         epc_authorMap(verbose, data);
@@ -1186,7 +1191,12 @@ function epc_authorName(verbose, data) {
         } else {
           console.log('[debug|epc_authorName] cannot set author name \'' + name + '\' for author id \'' + id + '\'');
           alert('[error] cannot set author name \'' + name + '\' for author id \'' + id + '\'');          }
+      } else {
+        // skip
+        data['pool'].shift();
+        $('#popup-input').val('');
       }
+
       if (data['pool'].length > 0) {
         data['set'] = false;
         epc_authorName(verbose, data);

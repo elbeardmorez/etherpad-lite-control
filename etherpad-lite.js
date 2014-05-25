@@ -1107,15 +1107,29 @@ function epc_authorMap(verbose, data) {
         // set data
         var args = [id, map];
         var jsonData = epx_call('setAuthorMap', args, verbose, true);
+        var sMessage;
         if (jsonData !== undefined && jsonData !== null) {
-          console.log('[info|epc_authorMap] map set to \'' + map + '\' for author id \'' + id + '\'');
-          author['map'] = map;
+          if (map === '') {
+            author['map'] = null;
+            author['mapped'] = false;
+            sMessage = '[info|epc_authorMap] author map removed for author id \'' + id + '\'';
+          } else {
+            author['map'] = map;
+            author['mapped'] = true;
+            sMessage = '[info|epc_authorMap] author map \'' + map + '\' set for author id \'' + id + '\'';
+          }
+          // next
           data['pool'].shift();
-          // reset popup
           $('#popup-input').val('');
         } else {
-          console.log('[debug|epc_authorMap] cannot set author map \'' + map + '\' for author id \'' + id + '\'');
-          alert('[error] cannot set author map \'' + map + '\' for author id \'' + id + '\'');          }
+          if (map === '') {
+            sMessage = '[error|epc_authorMap] author map not removed for author id \'' + id + '\'';
+          } else {
+            sMessage = '[error|epc_authorMap] author map \'' + map + '\' not set for author id \'' + id + '\'';
+          }
+          alert(sMessage);
+        }
+        console.log(sMessage);
       } else {
         // skip
         data['pool'].shift();

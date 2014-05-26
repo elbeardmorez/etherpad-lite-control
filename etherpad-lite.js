@@ -1110,14 +1110,16 @@ function epc_authorMap(verbose, data) {
         var sMessage;
         if (jsonData !== undefined && jsonData !== null) {
           if (map === '') {
-            author['map'] = null;
+            map = null;
             author['mapped'] = false;
             sMessage = '[info|epc_authorMap] author map removed for author id \'' + id + '\'';
           } else {
-            author['map'] = map;
             author['mapped'] = true;
             sMessage = '[info|epc_authorMap] author map \'' + map + '\' set for author id \'' + id + '\'';
           }
+          author['map'] = map;
+          // update selection
+          $('#epAuthors option[value="' + id + '"]')[0].innerHTML = map + ' [' + id + ']';
           // next
           data['pool'].shift();
           $('#popup-input').val('');

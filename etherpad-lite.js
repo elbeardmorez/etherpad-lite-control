@@ -1139,12 +1139,12 @@ function epc_authorMap(verbose, data) {
       if (data['pool'].length > 0) {
         data['set'] = false;
         epc_authorMap(verbose, data);
+      } else {
+        // update author info
+        if ($('#epInfo-title:contains("(author)")')[0] !== undefined)
+          epc_authorsInfo();
       }
     }
-  } else {
-    // update author info
-    if ($('#epInfo-title:contains("(author)")')[0] !== undefined)
-      epc_authorsInfo();
   }
 }
 
@@ -1214,12 +1214,12 @@ function epc_authorName(verbose, data) {
       if (data['pool'].length > 0) {
         data['set'] = false;
         epc_authorName(verbose, data);
+      } else {
+        // update author info
+        if ($('#epInfo-title:contains("(author)")')[0] !== undefined)
+          epc_authorsInfo();
       }
     }
-  } else {
-    // update author info
-    if ($('#epInfo-title:contains("(author)")')[0] !== undefined)
-      epc_authorsInfo();
   }
 }
 

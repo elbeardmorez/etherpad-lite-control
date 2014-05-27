@@ -254,8 +254,8 @@ function getFunctionName($s) {
   <div id="footer" class="fadeOut" style="z-index: 2; position: absolute; bottom: 0px; height: 15px; width: 100%;">
   </div>
 
-  <div id="popup-background" class="popup-background" style="z-index: 10; position: absolute; height: 100%; width: 100%;"></div>
-  <div id="popup-outer" class="popup-outer" style="z-index: 11; position: absolute; height: 100%; width: 100%;">
+  <div id="popup-background" class="popup-background" style="z-index: 100; position: absolute; height: 100%; width: 100%;"></div>
+  <div id="popup-outer" class="popup-outer" style="z-index: 101; position: absolute; height: 100%; width: 100%;">
   <div id="popup-inner" class="popup-inner" style="position: relative; top: 50%; left: 50%; width: 500px; margin-top: -200px; margin-left: -250px;">
     <h2 id=popupTitle></h2>
     <div style="position: relative; margin: 5px 0px 40px 0px; max-height: 325px; overflow: auto; border-width: 0px; border-color: #aaa;">

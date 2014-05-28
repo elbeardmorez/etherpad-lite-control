@@ -785,6 +785,13 @@ function epc_groups(verbose) {
   // update pads list
   if (pads !== undefined)
     epc_pads();
+  // update info
+  var info = $('#epInfo-title')[0].innerHTML.match(/.*\((session)\).*|/)[1];
+  switch (info) {
+    case 'session':
+      epc_sessionsInfo();
+      break;
+  }
 }
 
 function epc_groupsShow() {
@@ -925,9 +932,16 @@ function epc_authors(verbose) {
   $.each(selected, function(idx, id) {
     $('#epAuthors option[value="' + id + '"]').attr('selected', true);
   });
-  // update pad info
-  if ($('#epInfo-title:contains("(pad)")')[0] !== undefined)
-    epc_padsInfo();
+  // update info
+  var info = $('#epInfo-title')[0].innerHTML.match(/.*\((pad|session)\).*|/)[1];
+  switch (info) {
+    case 'pad':
+      epc_padsInfo();
+      break;
+    case 'session':
+      epc_sessionsInfo();
+      break;
+  }
 }
 
 function epc_authorsShow() {
@@ -1142,9 +1156,13 @@ function epc_authorMap(verbose, data) {
         data['set'] = false;
         epc_authorMap(verbose, data);
       } else {
-        // update author info
-        if ($('#epInfo-title:contains("(author)")')[0] !== undefined)
-          epc_authorsInfo();
+        // update info
+        var info = $('#epInfo-title')[0].innerHTML.match(/.*\((author)\).*|/)[1];
+        switch (info) {
+          case 'author':
+            epc_authorsInfo();
+            break;
+        }
       }
     }
   }
@@ -1217,9 +1235,13 @@ function epc_authorName(verbose, data) {
         data['set'] = false;
         epc_authorName(verbose, data);
       } else {
-        // update author info
-        if ($('#epInfo-title:contains("(author)")')[0] !== undefined)
-          epc_authorsInfo();
+        // update info
+        var info = $('#epInfo-title')[0].innerHTML.match(/.*\((author)\).*|/)[1];
+        switch (info) {
+          case 'session':
+            epc_authorsInfo();
+            break;
+        }
       }
     }
   }

@@ -373,14 +373,14 @@ function epc_padsRemove(verbose, data) {
       // do deletion
       if (data === true) {
         var selectedIndex = $("#epPads option:selected")[0].index;
-        $.each(selected, function(key, value) {
-          var args = [value];
+        $.each(selected, function(idx, id) {
+          var args = [id];
           var jsonData = ep_call('deletePad', args, verbose);
           if (jsonData !== undefined && jsonData['affected'] == 1) {
-            console.log('[info] deleted pad, id: \'' + value + '\'');
-            delete(pads[value]);
+            console.log('[info] deleted pad, id: \'' + id + '\'');
+            delete(pads[id]);
           } else
-            console.log('[debug] issue deleting pad, id: \'' + value + '\'');
+            console.log('[debug] issue deleting pad, id: \'' + id + '\'');
         });
 
         // reload pads
@@ -1011,7 +1011,7 @@ function epc_authorsRemove(verbose, data) {
       // do deletion
       if (data === true) {
         var selectedIndex = $("#epAuthors option:selected")[0].index;
-        $.each(selected, function(key, value) {
+        $.each(selected, function(idx, id) {
           var args = [id];
           var jsonData = epx_call('deleteAuthor', args, verbose);
           if (jsonData !== undefined && jsonData['affected'] == 1) {

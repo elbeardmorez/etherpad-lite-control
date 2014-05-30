@@ -267,6 +267,13 @@ function epc_pads(data, verbose) {
     $.each(selected, function(idx, id) {
       $('#epPads option[value="' + id + '"]').attr('selected', true);
     });
+    // update info
+    var info = $('#epInfo-title')[0].innerHTML.match(/.*\((pad)\).*|/)[1];
+    switch (info) {
+      case 'pad':
+        epc_padsInfo();
+        break;
+    }
   } else
     $('#epPads').html('');
 }
@@ -390,7 +397,15 @@ function epc_padsRemove(verbose, data) {
           selectedIndex = $('#epPads')[0].length;
         $('#epPads')[0].selectedIndex = selectedIndex;
         // update info
-        epc_padsInfo();
+        var info = $('#epInfo-title')[0].innerHTML.match(/.*\((pad|session)\).*|/)[1];
+        switch (info) {
+          case 'pad':
+            epc_padsInfo();
+            break;
+          case 'session':
+            epc_sessionsInfo();
+            break;
+        }
       }
     }
   }
@@ -530,6 +545,13 @@ function epc_sessions(verbose) {
   $.each(selected, function(idx, id) {
     $('#epSessions option[value="' + id + '"]').attr('selected', true);
   });
+  // update info
+  var info = $('#epInfo-title')[0].innerHTML.match(/.*\((session)\).*|/)[1];
+  switch (info) {
+    case 'session':
+      epc_sessionsInfo();
+      break;
+  }
 }
 
 function epc_sessionsShow() {
@@ -646,7 +668,12 @@ function epc_sessionsRemove(verbose, data) {
           selectedIndex = $('#epSessions')[0].length - 1;
         $('#epSessions')[0].selectedIndex = selectedIndex;
         // update info
-        epc_sessionsInfo();
+        var info = $('#epInfo-title')[0].innerHTML.match(/.*\((session)\).*|/)[1];
+        switch (info) {
+          case 'session':
+            epc_sessionsInfo();
+            break;
+        }
       }
     }
   }
@@ -933,8 +960,11 @@ function epc_authors(verbose) {
     $('#epAuthors option[value="' + id + '"]').attr('selected', true);
   });
   // update info
-  var info = $('#epInfo-title')[0].innerHTML.match(/.*\((pad|session)\).*|/)[1];
+  var info = $('#epInfo-title')[0].innerHTML.match(/.*\((author|pad|session)\).*|/)[1];
   switch (info) {
+    case 'author':
+      epc_authorsInfo();
+      break;
     case 'pad':
       epc_padsInfo();
       break;
@@ -982,6 +1012,8 @@ function epc_authorsAdd(verbose) {
     epc_authorsShow();
     // select added / existing
     $('#epAuthors option[value="' + id + '"]').attr('selected', true);
+    // update info
+    epc_authorsInfo();
   }
 }
 
@@ -1026,6 +1058,12 @@ function epc_authorsRemove(verbose, data) {
         if (selectedIndex > $('#epAuthors')[0].length - 1)
           selectedIndex = $('#epAuthors')[0].length - 1;
         $('#epAuthors')[0].selectedIndex = selectedIndex;
+        // update info
+        var info = $('#epInfo-title')[0].innerHTML.match(/.*\((author)\).*|/)[1];
+        switch (info) {
+          case 'author':
+            epc_authorsInfo();
+        }
       }
     }
   }
@@ -1157,10 +1195,13 @@ function epc_authorMap(verbose, data) {
         epc_authorMap(verbose, data);
       } else {
         // update info
-        var info = $('#epInfo-title')[0].innerHTML.match(/.*\((author)\).*|/)[1];
+        var info = $('#epInfo-title')[0].innerHTML.match(/.*\((author|session)\).*|/)[1];
         switch (info) {
           case 'author':
             epc_authorsInfo();
+            break;
+          case 'session':
+            epc_sessionsInfo();
             break;
         }
       }
@@ -1236,10 +1277,13 @@ function epc_authorName(verbose, data) {
         epc_authorName(verbose, data);
       } else {
         // update info
-        var info = $('#epInfo-title')[0].innerHTML.match(/.*\((author)\).*|/)[1];
+        var info = $('#epInfo-title')[0].innerHTML.match(/.*\((author|session)\).*|/)[1];
         switch (info) {
-          case 'session':
+          case 'author':
             epc_authorsInfo();
+            break;
+          case 'session':
+            epc_sessionsInfo();
             break;
         }
       }

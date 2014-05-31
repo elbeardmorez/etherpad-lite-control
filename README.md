@@ -46,6 +46,27 @@ there is a php 'include' referencing a '*composer*' (dependency manager) install
 *personally, i deploy for use through an Apache web server
 ## <p></p>
 
+### known issues
+extended/non-api methods which perform operations directly on the database do not use the same 'UeberDB' middleware database wrapper as the api calls do. consequently, UeberDB's 'cache/buffer' can cause problems
+
+the file under the 'patch/' directory named 'expose-UeberDB-db-wrapper-settings-to-users.diff' can be used to work around this issue by exposing the 'cache' setting of UeberDB, so its default setting can then be overriden. this should negatively impact speed, however i haven't noticed any difference yet
+
+```
+cd /path/to/etherpad-lite
+patch --verbose -p1  < expose-UeberDB-db-wrapper-settings-to-users.diff
+```
+
+having applied the patch, simply add the following to your 'settings.json' file, remembering to correctly comma-delimit this additional setting from any adjacent settings to ensure the JSON format remains valid
+
+```
+    "dbWrapperSettings" : { "cache"   : 0 }
+```
+
+#### adding an author fails to set the 'map' name when that author map name has previously been removed
+here, the non-api 'deleteAuthor()' method has deleted the 'mapper2author' key which governs the map name for a given author. when creating the new author, the api's 'createAutherIfNotExistsFor()' method checks for existence of a 'mapper2author' key, finds one in the UeberDB cache/buffer, and thus assumes that it already exists in the underlying database. Consequently no new record is created. the non-api 'listAllAuthors()' method then looks and fails to find this 'mapper2author' record and sets the map name to 'null'. this can be worked around by disabling the UeberDB cache mechanism as shown above
+
+## <p></p>
+
 ### development
 #### done
 - ui layout

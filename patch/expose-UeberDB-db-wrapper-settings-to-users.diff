@@ -1,0 +1,61 @@
+From 159294662d7be2a4fc98fcda43f8cb012b40aae7 Mon Sep 17 00:00:00 2001
+From: Pete Beardmore <pete.beardmore@msn.com>
+Date: Fri, 30 May 2014 09:51:18 +0100
+Subject: [PATCH] expose UeberDB db wrapper settings to users
+
+---
+ settings.json.template     | 8 ++++++++
+ src/node/db/DB.js          | 2 +-
+ src/node/utils/Settings.js | 4 ++++
+ 3 files changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/settings.json.template b/settings.json.template
+index 38e8267..a97130c 100644
+--- a/settings.json.template
++++ b/settings.json.template
+@@ -50,6 +50,14 @@
+                     "database": "store"
+                   },
+   */
++
++  //the database wrapper 'UeberDB' settings
++  //control the number of elements that can be cached, and the interval (ms) between database writes
++  //set 0 to disable
++  "dbWrapperSettings" : {
++                          "cache"         : 1000,
++                          "writeInterval" : 100
++                        },
+   
+   //the default text of a pad
+   "defaultPadText" : "Welcome to Etherpad!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nGet involved with Etherpad at http:\/\/etherpad.org\n",
+diff --git a/src/node/db/DB.js b/src/node/db/DB.js
+index 7273c83..65c4c77 100644
+--- a/src/node/db/DB.js
++++ b/src/node/db/DB.js
+@@ -24,7 +24,7 @@ var settings = require("../utils/Settings");
+ var log4js = require('log4js');
+ 
+ //set database settings
+-var db = new ueberDB.database(settings.dbType, settings.dbSettings, null, log4js.getLogger("ueberDB"));
++var db = new ueberDB.database(settings.dbType, settings.dbSettings, settings.dbWrapperSettings, log4js.getLogger("ueberDB"));
+ 
+ /**
+  * The UeberDB Object that provides the database functions
+diff --git a/src/node/utils/Settings.js b/src/node/utils/Settings.js
+index 05fe555..9e387ac 100644
+--- a/src/node/utils/Settings.js
++++ b/src/node/utils/Settings.js
+@@ -73,6 +73,10 @@ exports.dbType = "dirty";
+  * This setting is passed with dbType to ueberDB to set up the database
+  */
+ exports.dbSettings = { "filename" : path.join(exports.root, "dirty.db") };
++/**
++ * UeberDB settings
++ */
++exports.dbWrapperSettings = { "cache" : 1000, "writeInteval" : 100 };
+ 
+ /**
+  * The default Text of a new pad
+-- 
+1.8.4
+

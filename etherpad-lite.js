@@ -1257,15 +1257,17 @@ function epc_authorName(verbose, data) {
         // set data
         var args = [id, name];
         var jsonData = epx_call('setAuthorName', args, verbose, true);
+        var sMessage;
         if (jsonData !== undefined && jsonData !== null) {
-          console.log('[info|epc_authorName] name set to \'' + name + '\' for author id \'' + id + '\'');
           author['name'] = name;
+          sMessage = '[info|epc_authorName] author name \'' + name + '\' set for author id \'' + id + '\'';
+          // next
           data['pool'].shift();
-          // reset popup
           $('#popup-input').val('');
         } else {
-          console.log('[debug|epc_authorName] cannot set author name \'' + name + '\' for author id \'' + id + '\'');
-          alert('[error] cannot set author name \'' + name + '\' for author id \'' + id + '\'');          }
+          sMessage = '[error|epc_authorName] author name \'' + name + '\' not set for author id \'' + id + '\'';
+          alert(sMessage);
+        }
       } else {
         // skip
         data['pool'].shift();

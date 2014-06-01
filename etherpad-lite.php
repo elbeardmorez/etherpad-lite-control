@@ -141,6 +141,62 @@ function epxCall($func, $args = [],
             $sData = var2str($jsonData);
             break;
 
+          case "setAuthorMap":
+            $aid = $args[0];
+            $map = $args[1];
+            if ($map == '') {
+              // remove existing map
+              $query = 'delete from store where key like \'mapper2author:%\' and value = \'"' . $aid . '"\'';
+              $data = dbQuery($dbSettings['type'], $dbConnectionString, $query);
+              if ($data['data']['affected'] == 1) {
+                $data['message'] = 'author map deleted for id \'' . $aid . '\'';
+              } else {
+                $data['code'] = 1;
+                $data['message'] = 'author map not deleted for id \'' . $aid . '\'';
+              }
+            } else {
+              // unique map in use?
+              $query = 'select trim(value, \'\"\') as id, replace(key, \'mapper2author:\', \'\') as name from store where key = \'mapper2author:' . $map . '\'';
+              $data = dbQuery($dbSettings['type'], $dbConnectionString, $query);
+              if (isSet($data['data']['affected'])) {
+                // no matching map found
+                $query = 'insert into store values(\'mapper2author:' . $map . '\', \'"' . $aid . '"\')';
+                $data = dbQuery($dbSettings['type'], $dbConnectionString, $query);
+                if (isSet($data['data']['affected'])) {
+                  if ($data['data']['affected'] != 1)  {
+                    $data['code'] = 1;
+                  }
+                } else {
+                  $data['code'] = 1;
+                }
+              } else {
+                $data = ['data' => null,
+                         'code' => 1,
+                         'message' => 'unique map name \'' . $map . '\' is already in use for author ' .
+                                      '\'' .  $data['data'][0]['name'] .
+                                      ' [' . $data['data'][0]['id'] . ']\'' ];
+              }
+            }
+            $jsonData = $data;
+            $sData = var2str($jsonData);
+            break;
+
+          case "setAuthorName":
+            $aid = $args[0];
+            $name = $args[1] == null ? null : '"' . $args[1] . '"';
+            $query = 'update store set value = regexp_replace(value, \'"name":(null|"[^"]*")\', \'"name":' . $name . '\') where key = \'globalAuthor:' . $aid . '\'';
+            $data = dbQuery($dbSettings['type'], $dbConnectionString, $query);
+            if (isSet($data['data']['affected'])) {
+              if ($data['data']['affected'] != 1) {
+                $data = ['data' => null,
+                         'code' => 1,
+                         'message' => 'failed to set display name for author id \'' . $aid . '\''];
+              }
+            }
+            $jsonData = $data;
+            $sData = var2str($jsonData);
+            break;
+
           case "deleteAuthor":
             $aid = $args[0];
             $queries = [
@@ -276,7 +332,7 @@ function epCall($func, $args = [],
 }
 
 $aEpApi = [ 'checkToken', 'getHTML', 'getPublicStatus', 'deletePad', 'deleteGroup', 'listAllPads', 'listPads', 'listAllGroups', 'createGroupIfNotExistsFor', 'listAuthorsOfPad', 'getAuthorName', 'createAuthorIfNotExistsFor', 'getLastEdited', 'createPad', 'createGroupPad', 'createSession', 'deleteSession', 'getSessionInfo' ];
-$aEpX = [ 'test', 'getGroupMappers', 'deleteAuthor', 'listAllAuthors', 'getAuthorMappers', 'setAuthorMap', 'getPadCreated', 'listAllSessions', 'cleanDatabase' ];
+$aEpX = [ 'test', 'getGroupMappers', 'deleteAuthor', 'listAllAuthors', 'getAuthorMappers', 'setAuthorMap', 'setAuthorName', 'getPadCreated', 'listAllSessions', 'cleanDatabase' ];
 
 if (!empty($_POST)) {
   if (!empty($_POST['func'])) {

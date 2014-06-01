@@ -20,9 +20,9 @@ function getFunctionName($s) {
   <div id="control-background" style="z-index: 10; position: absolute; top: 15px; right: 0px; bottom: 25px; width: 120px;"></div>
   <div id="control-outer" style="z-index: 11; position: absolute; top: 15px; right: 0px; bottom: 25px; width: 120px; overflow: hidden;">
   <div id="control-inner" style="position: relative; display: table; height: 100%; width: 100%;">
-
-    <p style="margin: 2px 5px;">global</p>
-    <hr style="margin: 5px;">
+    <p style="margin: 2px 5px 10px;"><b>controls</b></p>
+    <p style="margin: 2px 5px; font-size: 0.8em;">global</p>
+    <hr style="margin: 5px; color: #aaa; background-color: #aaa; border-color: #aaa;">
     <?php
       $controls = [ 'Authors', 'Groups', 'Pads', 'Sessions' ];
       foreach ($controls as $control) {
@@ -31,7 +31,7 @@ function getFunctionName($s) {
     ?>
 
     <div style="display: table-row; height: 5%;"></div>
-    <p style="margin: 2px 5px;">author</p>
+    <p style="margin: 2px 5px; font-size: 0.8em;">author</p>
     <hr style="margin: 5px;">
     <?php
       $controls = [ 'Map', 'Name' ];
@@ -41,7 +41,7 @@ function getFunctionName($s) {
     ?>
 
     <div style="display: table-row; height: 5%;"></div>
-    <p style="margin: 2px 5px;">group</p>
+    <p style="margin: 2px 5px; font-size: 0.8em;">group</p>
     <hr style="margin: 5px;">
     <?php
       $controls = [ 'Authors', 'Pads' ];
@@ -51,7 +51,7 @@ function getFunctionName($s) {
     ?>
 
     <div style="display: table-row; height: 5%;"></div>
-    <p style="margin: 2px 5px;">pad</p>
+    <p style="margin: 2px 5px; font-size: 0.8em;">pad</p>
     <hr style="margin: 5px;">
     <?php
       $controls = [ 'Content' ];
@@ -61,7 +61,7 @@ function getFunctionName($s) {
     ?>
 
     <div style="display: table-row; height: 80%;"></div>
-    <p style="margin: 2px 5px;">misc</p>
+    <p style="margin: 2px 5px; font-size: 0.8em;">misc</p>
     <hr style="margin: 5px;">
     <?php
       $controls = [ 'Status' , 'Test', 'Clean' ];

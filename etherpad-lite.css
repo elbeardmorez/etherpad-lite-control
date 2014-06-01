@@ -44,6 +44,13 @@ body {
   background-image: -webkit-linear-gradient(bottom, #151515 0%, #ddd 100%);
 }
 
+hr {
+  height: 1px;
+  border-width: 0px;
+  color: #999;
+  background-color: #999;
+}
+
 #title {
   color: black;
   text-shadow: 1px 1px 4px white, 1px 1px 5px #eee;

@@ -5,49 +5,6 @@ var groups;
 var pads;
 var sessions;
 
-function epc_test() {
-  console.log('[debug|epc_test]');
-  epx_call();
-}
-
-function setCookie(sName, sValue, lExpire) {
-  if (!lExpire)
-    var lExpire = 365;
-  var dtExpiry = new Date();
-  dtExpiry.setDate(dtExpiry.getDate() + lExpire);
-  document.cookie = sName + "=" + escape(sValue) + ";expires=" + dtExpiry.toGMTString();
-}
-
-function getCookie(sName) {
-  if (document.cookie.length > 0) {
-    var lStart = document.cookie.indexOf(sName + "=");
-    if (lStart != -1) {
-      lStart += sName.length + 1;
-      var lEnd = document.cookie.indexOf(";", lStart);
-      if (lEnd == -1)
-        lEnd = document.cookie.length;
-      return unescape(document.cookie.substring(lStart, lEnd));
-    }
-  }
-  return "";
-}
-
-function loadState() {
-  var arr = [ 'epc_server', 'epc_port', 'epc_apikeypath', 'epc_settingspath' ];
-  for (idx in arr) {
-    var sElement = arr[idx];
-    console.log('restoring state for: \'' + sElement + '\'');
-    $('#' + sElement).val(getCookie(sElement));
-  }
-}
-
-function getServer() {
-  return $('#epc_server').val() + ":" +
-         $('#epc_port').val() +
-         ($('#epc_basepath').val() ? "/" +
-          $('#epc_basepath').val() : "");
-}
-
 /*
  return 'undefined' for erroneous and unsuccessful. 'null' used for successful queries, e.g. empty lists
 */
@@ -141,30 +98,530 @@ function ep_call(func, args, verbose, append) {
   return jsonData;
 }
 
-function epc_status(verbose) {
-  console.log('[debug|epc_status]');
-  ep_call('checkToken', undefined, verbose);
-}
+//
+// authors
+//
 
-function epc_clean(verbose) {
-  console.log('[debug|epc_clean]');
+function epc_authors(verbose) {
+  console.log('[debug|epc_authors]');
 
-  var jsonData = epx_call('cleanDatabase', undefined, verbose);
+  // remember current selection
+  selected = $('#epAuthors :selected').map(function(){return this.value;}).get();
+
+  // reset authors object
+  authors = {};
+
+  var jsonData;
+  jsonData = epx_call('listAllAuthors', undefined, verbose)
   if (jsonData !== undefined && jsonData !== null) {
     // process
-    var sMessage = '';
-    $.each(jsonData, function(idx, data) {
-      if (data['info'] != '')
-        sMessage += '<li>' + data['info'] + '</li>\n';
+    authors = jsonData;
+    $.each(authors, function(key, author) {
+      author['map'] = null;
+      author['mapped'] = false;
     });
-    if (sMessage == '')
-      sMessage = '<p>nothing to do!</p>';
-    else
-      sMessage = '<ul>\n' + sMessage + '</ul>\n';
-    $('#popupTitle').html('Database clean-up');
-    $('#popupContent').html(sMessage);
-    popupToggle();
   }
+  // map external names where possible
+  jsonData = epx_call('getAuthorMappers', undefined, true, true);
+  if (jsonData !== undefined && jsonData !== null) {
+    // process
+    $.each(jsonData, function(id, data) {
+      var author = authors[id];
+      author['mapped'] = true;
+      author['map'] = data['name'];
+    });
+  }
+
+  // update select control
+  epc_authorsShow();
+  // reselect selected
+  $.each(selected, function(idx, id) {
+    $('#epAuthors option[value="' + id + '"]').attr('selected', true);
+  });
+  // update info
+  var info = $('#epInfo-title')[0].innerHTML.match(/.*\((author|pad|session)\).*|/)[1];
+  switch (info) {
+    case 'author':
+      epc_authorsInfo();
+      break;
+    case 'pad':
+      epc_padsInfo();
+      break;
+    case 'session':
+      epc_sessionsInfo();
+      break;
+  }
+}
+
+function epc_authorsShow() {
+  console.log('[debug|epc_authorsShow]');
+
+  $('#epAuthors').html('');
+  $.each(authors, function(key, author) {
+    if (author['map'] === undefined)
+      $('#epAuthors').append('<option value="' + author['id'] + '">[' + author['id'] + ']</option>');
+    else
+      $('#epAuthors').append('<option value="' + author['id'] + '">' + author['map'] + ' [' + author['id'] + ']</option>');
+  });
+  if ($('#epAuthors')[0].length > 0) {
+    $('#epAuthors').prepend('<option value="All">All</option>');
+    $('#epAuthorsTitle').html('authors (' + ($('#epAuthors')[0].length - 1) + ')');
+  } else
+    $('#epAuthorsTitle').html('authors (0)');
+}
+
+function epc_authorsAdd(verbose) {
+  console.log('[debug|epc_authorsAdd]');
+
+  var map = $('#epAuthorName').val();
+  var args = [map, map];
+  var jsonData = ep_call('createAuthorIfNotExistsFor', args, verbose);
+  if (jsonData !== undefined) {
+    var id = jsonData['authorID'];
+    if (authors === undefined)
+      authors = {};
+    var author = authors[id];
+    if (author === undefined) {
+      authors[id] = { 'id': id, 'map': map, 'name': map, 'mapped': true };
+      console.log('[info] author name \'' + map + '\' added with id \'' + id + '\'');
+    } else
+      console.log('[info] author name \'' + map + '\' already exists with id \'' + id + '\'');
+
+    // reload author
+    epc_authorsShow();
+    // select added / existing
+    $('#epAuthors option[value="' + id + '"]').attr('selected', true);
+    // update info
+    epc_authorsInfo();
+  }
+}
+
+function epc_authorsRemove(verbose, data) {
+  console.log('[debug|epc_authorsRemove]');
+
+  selected = $('#epAuthors :selected').map(function(){return this.value;}).get();
+  if (selected.length > 0) {
+    if (data === undefined) {
+      // confirmation message
+      console.log('[debug|epc_authorsRemove] confirmation message');
+      $('#popupTitle').html('warning: confirmation required');
+      var suffix = ''
+      if (selected.length > 1)
+        suffix = 's';
+      var sMessage = '<p>are you sure you want to permanently remove the following author' + suffix + ':</p>\n';
+      sMessage += '<ul>\n';
+      $.each(selected, function(key, value) {
+        sMessage += '<li>' + value + '</li>\n'
+      });
+      sMessage += '</ul>\n';
+      $('#popupContent').html(sMessage);
+      popupToggle('info', 'yes|no', [function() {epc_authorsRemove(true, true);}]);
+    } else {
+      // toggle popup
+      popupToggle();
+      // do deletion
+      if (data === true) {
+        var selectedIndex = $("#epAuthors option:selected")[0].index;
+        $.each(selected, function(idx, id) {
+          var args = [id];
+          var jsonData = epx_call('deleteAuthor', args, verbose);
+          if (jsonData !== undefined && jsonData['affected'] == 1) {
+            console.log('[info] deleted author, id: \'' + id + '\'');
+            delete(authors[id]);
+          } else
+            console.log('[debug] issue deleting author, id: \'' + id + '\'');
+        });
+        // reload author
+        epc_authorsShow();
+        // reselect
+        if (selectedIndex > $('#epAuthors')[0].length - 1)
+          selectedIndex = $('#epAuthors')[0].length - 1;
+        $('#epAuthors')[0].selectedIndex = selectedIndex;
+        // update info
+        var info = $('#epInfo-title')[0].innerHTML.match(/.*\((author)\).*|/)[1];
+        switch (info) {
+          case 'author':
+            epc_authorsInfo();
+        }
+      }
+    }
+  }
+}
+
+function epc_authorsInfo(verbose) {
+  console.log('[debug|epc_authorsInfo]');
+
+  // get selected id
+  var selected = $('#epAuthors :selected').map(function(){return this.value;}).get();
+  if (selected.length > 0) {
+
+    // clear last info
+    $('#epInfo-inner').html('');
+    $('#epInfo-title').html('info');
+
+    var id = selected[0];
+    var author = authors[id];
+    if (author === undefined) {
+      if (id != 'All')
+        console.log('[debug] broken author reference key');
+      return;
+    }
+
+    var props = ['id', 'map', 'name', 'mapped'];
+
+    // build html
+    var authorHTML = {};
+    var propHTMLSuffix = "<span style='font-size: 1.1em;'>"
+    var propHTMLPostfix = "</span>";
+
+    // prop specific styling
+    $.each(props, function(idx, prop) {
+      switch (prop) {
+      }
+    });
+
+    // construct html
+    var html = '';
+    $.each(props, function(idx, prop) {
+      html += '<p style="margin: 3px 0px 2px; font-size: 0.8em;"><b>' + prop + ': </b>' + (authorHTML[prop] ? authorHTML[prop] : propHTMLSuffix + (author[prop] !== undefined ? author[prop] : '') + propHTMLPostfix) + '</p>';
+    });
+    $('#epInfo-inner').html(html);
+    $('#epInfo-title').html('info (author)');
+  }
+}
+
+function epc_authorMap(verbose, data) {
+  console.log('[debug|epc_authorMap]');
+
+  if (data === undefined) {
+    $('#epStatus-inner').html('');
+    var selected = $('#epAuthors :selected').map(function() { return this.value; }).get();
+    if (selected.length == 0) {
+      alert("[user] no author(s) selected");
+      return;
+    }
+    var data = { 'pool': selected, 'set': false };
+    $('#popup-input').val('');
+  }
+
+  if (data['pool'].length > 0) {
+    var id = data['pool'][0];
+    var author = authors[id];
+    console.log("[debug|epc_authorMap] processing author id: " + id);
+
+    if (!data['set']) {
+      console.log("[debug|epc_authorMap] not set");
+
+      var sMessage = '<p><b>author</b><br>\nid: ' + id + '<br>\nmap: <b>' + author['map'] + '</b><br>\nname: ' + author['name'] + '<br>\n<br>\n';
+      $('#popupTitle').html('input: map name');
+      if (author['map']) {
+        sMessage += 'please modify the desired \'map\' name below';
+        if (!$('#popup-input').val())
+          $('#popup-input').val(author['map']);
+      } else
+        sMessage += 'please set the desired \'map\' name below</p>\n';
+      sMessage += '</p>\n';
+      $('#popupContent').html(sMessage);
+      popupToggle('input', 'ok|skip|cancel',
+        [function() {data['set'] = true; epc_authorMap(verbose, data);},
+         function() {$('#popup-input').val(''); popupToggle(); data['pool'].shift(); epc_authorMap(verbose, data);}]);
+    } else {
+      console.log("[debug|epc_authorMap] set");
+
+      // recover input
+      var map = $('#popup-input').val();
+
+      // toggle popup
+      popupToggle();
+
+      if (author['map'] !== map) {
+        // set data
+        var args = [id, map];
+        var jsonData = epx_call('setAuthorMap', args, verbose, true);
+        var sMessage;
+        if (jsonData !== undefined && jsonData !== null) {
+          if (map === '') {
+            map = null;
+            author['mapped'] = false;
+            sMessage = '[info|epc_authorMap] author map removed for author id \'' + id + '\'';
+          } else {
+            author['mapped'] = true;
+            sMessage = '[info|epc_authorMap] author map \'' + map + '\' set for author id \'' + id + '\'';
+          }
+          author['map'] = map;
+          // update selection
+          $('#epAuthors option[value="' + id + '"]')[0].innerHTML = map + ' [' + id + ']';
+          // next
+          data['pool'].shift();
+          $('#popup-input').val('');
+        } else {
+          if (map === '') {
+            sMessage = '[error|epc_authorMap] author map not removed for author id \'' + id + '\'';
+          } else {
+            sMessage = '[error|epc_authorMap] author map \'' + map + '\' not set for author id \'' + id + '\'';
+          }
+          alert(sMessage);
+        }
+        console.log(sMessage);
+      } else {
+        // skip
+        data['pool'].shift();
+        $('#popup-input').val('');
+      }
+
+      if (data['pool'].length > 0) {
+        data['set'] = false;
+        epc_authorMap(verbose, data);
+      } else {
+        // update info
+        var info = $('#epInfo-title')[0].innerHTML.match(/.*\((author|session)\).*|/)[1];
+        switch (info) {
+          case 'author':
+            epc_authorsInfo();
+            break;
+          case 'session':
+            epc_sessionsInfo();
+            break;
+        }
+      }
+    }
+  }
+}
+
+function epc_authorName(verbose, data) {
+  console.log('[debug|epc_authorName]');
+
+  if (data === undefined) {
+    $('#epStatus-inner').html('');
+    var selected = $('#epAuthors :selected').map(function() { return this.value; }).get();
+    if (selected.length == 0) {
+      alert("[user] no author(s) selected");
+      return;
+    }
+    var data = { 'pool': selected, 'set': false };
+    $('#popup-input').val('');
+  }
+
+  if (data['pool'].length > 0) {
+    var id = data['pool'][0];
+    var author = authors[id];
+    console.log("[debug|epc_authorName] processing author id: " + id);
+
+    if (!data['set']) {
+      console.log("[debug|epc_authorName] not set");
+
+      var sMessage = '<p><b>author</b><br>\nid: ' + id + '<br>\nmap: ' + author['map'] + '<br>\nname: <b>' + author['name'] + '</b><br>\n<br>\n';
+      $('#popupTitle').html('input: display name');
+      if (author['name']) {
+        sMessage += 'please modify the desired \'display\' name below';
+        if (!$('#popup-input').val())
+          $('#popup-input').val(author['name']);
+      } else
+        sMessage += 'please set the desired \'display\' name below</p>\n';
+      sMessage += '</p>\n';
+      $('#popupContent').html(sMessage);
+      popupToggle('input', 'ok|skip|cancel',
+        [function() {data['set'] = true; epc_authorName(verbose, data);},
+         function() {$('#popup-input').val(''); popupToggle(); data['pool'].shift(); epc_authorName(verbose, data);}]);
+    } else {
+      console.log("[debug|epc_authorName] set");
+
+      // recover input
+      var name = $('#popup-input').val();
+
+      // toggle popup
+      popupToggle();
+
+      if (author['name'] !== name) {
+        // set data
+        var args = [id, name];
+        var jsonData = epx_call('setAuthorName', args, verbose, true);
+        var sMessage;
+        if (jsonData !== undefined && jsonData !== null) {
+          author['name'] = name;
+          sMessage = '[info|epc_authorName] author name \'' + name + '\' set for author id \'' + id + '\'';
+          // next
+          data['pool'].shift();
+          $('#popup-input').val('');
+        } else {
+          sMessage = '[error|epc_authorName] author name \'' + name + '\' not set for author id \'' + id + '\'';
+          alert(sMessage);
+        }
+      } else {
+        // skip
+        data['pool'].shift();
+        $('#popup-input').val('');
+      }
+
+      if (data['pool'].length > 0) {
+        data['set'] = false;
+        epc_authorName(verbose, data);
+      } else {
+        // update info
+        var info = $('#epInfo-title')[0].innerHTML.match(/.*\((author|session)\).*|/)[1];
+        switch (info) {
+          case 'author':
+            epc_authorsInfo();
+            break;
+          case 'session':
+            epc_sessionsInfo();
+            break;
+        }
+      }
+    }
+  }
+}
+
+//
+// groups
+//
+
+function epc_groups(verbose) {
+  console.log('[debug|epc_groups]');
+
+  // remember current selection
+  var selected = $('#epGroups :selected').map(function(){return this.value;}).get();
+
+  // reset groups object
+  groups = {};
+
+  var jsonData;
+  jsonData = ep_call('listAllGroups', undefined, verbose)
+  if (jsonData !== undefined && jsonData !== null) {
+    // process
+    if (jsonData['groupIDs'].length > 0) {
+      $.each(jsonData['groupIDs'], function(idx, id) {
+        if (groups[id] === undefined)
+          groups[id] = {'id': id};
+      });
+    }
+  }
+  // map external names where possible
+  jsonData = epx_call('getGroupMappers', undefined, true, true);
+  if (jsonData !== undefined && jsonData !== null) {
+    // process
+    $.each(groups, function(key, group) {
+      if (groups['name'] === undefined &&
+        jsonData[key] !== undefined) {
+        group['name'] = jsonData[key]['name'];
+      }
+    });
+  }
+
+  // update select control
+  epc_groupsShow();
+  // reselect selected
+  $.each(selected, function(idx, id) {
+    $('#epGroups option[value="' + id + '"]').attr('selected', true);
+  });
+  // update pads list
+  if (pads !== undefined)
+    epc_pads();
+  // update info
+  var info = $('#epInfo-title')[0].innerHTML.match(/.*\((session)\).*|/)[1];
+  switch (info) {
+    case 'session':
+      epc_sessionsInfo();
+      break;
+  }
+}
+
+function epc_groupsShow() {
+  console.log('[debug|epc_groupsShow]');
+
+  $('#epGroups').html('');
+  $.each(groups, function(key, group) {
+    if (group['name'] === undefined)
+      $('#epGroups').append('<option value="' + group['id'] + '">[' + group['id'] + ']</option>');
+    else
+      $('#epGroups').append('<option value="' + group['id'] + '">' + group['name'] + ' [' + group['id'] + ']</option>');
+  });
+  if ($('#epGroups')[0].length > 0) {
+    $('#epGroups').prepend('<option value="All">All</option>');
+    $('#epGroupsTitle').html('groups (' + ($('#epGroups')[0].length - 1) + ')');
+  } else
+    $('#epGroupsTitle').html('groups (0)');
+}
+
+function epc_groupsAdd(verbose) {
+  console.log('[debug|epc_groupsAdd]');
+
+  var name = $('#epGroupName').val();
+  var args = [name];
+  var jsonData = ep_call('createGroupIfNotExistsFor', args, verbose);
+  if (jsonData !== undefined) {
+    var id = jsonData['groupID'];
+    if (groups === undefined)
+      groups = {};
+    var group = groups[id];
+    if (group === undefined) {
+      groups[id] = { 'id': id, 'name': name };
+      console.log('[info] group name \'' + name + '\' added with id \'' + id + '\'');
+    } else
+      console.log('[info] group name \'' + name + '\' already exists with id \'' + id + '\'');
+
+    // reload group
+    epc_groupsShow();
+    // select added / existing
+    $('#epGroups option[value="' + id + '"]').attr('selected', true);
+  }
+}
+
+function epc_groupsRemove(verbose, data) {
+  console.log('[debug|epc_groupsRemove]');
+
+  var selected = $('#epGroups :selected').map(function(){return this.value;}).get();
+  if (selected.length > 0) {
+    if (data === undefined) {
+      // confirmation message
+      console.log('[debug|epc_groupsRemove] confirmation message');
+      $('#popupTitle').html('warning: confirmation required');
+      var suffix = ''
+      if (selected.length > 1)
+        suffix = 's';
+      var sMessage = '<p>are you sure you want to permanently remove the following group' + suffix + ':</p>\n';
+      sMessage += '<ul>\n';
+      $.each(selected, function(key, value) {
+        sMessage += '<li>' + value + '</li>\n'
+      });
+      sMessage += '</ul>\n';
+      $('#popupContent').html(sMessage);
+      popupToggle('info', 'yes|no', [function() {epc_groupsRemove(true, true);}]);
+    } else {
+      // toggle popup
+      popupToggle();
+      // do deletion
+      if (data === true) {
+        var selectedIndex = $("#epGroups option:selected")[0].index;
+        $.each(selected, function(idx, id) {
+          var args = [id];
+          var jsonData = ep_call('deleteGroup', args, verbose);
+          if (jsonData !== undefined && jsonData['affected'] == 1) {
+            console.log('[info] deleted group, id: \'' + id + '\'');
+            delete(groups[id]);
+          } else
+            console.log('[debug] issue deleting group, id: \'' + id + '\'');
+        });
+
+        // reload group
+        epc_groupsShow();
+        // reselect
+        if (selectedIndex > $('#epGroups')[0].length - 1)
+          selectedIndex = $('#epGroups')[0].length - 1;
+        $('#epGroups')[0].selectedIndex = selectedIndex;
+      }
+    }
+  }
+}
+
+function epc_groupPads(verbose) {
+  console.log('[debug|epc_groupPads]');
+  epc_pads('group');
+}
+
+function epc_groupAuthors(verbose) {
+  console.log('[debug|epc_groupAuthors]');
+  epc_authors('group');
 }
 
 //
@@ -768,528 +1225,79 @@ function epc_sessionsInfo(verbose) {
 }
 
 //
-// groups
+// misc
 //
 
-function epc_groups(verbose) {
-  console.log('[debug|epc_groups]');
-
-  // remember current selection
-  var selected = $('#epGroups :selected').map(function(){return this.value;}).get();
-
-  // reset groups object
-  groups = {};
-
-  var jsonData;
-  jsonData = ep_call('listAllGroups', undefined, verbose)
-  if (jsonData !== undefined && jsonData !== null) {
-    // process
-    if (jsonData['groupIDs'].length > 0) {
-      $.each(jsonData['groupIDs'], function(idx, id) {
-        if (groups[id] === undefined)
-          groups[id] = {'id': id};
-      });
-    }
-  }
-  // map external names where possible
-  jsonData = epx_call('getGroupMappers', undefined, true, true);
-  if (jsonData !== undefined && jsonData !== null) {
-    // process
-    $.each(groups, function(key, group) {
-      if (groups['name'] === undefined &&
-        jsonData[key] !== undefined) {
-        group['name'] = jsonData[key]['name'];
-      }
-    });
-  }
-
-  // update select control
-  epc_groupsShow();
-  // reselect selected
-  $.each(selected, function(idx, id) {
-    $('#epGroups option[value="' + id + '"]').attr('selected', true);
-  });
-  // update pads list
-  if (pads !== undefined)
-    epc_pads();
-  // update info
-  var info = $('#epInfo-title')[0].innerHTML.match(/.*\((session)\).*|/)[1];
-  switch (info) {
-    case 'session':
-      epc_sessionsInfo();
-      break;
-  }
+function epc_status(verbose) {
+  console.log('[debug|epc_status]');
+  ep_call('checkToken', undefined, verbose);
 }
 
-function epc_groupsShow() {
-  console.log('[debug|epc_groupsShow]');
+function epc_test() {
+  console.log('[debug|epc_test]');
+  epx_call();
+}
 
-  $('#epGroups').html('');
-  $.each(groups, function(key, group) {
-    if (group['name'] === undefined)
-      $('#epGroups').append('<option value="' + group['id'] + '">[' + group['id'] + ']</option>');
+function epc_clean(verbose) {
+  console.log('[debug|epc_clean]');
+
+  var jsonData = epx_call('cleanDatabase', undefined, verbose);
+  if (jsonData !== undefined && jsonData !== null) {
+    // process
+    var sMessage = '';
+    $.each(jsonData, function(idx, data) {
+      if (data['info'] != '')
+        sMessage += '<li>' + data['info'] + '</li>\n';
+    });
+    if (sMessage == '')
+      sMessage = '<p>nothing to do!</p>';
     else
-      $('#epGroups').append('<option value="' + group['id'] + '">' + group['name'] + ' [' + group['id'] + ']</option>');
-  });
-  if ($('#epGroups')[0].length > 0) {
-    $('#epGroups').prepend('<option value="All">All</option>');
-    $('#epGroupsTitle').html('groups (' + ($('#epGroups')[0].length - 1) + ')');
-  } else
-    $('#epGroupsTitle').html('groups (0)');
-}
-
-function epc_groupsAdd(verbose) {
-  console.log('[debug|epc_groupsAdd]');
-
-  var name = $('#epGroupName').val();
-  var args = [name];
-  var jsonData = ep_call('createGroupIfNotExistsFor', args, verbose);
-  if (jsonData !== undefined) {
-    var id = jsonData['groupID'];
-    if (groups === undefined)
-      groups = {};
-    var group = groups[id];
-    if (group === undefined) {
-      groups[id] = { 'id': id, 'name': name };
-      console.log('[info] group name \'' + name + '\' added with id \'' + id + '\'');
-    } else
-      console.log('[info] group name \'' + name + '\' already exists with id \'' + id + '\'');
-
-    // reload group
-    epc_groupsShow();
-    // select added / existing
-    $('#epGroups option[value="' + id + '"]').attr('selected', true);
+      sMessage = '<ul>\n' + sMessage + '</ul>\n';
+    $('#popupTitle').html('Database clean-up');
+    $('#popupContent').html(sMessage);
+    popupToggle();
   }
-}
-
-function epc_groupsRemove(verbose, data) {
-  console.log('[debug|epc_groupsRemove]');
-
-  var selected = $('#epGroups :selected').map(function(){return this.value;}).get();
-  if (selected.length > 0) {
-    if (data === undefined) {
-      // confirmation message
-      console.log('[debug|epc_groupsRemove] confirmation message');
-      $('#popupTitle').html('warning: confirmation required');
-      var suffix = ''
-      if (selected.length > 1)
-        suffix = 's';
-      var sMessage = '<p>are you sure you want to permanently remove the following group' + suffix + ':</p>\n';
-      sMessage += '<ul>\n';
-      $.each(selected, function(key, value) {
-        sMessage += '<li>' + value + '</li>\n'
-      });
-      sMessage += '</ul>\n';
-      $('#popupContent').html(sMessage);
-      popupToggle('info', 'yes|no', [function() {epc_groupsRemove(true, true);}]);
-    } else {
-      // toggle popup
-      popupToggle();
-      // do deletion
-      if (data === true) {
-        var selectedIndex = $("#epGroups option:selected")[0].index;
-        $.each(selected, function(idx, id) {
-          var args = [id];
-          var jsonData = ep_call('deleteGroup', args, verbose);
-          if (jsonData !== undefined && jsonData['affected'] == 1) {
-            console.log('[info] deleted group, id: \'' + id + '\'');
-            delete(groups[id]);
-          } else
-            console.log('[debug] issue deleting group, id: \'' + id + '\'');
-        });
-
-        // reload group
-        epc_groupsShow();
-        // reselect
-        if (selectedIndex > $('#epGroups')[0].length - 1)
-          selectedIndex = $('#epGroups')[0].length - 1;
-        $('#epGroups')[0].selectedIndex = selectedIndex;
-      }
-    }
-  }
-}
-
-function epc_groupPads(verbose) {
-  console.log('[debug|epc_groupPads]');
-  epc_pads('group');
-}
-
-function epc_groupAuthors(verbose) {
-  console.log('[debug|epc_groupAuthors]');
-  epc_authors('group');
 }
 
 //
-// authors
+// extra
 //
 
-function epc_authors(verbose) {
-  console.log('[debug|epc_authors]');
-
-  // remember current selection
-  selected = $('#epAuthors :selected').map(function(){return this.value;}).get();
-
-  // reset authors object
-  authors = {};
-
-  var jsonData;
-  jsonData = epx_call('listAllAuthors', undefined, verbose)
-  if (jsonData !== undefined && jsonData !== null) {
-    // process
-    authors = jsonData;
-    $.each(authors, function(key, author) {
-      author['map'] = null;
-      author['mapped'] = false;
-    });
-  }
-  // map external names where possible
-  jsonData = epx_call('getAuthorMappers', undefined, true, true);
-  if (jsonData !== undefined && jsonData !== null) {
-    // process
-    $.each(jsonData, function(id, data) {
-      var author = authors[id];
-      author['mapped'] = true;
-      author['map'] = data['name'];
-    });
-  }
-
-  // update select control
-  epc_authorsShow();
-  // reselect selected
-  $.each(selected, function(idx, id) {
-    $('#epAuthors option[value="' + id + '"]').attr('selected', true);
-  });
-  // update info
-  var info = $('#epInfo-title')[0].innerHTML.match(/.*\((author|pad|session)\).*|/)[1];
-  switch (info) {
-    case 'author':
-      epc_authorsInfo();
-      break;
-    case 'pad':
-      epc_padsInfo();
-      break;
-    case 'session':
-      epc_sessionsInfo();
-      break;
-  }
+function setCookie(sName, sValue, lExpire) {
+  if (!lExpire)
+    var lExpire = 365;
+  var dtExpiry = new Date();
+  dtExpiry.setDate(dtExpiry.getDate() + lExpire);
+  document.cookie = sName + "=" + escape(sValue) + ";expires=" + dtExpiry.toGMTString();
 }
 
-function epc_authorsShow() {
-  console.log('[debug|epc_authorsShow]');
-
-  $('#epAuthors').html('');
-  $.each(authors, function(key, author) {
-    if (author['map'] === undefined)
-      $('#epAuthors').append('<option value="' + author['id'] + '">[' + author['id'] + ']</option>');
-    else
-      $('#epAuthors').append('<option value="' + author['id'] + '">' + author['map'] + ' [' + author['id'] + ']</option>');
-  });
-  if ($('#epAuthors')[0].length > 0) {
-    $('#epAuthors').prepend('<option value="All">All</option>');
-    $('#epAuthorsTitle').html('authors (' + ($('#epAuthors')[0].length - 1) + ')');
-  } else
-    $('#epAuthorsTitle').html('authors (0)');
+function getCookie(sName) {
+  if (document.cookie.length > 0) {
+    var lStart = document.cookie.indexOf(sName + "=");
+    if (lStart != -1) {
+      lStart += sName.length + 1;
+      var lEnd = document.cookie.indexOf(";", lStart);
+      if (lEnd == -1)
+        lEnd = document.cookie.length;
+      return unescape(document.cookie.substring(lStart, lEnd));
+    }
+  }
+  return "";
 }
 
-function epc_authorsAdd(verbose) {
-  console.log('[debug|epc_authorsAdd]');
-
-  var map = $('#epAuthorName').val();
-  var args = [map, map];
-  var jsonData = ep_call('createAuthorIfNotExistsFor', args, verbose);
-  if (jsonData !== undefined) {
-    var id = jsonData['authorID'];
-    if (authors === undefined)
-      authors = {};
-    var author = authors[id];
-    if (author === undefined) {
-      authors[id] = { 'id': id, 'map': map, 'name': map, 'mapped': true };
-      console.log('[info] author name \'' + map + '\' added with id \'' + id + '\'');
-    } else
-      console.log('[info] author name \'' + map + '\' already exists with id \'' + id + '\'');
-
-    // reload author
-    epc_authorsShow();
-    // select added / existing
-    $('#epAuthors option[value="' + id + '"]').attr('selected', true);
-    // update info
-    epc_authorsInfo();
-  }
+function getServer() {
+  return $('#epc_server').val() + ":" +
+         $('#epc_port').val() +
+         ($('#epc_basepath').val() ? "/" +
+          $('#epc_basepath').val() : "");
 }
 
-function epc_authorsRemove(verbose, data) {
-  console.log('[debug|epc_authorsRemove]');
-
-  selected = $('#epAuthors :selected').map(function(){return this.value;}).get();
-  if (selected.length > 0) {
-    if (data === undefined) {
-      // confirmation message
-      console.log('[debug|epc_authorsRemove] confirmation message');
-      $('#popupTitle').html('warning: confirmation required');
-      var suffix = ''
-      if (selected.length > 1)
-        suffix = 's';
-      var sMessage = '<p>are you sure you want to permanently remove the following author' + suffix + ':</p>\n';
-      sMessage += '<ul>\n';
-      $.each(selected, function(key, value) {
-        sMessage += '<li>' + value + '</li>\n'
-      });
-      sMessage += '</ul>\n';
-      $('#popupContent').html(sMessage);
-      popupToggle('info', 'yes|no', [function() {epc_authorsRemove(true, true);}]);
-    } else {
-      // toggle popup
-      popupToggle();
-      // do deletion
-      if (data === true) {
-        var selectedIndex = $("#epAuthors option:selected")[0].index;
-        $.each(selected, function(idx, id) {
-          var args = [id];
-          var jsonData = epx_call('deleteAuthor', args, verbose);
-          if (jsonData !== undefined && jsonData['affected'] == 1) {
-            console.log('[info] deleted author, id: \'' + id + '\'');
-            delete(authors[id]);
-          } else
-            console.log('[debug] issue deleting author, id: \'' + id + '\'');
-        });
-        // reload author
-        epc_authorsShow();
-        // reselect
-        if (selectedIndex > $('#epAuthors')[0].length - 1)
-          selectedIndex = $('#epAuthors')[0].length - 1;
-        $('#epAuthors')[0].selectedIndex = selectedIndex;
-        // update info
-        var info = $('#epInfo-title')[0].innerHTML.match(/.*\((author)\).*|/)[1];
-        switch (info) {
-          case 'author':
-            epc_authorsInfo();
-        }
-      }
-    }
-  }
-}
-
-function epc_authorsInfo(verbose) {
-  console.log('[debug|epc_authorsInfo]');
-
-  // get selected id
-  var selected = $('#epAuthors :selected').map(function(){return this.value;}).get();
-  if (selected.length > 0) {
-
-    // clear last info
-    $('#epInfo-inner').html('');
-    $('#epInfo-title').html('info');
-
-    var id = selected[0];
-    var author = authors[id];
-    if (author === undefined) {
-      if (id != 'All')
-        console.log('[debug] broken author reference key');
-      return;
-    }
-
-    var props = ['id', 'map', 'name', 'mapped'];
-
-    // build html
-    var authorHTML = {};
-    var propHTMLSuffix = "<span style='font-size: 1.1em;'>"
-    var propHTMLPostfix = "</span>";
-
-    // prop specific styling
-    $.each(props, function(idx, prop) {
-      switch (prop) {
-      }
-    });
-
-    // construct html
-    var html = '';
-    $.each(props, function(idx, prop) {
-      html += '<p style="margin: 3px 0px 2px; font-size: 0.8em;"><b>' + prop + ': </b>' + (authorHTML[prop] ? authorHTML[prop] : propHTMLSuffix + (author[prop] !== undefined ? author[prop] : '') + propHTMLPostfix) + '</p>';
-    });
-    $('#epInfo-inner').html(html);
-    $('#epInfo-title').html('info (author)');
-  }
-}
-
-function epc_authorMap(verbose, data) {
-  console.log('[debug|epc_authorMap]');
-
-  if (data === undefined) {
-    $('#epStatus-inner').html('');
-    var selected = $('#epAuthors :selected').map(function() { return this.value; }).get();
-    if (selected.length == 0) {
-      alert("[user] no author(s) selected");
-      return;
-    }
-    var data = { 'pool': selected, 'set': false };
-    $('#popup-input').val('');
-  }
-
-  if (data['pool'].length > 0) {
-    var id = data['pool'][0];
-    var author = authors[id];
-    console.log("[debug|epc_authorMap] processing author id: " + id);
-
-    if (!data['set']) {
-      console.log("[debug|epc_authorMap] not set");
-
-      var sMessage = '<p><b>author</b><br>\nid: ' + id + '<br>\nmap: <b>' + author['map'] + '</b><br>\nname: ' + author['name'] + '<br>\n<br>\n';
-      $('#popupTitle').html('input: map name');
-      if (author['map']) {
-        sMessage += 'please modify the desired \'map\' name below';
-        if (!$('#popup-input').val())
-          $('#popup-input').val(author['map']);
-      } else
-        sMessage += 'please set the desired \'map\' name below</p>\n';
-      sMessage += '</p>\n';
-      $('#popupContent').html(sMessage);
-      popupToggle('input', 'ok|skip|cancel',
-        [function() {data['set'] = true; epc_authorMap(verbose, data);},
-         function() {$('#popup-input').val(''); popupToggle(); data['pool'].shift(); epc_authorMap(verbose, data);}]);
-    } else {
-      console.log("[debug|epc_authorMap] set");
-
-      // recover input
-      var map = $('#popup-input').val();
-
-      // toggle popup
-      popupToggle();
-
-      if (author['map'] !== map) {
-        // set data
-        var args = [id, map];
-        var jsonData = epx_call('setAuthorMap', args, verbose, true);
-        var sMessage;
-        if (jsonData !== undefined && jsonData !== null) {
-          if (map === '') {
-            map = null;
-            author['mapped'] = false;
-            sMessage = '[info|epc_authorMap] author map removed for author id \'' + id + '\'';
-          } else {
-            author['mapped'] = true;
-            sMessage = '[info|epc_authorMap] author map \'' + map + '\' set for author id \'' + id + '\'';
-          }
-          author['map'] = map;
-          // update selection
-          $('#epAuthors option[value="' + id + '"]')[0].innerHTML = map + ' [' + id + ']';
-          // next
-          data['pool'].shift();
-          $('#popup-input').val('');
-        } else {
-          if (map === '') {
-            sMessage = '[error|epc_authorMap] author map not removed for author id \'' + id + '\'';
-          } else {
-            sMessage = '[error|epc_authorMap] author map \'' + map + '\' not set for author id \'' + id + '\'';
-          }
-          alert(sMessage);
-        }
-        console.log(sMessage);
-      } else {
-        // skip
-        data['pool'].shift();
-        $('#popup-input').val('');
-      }
-
-      if (data['pool'].length > 0) {
-        data['set'] = false;
-        epc_authorMap(verbose, data);
-      } else {
-        // update info
-        var info = $('#epInfo-title')[0].innerHTML.match(/.*\((author|session)\).*|/)[1];
-        switch (info) {
-          case 'author':
-            epc_authorsInfo();
-            break;
-          case 'session':
-            epc_sessionsInfo();
-            break;
-        }
-      }
-    }
-  }
-}
-
-function epc_authorName(verbose, data) {
-  console.log('[debug|epc_authorName]');
-
-  if (data === undefined) {
-    $('#epStatus-inner').html('');
-    var selected = $('#epAuthors :selected').map(function() { return this.value; }).get();
-    if (selected.length == 0) {
-      alert("[user] no author(s) selected");
-      return;
-    }
-    var data = { 'pool': selected, 'set': false };
-    $('#popup-input').val('');
-  }
-
-  if (data['pool'].length > 0) {
-    var id = data['pool'][0];
-    var author = authors[id];
-    console.log("[debug|epc_authorName] processing author id: " + id);
-
-    if (!data['set']) {
-      console.log("[debug|epc_authorName] not set");
-
-      var sMessage = '<p><b>author</b><br>\nid: ' + id + '<br>\nmap: ' + author['map'] + '<br>\nname: <b>' + author['name'] + '</b><br>\n<br>\n';
-      $('#popupTitle').html('input: display name');
-      if (author['name']) {
-        sMessage += 'please modify the desired \'display\' name below';
-        if (!$('#popup-input').val())
-          $('#popup-input').val(author['name']);
-      } else
-        sMessage += 'please set the desired \'display\' name below</p>\n';
-      sMessage += '</p>\n';
-      $('#popupContent').html(sMessage);
-      popupToggle('input', 'ok|skip|cancel',
-        [function() {data['set'] = true; epc_authorName(verbose, data);},
-         function() {$('#popup-input').val(''); popupToggle(); data['pool'].shift(); epc_authorName(verbose, data);}]);
-    } else {
-      console.log("[debug|epc_authorName] set");
-
-      // recover input
-      var name = $('#popup-input').val();
-
-      // toggle popup
-      popupToggle();
-
-      if (author['name'] !== name) {
-        // set data
-        var args = [id, name];
-        var jsonData = epx_call('setAuthorName', args, verbose, true);
-        var sMessage;
-        if (jsonData !== undefined && jsonData !== null) {
-          author['name'] = name;
-          sMessage = '[info|epc_authorName] author name \'' + name + '\' set for author id \'' + id + '\'';
-          // next
-          data['pool'].shift();
-          $('#popup-input').val('');
-        } else {
-          sMessage = '[error|epc_authorName] author name \'' + name + '\' not set for author id \'' + id + '\'';
-          alert(sMessage);
-        }
-      } else {
-        // skip
-        data['pool'].shift();
-        $('#popup-input').val('');
-      }
-
-      if (data['pool'].length > 0) {
-        data['set'] = false;
-        epc_authorName(verbose, data);
-      } else {
-        // update info
-        var info = $('#epInfo-title')[0].innerHTML.match(/.*\((author|session)\).*|/)[1];
-        switch (info) {
-          case 'author':
-            epc_authorsInfo();
-            break;
-          case 'session':
-            epc_sessionsInfo();
-            break;
-        }
-      }
-    }
+function loadState() {
+  var arr = [ 'epc_server', 'epc_port', 'epc_apikeypath', 'epc_settingspath' ];
+  for (idx in arr) {
+    var sElement = arr[idx];
+    console.log('restoring state for: \'' + sElement + '\'');
+    $('#' + sElement).val(getCookie(sElement));
   }
 }
 

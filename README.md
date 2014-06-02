@@ -2,22 +2,24 @@
 ## Etherpad-Lite Control
 
 ### description
-a html/javascript/php interface for Etherpad-Lite administration. Uses Etherpad-Lite API where possible, supplemented by direct database calls to extend functionality where needed
+a html/javascript (frontend) / php (backend) interface for Etherpad-Lite administration. uses Etherpad-Lite's API where possible, supplemented by direct database calls to extend functionality where needed
 
 ### features
-- add / remove groups
-- remove multiple pads
+- list authors, pad groups, pads and sessions __*__
+- add and remove authors, pad groups, pads and sessions __*__
+- display author, pad and session information __*__
 - view pad content
-- list all authors
-- display group 'mapper' names __*__
+- modify author map and display names __*__
+- distinguish global (public), global (private) and regular pads types __*__
+- create sessions for facilitating secure access of author add/remove user(s) to/from group(s)
 
-__*__ requires non-api/direct database calls to a supported database [currently: 'postgre' only]
+__*__ note: most functionality is now dependent on non-api/direct database calls to a supported database [currently: 'postgre' only]
 
 ### dependencies
-- php >5.3
+- php >5.3 [server-side scripting]
+- jQuery [client script loaded at runtime]
 - etherpad-lite-client [php bindings for Etherpad-Lite (https://github.com/0x46616c6b/etherpad-lite-client.git)]
-- jquery
-- composer
+- composer [installation tool] 
 - postgre [additional non-api functionality]
 
 ## <p></p>
@@ -133,27 +135,10 @@ here, the non-api 'deleteAuthor()' method has deleted the 'mapper2author' key wh
 ## <p></p>
 
 ### development
-#### done
-- ui layout
-- php client wrapper
-- api token check
-- maintain state
-- list all pads
-- popup dialog mechanism
-- view pad content
-- delete pads
-- list all groups
-- list all authors
-- switch for global and group private/public pads
-- list group pads
-- add/remove groups
-- add database layer
-- reference mapper names
-
 #### todo
-- group/pad info
+- move to asynchronous ajax calls
 - set pad passwords
-- create sessions to add/remove user(s) to/from group(s)
 - convert global pads to group pads
 - allow non-api functionality to be disabled
+- port database queries to mysql
 

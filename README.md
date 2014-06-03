@@ -107,6 +107,7 @@ __*__ currently unavailable due to a limitation of one of Etherpad-Lite's compon
 <br>-<i>group->authors</i>, load list of authors associated with the selected group(s') pads
 <br>-<i>group->authors</i>, load list of pads associated with the selected group(s)
 <br>-<i>pad->content</i>, display (read-only) content of selected pad
+<br>-<i>misc->help</i>, display this usage information in a popup
 <br>-<i>misc->status</i>, checks the Etherpad-Lite api token is accessible and valid
 <br>-<i>misc->test</i>, pulls the top 10 records from the database
 <br>-<i>misc->clean</i>, remove non-essential records from the database

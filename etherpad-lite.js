@@ -1,5 +1,6 @@
 
-// global containers
+// globals
+var help;
 var authors;
 var groups;
 var pads;
@@ -1227,6 +1228,21 @@ function epc_sessionsInfo(verbose) {
 //
 // misc
 //
+
+function epc_help() {
+
+  help = undefined;
+  if (!help) {
+    var jsonData = epx_call('help', [], false);
+    if (jsonData !== undefined)
+      help = jsonData['html'];
+    else
+      help = '[debug] error loading help';
+  }
+  $('#popupTitle').html('help');
+  $('#popupContent').html(help);
+  popupToggle();
+}
 
 function epc_status(verbose) {
   console.log('[debug|epc_status]');

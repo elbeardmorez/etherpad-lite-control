@@ -277,6 +277,21 @@ function epxCall($func, $args = [],
             $jsonData = $data;
             break;
 
+          case 'help':
+            $sReadme = getFileContents('README.md');
+            # cut usage section
+            $sReadme = substr($sReadme, strpos($sReadme, '### usage') + 10);
+            $sReadme = substr($sReadme, 0, strpos($sReadme, '## <p></p>'));
+            # strip markdown
+            $sReadme = preg_replace('/\*\*(.*?)\*\*' . "\n" . '(?:<br>)?/', '<p style="font-size: 1.1em; margin: 10px 0px 2px;"><b>${1}</b></p>' . "\n", $sReadme);
+            $sReadme = preg_replace('/__\*__\s*/', '*', $sReadme);
+            $sReadme = preg_replace('/```(.*?)```/s', '<pre>${1}</pre>', $sReadme);
+
+            $data = [ 'code' => 0, 'message' => 'ok', 'data' => [ 'html' => '' . $sReadme . '' ] ];
+            $sData = var2str($data);
+            $jsonData = $data;
+            break;
+
           default:
             $sData = '[error] unsupported non-api function \'' . $func . '\'';
             error_log($sData);
@@ -332,7 +347,7 @@ function epCall($func, $args = [],
 }
 
 $aEpApi = [ 'checkToken', 'getHTML', 'getPublicStatus', 'deletePad', 'deleteGroup', 'listAllPads', 'listPads', 'listAllGroups', 'createGroupIfNotExistsFor', 'listAuthorsOfPad', 'getAuthorName', 'createAuthorIfNotExistsFor', 'getLastEdited', 'createPad', 'createGroupPad', 'createSession', 'deleteSession', 'getSessionInfo' ];
-$aEpX = [ 'test', 'getGroupMappers', 'deleteAuthor', 'listAllAuthors', 'getAuthorMappers', 'setAuthorMap', 'setAuthorName', 'getPadCreated', 'listAllSessions', 'cleanDatabase' ];
+$aEpX = [ 'help', 'test', 'getGroupMappers', 'deleteAuthor', 'listAllAuthors', 'getAuthorMappers', 'setAuthorMap', 'setAuthorName', 'getPadCreated', 'listAllSessions', 'cleanDatabase' ];
 
 if (!empty($_POST)) {
   if (!empty($_POST['func'])) {

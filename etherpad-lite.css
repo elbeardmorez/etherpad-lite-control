@@ -75,6 +75,9 @@ hr {
 #epStatus-inner, #epInfo-inner {
   font-size: 0.8em;
 }
+#epInfo-inner p {
+  word-wrap: break-word;
+}
 #epStatus-outer {
   background-color: #eee;
 }

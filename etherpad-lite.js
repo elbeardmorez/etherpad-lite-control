@@ -700,7 +700,7 @@ function epc_pads(data, verbose) {
           else {
             // group pad
             // set public status
-            if (res) {
+            if (res2) {
               pad['public'] = true;
               pad['type'] = 'public group';
             } else {

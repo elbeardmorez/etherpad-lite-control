@@ -753,6 +753,7 @@ function epc_padsShow(type) {
       break;
   }
   $('#epPads').html('');
+  if (pads) {
   $.each(pads, function(idx, pad) {
     switch (type) {
       case "group (private)":
@@ -775,6 +776,7 @@ function epc_padsShow(type) {
     $('#epPadsTitle').html('pads (' + ($('#epPads')[0].length - 1) + ')');
   } else
     $('#epPadsTitle').html('pads (0)');
+}
 }
 
 function epc_padsAdd(verbose, data) {

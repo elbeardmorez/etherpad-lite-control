@@ -754,29 +754,29 @@ function epc_padsShow(type) {
   }
   $('#epPads').html('');
   if (pads) {
-  $.each(pads, function(idx, pad) {
-    switch (type) {
-      case "group (private)":
-        if (pad['type'] === 'private group')
-          $('#epPads').append('<option value="' + pad['id'] + '">' + pad['name'] + '</option>');
-        break;
-      case "group (public)":
-        if (pad['type'] === 'public group')
-          $('#epPads').append('<option value="' + pad['id'] + '">' + pad['name'] + '</option>');
-        break;
-      case "regular":
-        if (pad['type'] === 'regular')
-          $('#epPads').append('<option value="' + pad['id'] + '">' + pad['name'] + '</option>');
-        break;
-    }
-  });
+    $.each(pads, function(idx, pad) {
+      switch (type) {
+        case "group (private)":
+          if (pad['type'] === 'private group')
+            $('#epPads').append('<option value="' + pad['id'] + '">' + pad['name'] + '</option>');
+          break;
+        case "group (public)":
+          if (pad['type'] === 'public group')
+            $('#epPads').append('<option value="' + pad['id'] + '">' + pad['name'] + '</option>');
+          break;
+        case "regular":
+          if (pad['type'] === 'regular')
+            $('#epPads').append('<option value="' + pad['id'] + '">' + pad['name'] + '</option>');
+          break;
+      }
+    });
 
-  if ($('#epPads')[0].length > 0) {
-    $('#epPads').prepend('<option value="All">All</option>');
-    $('#epPadsTitle').html('pads (' + ($('#epPads')[0].length - 1) + ')');
-  } else
-    $('#epPadsTitle').html('pads (0)');
-}
+    if ($('#epPads')[0].length > 0) {
+      $('#epPads').prepend('<option value="All">All</option>');
+      $('#epPadsTitle').html('pads (' + ($('#epPads')[0].length - 1) + ')');
+    } else
+      $('#epPadsTitle').html('pads (0)');
+  }
 }
 
 function epc_padsAdd(verbose, data) {

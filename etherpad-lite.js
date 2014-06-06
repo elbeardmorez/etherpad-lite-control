@@ -661,23 +661,22 @@ function epc_pads(data, verbose) {
   var res;
   switch (data) {
     case 'global':
-      var func = 'listAllPads';
-      var args = [];
-      res = ep_call(func, args, verbose);
+      res = ep_call('listAllPads', [], verbose);
       if (res !== undefined && res !== null)
         jsonData.push(res);
       break;
     case 'group':
       selectedGids = $('#epGroups :selected').map(function(){return this.value;}).get();
       if (selectedGids.length > 0) {
-        var func = "listPads";
-        var args = [];
         $.each(selectedGids, function(idx, gid) {
-          args = [gid];
-          res = ep_call(func, args, verbose);
+          res = ep_call('listPads', [gid], verbose);
           if (res !== undefined && res !== null)
             jsonData.push(res);
         });
+      } else {
+        res = ep_call('listAllPads', [], verbose);
+        if (res !== undefined && res !== null)
+          jsonData.push(res);
       }
       break;
   }

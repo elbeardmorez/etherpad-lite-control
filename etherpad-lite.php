@@ -317,11 +317,11 @@ function epCall($func, $args = [],
                 $apiKeyPath = '/var/www/etherpad-lite/APIKEY.txt') {
   error_log('[debug|epCall]');
 
-#  error_log('$url: ' . $url);
-#  error_log('$apiKeyPath: ' . $apiKeyPath);
-
   $sData = '';
-  $jsonData = null;
+  $sData = '';
+  $jsonData = [ 'code' => 1,
+                'message' => '[error] epCall failed',
+                'data' => null ];
 
   $sApiKey = getApiKey($apiKeyPath);
   if($sApiKey) {

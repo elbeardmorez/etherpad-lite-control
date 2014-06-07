@@ -1,10 +1,15 @@
 
 // globals
 var help;
+
 var authors;
 var groups;
 var pads;
 var sessions;
+
+var padProps = ['name', 'created', 'updated', 'type', 'author(s)'];
+var authorProps = ['id', 'map', 'name', 'mapped'];
+var sessionProps = ['id', 'author', 'group', 'expiry'];
 
 /*
  return 'undefined' for erroneous and unsuccessful. 'null' used for successful queries, e.g. empty lists
@@ -143,13 +148,13 @@ function epc_authors(verbose) {
   var info = $('#epInfo-title')[0].innerHTML.match(/.*\((author|pad|session)\).*|/)[1];
   switch (info) {
     case 'author':
-      epc_authorsInfo();
+      epc_authorsInfoShow();
       break;
     case 'pad':
-      epc_padsInfo();
+      epc_padsInfoShow();
       break;
     case 'session':
-      epc_sessionsInfo();
+      epc_sessionsInfoShow();
       break;
   }
 }
@@ -193,7 +198,7 @@ function epc_authorsAdd(verbose) {
     // select added / existing
     $('#epAuthors option[value="' + id + '"]').attr('selected', true);
     // update info
-    epc_authorsInfo();
+    epc_authorsInfoShow();
   }
 }
 
@@ -242,15 +247,33 @@ function epc_authorsRemove(verbose, data) {
         var info = $('#epInfo-title')[0].innerHTML.match(/.*\((author)\).*|/)[1];
         switch (info) {
           case 'author':
-            epc_authorsInfo();
+            epc_authorsInfoShow();
         }
       }
     }
   }
 }
 
-function epc_authorsInfo(verbose) {
+function epc_authorsInfo(verbose, data) {
   console.log('[debug|epc_authorsInfo]');
+
+  $.each(data, function(idx, id) {
+    var author = authors[id];
+
+    var calls = {};
+    if (author === undefined)
+      console.log('[debug] broken author reference key: ' + id);
+    else {
+      // collect info strings
+      var append = false;
+      $.each(authorProps, function(idx, prop) {
+      });
+    }
+  });
+}
+
+function epc_authorsInfoShow(verbose) {
+  console.log('[debug|epc_authorsInfoShow]');
 
   // get selected id
   var selected = $('#epAuthors :selected').map(function(){return this.value;}).get();
@@ -262,28 +285,31 @@ function epc_authorsInfo(verbose) {
 
     var id = selected[0];
     var author = authors[id];
+
+    // check for 'all'
     if (author === undefined) {
       if (id != 'All')
         console.log('[debug] broken author reference key');
       return;
     }
 
-    var props = ['id', 'map', 'name', 'mapped'];
+    // ensure info
+    epc_authorsInfo(verbose, [id]);
 
-    // build html
+    // html
     var authorHTML = {};
     var propHTMLSuffix = "<span style='font-size: 1.1em;'>"
     var propHTMLPostfix = "</span>";
 
     // prop specific styling
-    $.each(props, function(idx, prop) {
+    $.each(authorProps, function(idx, prop) {
       switch (prop) {
       }
     });
 
     // construct html
     var html = '';
-    $.each(props, function(idx, prop) {
+    $.each(authorProps, function(idx, prop) {
       html += '<p style="margin: 3px 0px 2px; font-size: 0.8em;"><b>' + prop + ': </b>' + (authorHTML[prop] ? authorHTML[prop] : propHTMLSuffix + (author[prop] !== undefined ? author[prop] : '') + propHTMLPostfix) + '</p>';
     });
     $('#epInfo-inner').html(html);
@@ -378,10 +404,10 @@ function epc_authorMap(verbose, data) {
         var info = $('#epInfo-title')[0].innerHTML.match(/.*\((author|session)\).*|/)[1];
         switch (info) {
           case 'author':
-            epc_authorsInfo();
+            epc_authorsInfoShow();
             break;
           case 'session':
-            epc_sessionsInfo();
+            epc_sessionsInfoShow();
             break;
         }
       }
@@ -462,10 +488,10 @@ function epc_authorName(verbose, data) {
         var info = $('#epInfo-title')[0].innerHTML.match(/.*\((author|session)\).*|/)[1];
         switch (info) {
           case 'author':
-            epc_authorsInfo();
+            epc_authorsInfoShow();
             break;
           case 'session':
-            epc_sessionsInfo();
+            epc_sessionsInfoShow();
             break;
         }
       }
@@ -522,7 +548,7 @@ function epc_groups(verbose) {
   var info = $('#epInfo-title')[0].innerHTML.match(/.*\((session)\).*|/)[1];
   switch (info) {
     case 'session':
-      epc_sessionsInfo();
+      epc_sessionsInfoShow();
       break;
   }
 }
@@ -728,7 +754,7 @@ function epc_pads(data, verbose) {
     var info = $('#epInfo-title')[0].innerHTML.match(/.*\((pad)\).*|/)[1];
     switch (info) {
       case 'pad':
-        epc_padsInfo();
+        epc_padsInfoShow();
         break;
     }
   } else
@@ -814,7 +840,7 @@ function epc_padsAdd(verbose, data) {
   // select added / existing
   $('#epPads option[value="' + name + '"]').attr('selected', true);
   // update info
-  epc_padsInfo();
+  epc_padsInfoShow();
 }
 
 function epc_padsRemove(verbose, data) {
@@ -859,10 +885,10 @@ function epc_padsRemove(verbose, data) {
         var info = $('#epInfo-title')[0].innerHTML.match(/.*\((pad|session)\).*|/)[1];
         switch (info) {
           case 'pad':
-            epc_padsInfo();
+            epc_padsInfoShow();
             break;
           case 'session':
-            epc_sessionsInfo();
+            epc_sessionsInfoShow();
             break;
         }
       }
@@ -885,9 +911,88 @@ function epc_padContent(verbose) {
   }
 }
 
-function epc_padsInfo(verbose) {
+function epc_padsInfo(verbose, data) {
   console.log('[debug|epc_padsInfo]');
 
+  $.each(data, function(idx, id) {
+    var pad = pads[id];
+
+    var calls = {};
+    calls['created'] = [ 'nonapi', 'getPadCreated', [ id ], 'created' ];
+    calls['updated'] = [ 'api', 'getLastEdited', [ id ], 'lastEdited' ];
+    calls['author(s)'] = [ 'api', 'listAuthorsOfPad', [ id ], 'authorIDs' ];
+
+    if (pad === undefined)
+      console.log('[debug] broken pad reference key: ' + id);
+    else {
+      // collect info strings
+      var append = false;
+      $.each(padProps, function(idx, prop) {
+
+        var bUpdate = true;
+        var bProcess = true;
+
+        // pre-processing
+        switch (prop) {
+          case 'created':
+          case 'updated':
+            if (pad['created'] !== undefined)
+              bUpdate = bProcess = false;
+            break;
+          case 'author(s)':
+            if (pad['authors'] !== undefined)
+              bUpdate = false;
+            break;
+        }
+
+        if (bUpdate && calls[prop] !== undefined) {
+          var call = calls[prop];
+          var type = call[0];
+          var func = call[1];
+          var args = call[2];
+          var dataKey = call[3];
+
+          var jsonData;
+          if (type === "api")
+            jsonData = ep_call(func, args, verbose, append);
+          else
+            jsonData = epx_call(func, args, verbose, append);
+          // append any further status messages
+          append = true;
+          if (jsonData !== undefined)
+            // add info to pad object
+            pad[prop] = jsonData[dataKey];
+        }
+
+        if (bProcess) {
+          // post processing
+          switch (prop) {
+            case 'created':
+            case 'updated':
+              // convert date
+              pad[prop] = getDateString(new Date(pad[prop]));
+              break;
+            case 'author(s)':
+              if (pad[prop] !== undefined) {
+                if ($.isArray(pad[prop]))
+                  // flatten
+                  pad[prop] = pad[prop].map(function(s){return '? [' + s + ']';}).join(', ');
+                if (authors !== undefined && pad[prop].match(/\?/))
+                  // resolve unresolved
+                  pad[prop] = pad[prop].split(',').map(function(s){ var author = authors[s.match(/^.*?\[(.*?)\]\s*$/)[1]]; return (author !== undefined ? (author['map'] ? author['map'] : author['name']) + ' [' + author['id'] + ']' : s.trim()); }).join(', ');
+              }
+              break;
+          }
+        }
+      });
+    }
+  });
+}
+
+function epc_padsInfoShow(verbose) {
+  console.log('[debug|epc_padsInfoShow]');
+
+  // get selected id
   var selected = $('#epPads :selected').map(function(){return this.value;}).get();
   if (selected.length > 0) {
 
@@ -897,83 +1002,32 @@ function epc_padsInfo(verbose) {
 
     var id = selected[0];
     var pad = pads[id];
+
+    // check for 'all'
     if (pad === undefined) {
       if (id != 'All')
         console.log('[debug] broken pad reference key');
       return;
     }
 
-    var props = ['name', 'created', 'updated', 'type', 'author(s)']
-    var infos = {};
-    infos['created'] = [ 'nonapi', 'getPadCreated', [ id ], 'created' ];
-    infos['updated'] = [ 'api', 'getLastEdited', [ id ], 'lastEdited' ];
-    infos['author(s)'] = [ 'api', 'listAuthorsOfPad', [ id ], 'authorIDs' ];
+    // ensure info
+    epc_padsInfo(verbose, [id]);
 
-    // collect info strings
-    var append = false;
-    $.each(props, function(idx, prop) {
+    // html
+    var padHTML = {};
+    var propHTMLSuffix = "<span style='font-size: 1.1em;'>"
+    var propHTMLPostfix = "</span>";
 
-      var bUpdate = true;
-      var bProcess = true;
-
-      // pre-processing
+    // prop specific styling
+    $.each(padProps, function(idx, prop) {
       switch (prop) {
-        case 'created':
-        case 'updated':
-          if (pad['created'] !== undefined)
-            bUpdate = bProcess = false;
-          break;
-        case 'author(s)':
-          if (pad['authors'] !== undefined)
-            bUpdate = false;
-          break;
-      }
-
-      if (bUpdate && infos[prop] !== undefined) {
-        var info = infos[prop];
-        var type = info[0];
-        var func = info[1];
-        var args = info[2];
-        var dataKey = info[3];
-
-        var jsonData;
-        if (type === "api")
-          jsonData = ep_call(func, args, verbose, append);
-        else
-          jsonData = epx_call(func, args, verbose, append);
-        // append any further status messages
-        append = true;
-        if (jsonData !== undefined)
-          // add info to pad object
-          pad[prop] = jsonData[dataKey];
-      }
-
-      if (bProcess) {
-        // post processing
-        switch (prop) {
-          case 'created':
-          case 'updated':
-            // convert date
-            pad[prop] = getDateString(new Date(pad[prop]));
-            break;
-          case 'author(s)':
-            if (pad[prop] !== undefined) {
-              if ($.isArray(pad[prop]))
-                // flatten
-                pad[prop] = pad[prop].map(function(s){return '? [' + s + ']';}).join(', ');
-              if (authors !== undefined && pad[prop].match(/\?/))
-                // resolve unresolved
-                pad[prop] = pad[prop].split(',').map(function(s){ var author = authors[s.match(/^.*?\[(.*?)\]\s*$/)[1]]; return (author !== undefined ? (author['map'] ? author['map'] : author['name']) + ' [' + author['id'] + ']' : s.trim()); }).join(', ');
-            }
-            break;
-        }
       }
     });
 
     // construct html
     var html = '';
-    $.each(props, function(idx, prop) {
-      html += "<p style='margin: 3px 0px 2px; font-size: 0.8em;'><b>" + prop + ": </b><span style='font-size: 1.1em;'>" + ( pad[prop] !== undefined ? pad[prop] : '') + "</span></p>"
+    $.each(padProps, function(idx, prop) {
+      html += '<p style="margin: 3px 0px 2px; font-size: 0.8em;"><b>' + prop + ': </b>' + (padHTML[prop] ? padHTML[prop] : propHTMLSuffix + (pad[prop] !== undefined ? pad[prop] : '') + propHTMLPostfix) + '</p>';
     });
     $('#epInfo-inner').html(html);
     $('#epInfo-title').html('info (pad)');
@@ -1008,7 +1062,7 @@ function epc_sessions(verbose) {
   var info = $('#epInfo-title')[0].innerHTML.match(/.*\((session)\).*|/)[1];
   switch (info) {
     case 'session':
-      epc_sessionsInfo();
+      epc_sessionsInfoShow();
       break;
   }
 }
@@ -1081,7 +1135,7 @@ function epc_sessionsAdd(verbose) {
   // select added / existing
   $('#epSessions option[value="' + id + '"]').attr('selected', true);
   // update info
-  epc_sessionsInfo();
+  epc_sessionsInfoShow();
 }
 
 function epc_sessionsRemove(verbose, data) {
@@ -1130,7 +1184,7 @@ function epc_sessionsRemove(verbose, data) {
         var info = $('#epInfo-title')[0].innerHTML.match(/.*\((session)\).*|/)[1];
         switch (info) {
           case 'session':
-            epc_sessionsInfo();
+            epc_sessionsInfoShow();
             break;
         }
       }
@@ -1138,9 +1192,98 @@ function epc_sessionsRemove(verbose, data) {
   }
 }
 
-function epc_sessionsInfo(verbose) {
+function epc_sessionsInfo(verbose, data) {
   console.log('[debug|epc_sessionsInfo]');
 
+  $.each(data, function(idx, id) {
+    var session = sessions[id];
+
+    var calls = {};
+    calls['author'] = [ 'api', 'getSessionInfo', [ id ], 'authorID' ];
+    calls['group'] = [ 'api', 'getSessionInfo', [ id ], 'groupID' ];
+    calls['expiry'] = [ 'api', 'getSessionInfo', [ id ], 'validUntil' ];
+
+    if (session === undefined)
+      console.log('[debug] broken session reference key: ' + id);
+    else {
+      // collect info strings
+      var append = false;
+      $.each(sessionProps, function(idx, prop) {
+
+        var bUpdate = true;
+        var bProcess = true;
+
+        // pre-processing
+        switch (prop) {
+          case 'author':
+          case 'group':
+          case 'expiry':
+            bUpdate = false;
+//            if (session[prop] !== undefined)
+//              bProcess = false;
+            break;
+        }
+
+        if (bUpdate && calls[prop] !== undefined) {
+          var call = calls[prop];
+          var type = call[0];
+          var func = call[1];
+          var args = call[2];
+          var dataKey = call[3];
+
+          var jsonData;
+          if (type === "api")
+            jsonData = ep_call(func, args, verbose, append);
+          else
+            jsonData = epx_call(func, args, verbose, append);
+          // append any further status messages
+          append = true;
+          if (jsonData !== undefined)
+            // add info to session object
+            session[prop] = jsonData[dataKey];
+        }
+
+        if (bProcess) {
+          // post processing
+          switch (prop) {
+            case 'author':
+              if (session['author'] === undefined || session['author'] == session['authorID']) {
+                session['author'] = session['authorID'];
+                if (authors !== undefined) {
+                  // resolve id
+                  author = authors[session['author']];
+                  if (author !== undefined)
+                    session['author'] = (author['map'] ? author['map'] : author['name']) + ' [' + author['id'] + ']';
+                }
+              }
+              break;
+            case 'group':
+              if (session['group'] === undefined || session['group'] == session['groupID']) {
+                session['group'] = session['groupID'];
+                if (groups !== undefined) {
+                  // resolve id
+                  group = groups[session['groupID']];
+                  if (group !== undefined)
+                    session['group'] = group['name'] + ' [' + group['id'] + ']';
+                }
+              }
+              break;
+            case 'expiry':
+              if (session['expiry'] === undefined)
+                // convert date
+                session['expiry'] = getDateString(new Date(session['validUntil']));
+              break;
+          }
+        }
+      });
+    }
+  });
+}
+
+function epc_sessionsInfoShow(verbose) {
+  console.log('[debug|epc_sessionsInfoShow]');
+
+  // get selected id
   var selected = $('#epSessions :selected').map(function(){return this.value;}).get();
   if (selected.length > 0) {
 
@@ -1150,63 +1293,24 @@ function epc_sessionsInfo(verbose) {
 
     var id = selected[0];
     var session = sessions[id];
+
+    // check for 'all'
     if (session === undefined) {
       if (id != 'All')
         console.log('[debug] broken session reference key');
       return;
     }
 
-    var props = ['id', 'author', 'group', 'expiry'];
-
     // ensure info
-    if (session['authorID'] === undefined) {
-      var jsonData = ep_call('getSessionInfo', [id], verbose, true);
-      if (jsonData !== undefined) {
-        $.each(jsonData, function(key, value) {
-          // add info to session object
-          session[key] = value;
-        });
-      }
-    }
-    $.each(props, function(idx, prop) {
-      switch (prop) {
-        case 'author':
-          if (session['author'] === undefined || session['author'] == session['authorID']) {
-            session['author'] = session['authorID'];
-            if (authors !== undefined) {
-              // resolve id
-              author = authors[session['authorID']];
-              if (author !== undefined)
-                session['author'] = (author['map'] ? author['map'] : author['name']) + ' [' + author['id'] + ']';
-            }
-          }
-          break;
-        case 'group':
-          if (session['group'] === undefined || session['group'] == session['groupID']) {
-            session['group'] = session['groupID'];
-            if (groups !== undefined) {
-              // resolve id
-              group = groups[session['groupID']];
-              if (group !== undefined)
-                session['group'] = group['name'] + ' [' + group['id'] + ']';
-            }
-          }
-          break;
-        case 'expiry':
-          if (session['expiry'] === undefined)
-            // convert date
-            session['expiry'] = getDateString(new Date(session['validUntil']));
-          break;
-      }
-    });
+    epc_sessionsInfo(verbose, [id]);
 
-    // build html
+    // html
     var sessionHTML = {};
     var propHTMLSuffix = "<span style='font-size: 1.1em;'>"
     var propHTMLPostfix = "</span>";
 
     // prop specific styling
-    $.each(props, function(idx, prop) {
+    $.each(sessionProps, function(idx, prop) {
       switch (prop) {
         case 'expiry':
           if (session['validUntil'] < Date.now())
@@ -1218,7 +1322,7 @@ function epc_sessionsInfo(verbose) {
 
     // construct html
     var html = '';
-    $.each(props, function(idx, prop) {
+    $.each(sessionProps, function(idx, prop) {
       html += '<p style="margin: 3px 0px 2px; font-size: 0.8em;"><b>' + prop + ': </b>' + (sessionHTML[prop] ? sessionHTML[prop] : propHTMLSuffix + (session[prop] ? session[prop] : '') + propHTMLPostfix) + '</p>';
     });
     $('#epInfo-inner').html(html);

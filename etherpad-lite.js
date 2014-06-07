@@ -8,7 +8,7 @@ var pads;
 var sessions;
 
 var padProps = ['name', 'created', 'updated', 'type', 'author(s)'];
-var authorProps = ['id', 'map', 'name', 'mapped'];
+var authorProps = ['id', 'map', 'name', 'mapped', 'pad(s)'];
 var sessionProps = ['id', 'author', 'group', 'expiry'];
 
 /*
@@ -125,6 +125,13 @@ function epc_authors(verbose) {
     $.each(authors, function(key, author) {
       author['map'] = null;
       author['mapped'] = false;
+      if (author['padIDs']) {
+        // simple array
+        author['padIDs'] = Object.keys(author['padIDs']);
+        // flatten
+        author['pad(s)'] = author['padIDs'].join(', ');
+      } else
+        author['pad(s)'] = '';
     });
   }
   // map external names where possible

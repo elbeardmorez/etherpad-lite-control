@@ -935,8 +935,10 @@ function epc_padsInfo(verbose, data) {
         // pre-processing
         switch (prop) {
           case 'created':
-          case 'updated':
             if (pad['created'] !== undefined)
+              bUpdate = bProcess = false;
+          case 'updated':
+            if (pad['updated'] !== undefined)
               bUpdate = bProcess = false;
             break;
           case 'author(s)':

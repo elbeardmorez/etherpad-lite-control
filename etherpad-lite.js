@@ -1201,7 +1201,7 @@ function epc_sessionsInfo(verbose, data) {
     var calls = {};
     calls['author'] = [ 'api', 'getSessionInfo', [ id ], 'authorID' ];
     calls['group'] = [ 'api', 'getSessionInfo', [ id ], 'groupID' ];
-    calls['expiry'] = [ 'api', 'getSessionInfo', [ id ], 'validUntil' ];
+    calls['expiryUTC'] = [ 'api', 'getSessionInfo', [ id ], 'validUntil' ];
 
     if (session === undefined)
       console.log('[debug] broken session reference key: ' + id);
@@ -1217,10 +1217,12 @@ function epc_sessionsInfo(verbose, data) {
         switch (prop) {
           case 'author':
           case 'group':
+            bUpdate = false;
+            break;
           case 'expiry':
             bUpdate = false;
-//            if (session[prop] !== undefined)
-//              bProcess = false;
+            if (session['expiry'] !== undefined)
+              bProcess = false;
             break;
         }
 
@@ -1247,8 +1249,7 @@ function epc_sessionsInfo(verbose, data) {
           // post processing
           switch (prop) {
             case 'author':
-              if (session['author'] === undefined || session['author'] == session['authorID']) {
-                session['author'] = session['authorID'];
+              if (!session['author'].match(/\ /)) {
                 if (authors !== undefined) {
                   // resolve id
                   author = authors[session['author']];
@@ -1258,11 +1259,10 @@ function epc_sessionsInfo(verbose, data) {
               }
               break;
             case 'group':
-              if (session['group'] === undefined || session['group'] == session['groupID']) {
-                session['group'] = session['groupID'];
+              if (!session['group'].match(/\ /)) {
                 if (groups !== undefined) {
                   // resolve id
-                  group = groups[session['groupID']];
+                  group = groups[session['group']];
                   if (group !== undefined)
                     session['group'] = group['name'] + ' [' + group['id'] + ']';
                 }
@@ -1271,7 +1271,7 @@ function epc_sessionsInfo(verbose, data) {
             case 'expiry':
               if (session['expiry'] === undefined)
                 // convert date
-                session['expiry'] = getDateString(new Date(session['validUntil']));
+                session['expiry'] = getDateString(new Date(session['expiryUTC']));
               break;
           }
         }

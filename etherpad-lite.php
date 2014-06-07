@@ -240,8 +240,10 @@ function epxCall($func, $args = [],
             else {
               foreach ($data['data'] as $arr) {
                 $session = json_decode($arr['value'], true);
-                $session['id'] = $arr['id'];
-                $data2[$session['id']] = $session;
+                $data2[$arr['id']] = [ 'id' => $arr['id'],
+                                       'author' => $session['authorID'],
+                                       'group' => $session['groupID'],
+                                       'expiryUTC' => $session['validUntil'] ];
               }
             }
             $data['data'] = $data2;

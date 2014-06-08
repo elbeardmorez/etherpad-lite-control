@@ -720,8 +720,10 @@ function epc_pads(data, verbose) {
       if (selectedGids.length > 0) {
         $.each(selectedGids, function(idx, gid) {
           res = ep_call('listPads', [gid], verbose);
-          if (res !== undefined && res !== null)
+          if (res !== undefined && res !== null) {
+            groups[gid]['padIDs'] = res['padIDs'];
             jsonData.push(res);
+          }
         });
       } else {
         res = ep_call('listAllPads', [], verbose);

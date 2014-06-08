@@ -108,41 +108,75 @@ function ep_call(func, args, verbose, append) {
 // authors
 //
 
-function epc_authors(verbose) {
+function epc_authors(data, verbose) {
   console.log('[debug|epc_authors]');
+
+  if (data === undefined)
+    var data = 'global';
 
   // remember current selection
   selected = $('#epAuthors :selected').map(function(){return this.value;}).get();
 
+  var aData = [];
+  var jsonData;
+  switch (data) {
+    case 'global':
+      jsonData = epx_call('listAllAuthors', [], verbose);
+      if (jsonData !== undefined && jsonData !== null)
+        aData.push(jsonData);
+      break;
+    case 'group':
+      // alert if no groups?
+      selectedGids = $('#epGroups :selected').map(function(){return this.value;}).get();
+      // collect padIDs, from which to collect authorIDs
+      if (selectedGids.length > 0) {
+        $.each(selectedGids, function(idx, gid) {
+          jsonData = {};
+          groups[gid]['padIDs'] &&
+            $.each(groups[gid]['padIDs'], function (idx2, pid) {
+              pads[pid]['authorIDs'] &&
+                $.each(pads[pid]['authorIDs'], function (idx3, aid) {
+                  jsonData[aid] = authors[aid];
+        });});});
+      } else {
+        jsonData = epx_call('listAllAuthors', [], verbose);
+        if (jsonData !== undefined && jsonData !== null)
+          aData.push(jsonData);
+      }
+      break;
+  }
+
   // reset authors object
   authors = {};
+  if (aData.length > 0) {
+    // process
+    $.each(aData, function(idx, jsonData) {
+      if (jsonData) {
+        $.each(jsonData, function(id, author) {
+          authors[id] = author;
+          author['map'] = null;
+          author['mapped'] = false;
+          if (author['padIDs']) {
+            // simple array
+            author['padIDs'] = Object.keys(author['padIDs']);
+            // flatten
+            author['pad(s)'] = author['padIDs'].join(', ');
+          } else
+            author['pad(s)'] = '';
+        });
+      }
+    });
 
-  var jsonData;
-  jsonData = epx_call('listAllAuthors', undefined, verbose)
-  if (jsonData !== undefined && jsonData !== null) {
-    // process
-    authors = jsonData;
-    $.each(authors, function(key, author) {
-      author['map'] = null;
-      author['mapped'] = false;
-      if (author['padIDs']) {
-        // simple array
-        author['padIDs'] = Object.keys(author['padIDs']);
-        // flatten
-        author['pad(s)'] = author['padIDs'].join(', ');
-      } else
-        author['pad(s)'] = '';
-    });
-  }
-  // map external names where possible
-  jsonData = epx_call('getAuthorMappers', undefined, true, true);
-  if (jsonData !== undefined && jsonData !== null) {
-    // process
-    $.each(jsonData, function(id, data) {
-      var author = authors[id];
-      author['mapped'] = true;
-      author['map'] = data['name'];
-    });
+    // map external names where possible
+    jsonData = epx_call('getAuthorMappers', undefined, true, true);
+    if (jsonData !== undefined && jsonData !== null) {
+      // process
+      $.each(jsonData, function(id, data) {
+        var author = authors[id];
+        author['mapped'] = true;
+        author['map'] = data['name'];
+      });
+    }
   }
 
   // update select control
@@ -695,63 +729,61 @@ function epc_pads(data, verbose) {
   // remember current selection
   var selected = $('#epPads :selected').map(function(){return this.value;}).get();
 
-  var jsonData = [];
-  var res;
+  var aData = [];
+  var jsonData;
   switch (data) {
     case 'global':
-      res = ep_call('listAllPads', [], verbose);
-      if (res !== undefined && res !== null)
-        jsonData.push(res);
+      jsonData = ep_call('listAllPads', [], verbose);
+      if (jsonData !== undefined && jsonData !== null)
+        aData.push(jsonData);
       break;
     case 'author':
       selectedAids = $('#epAuthors :selected').map(function(){return this.value;}).get();
       if (selectedAids.length > 0) {
         $.each(selectedAids, function(idx, aid) {
-          authors[aid]['padIDs'] && jsonData.push({ 'padIDs': authors[aid]['padIDs'] });
+          authors[aid]['padIDs'] && aData.push({ 'padIDs': authors[aid]['padIDs'] });
         });
       } else {
-        res = ep_call('listAllPads', [], verbose);
-        if (res !== undefined && res !== null)
-          jsonData.push(res);
+        jsonData = ep_call('listAllPads', [], verbose);
+        if (jsonData !== undefined && jsonData !== null)
+          aData.push(jsonData);
       }
       break;
     case 'group':
       selectedGids = $('#epGroups :selected').map(function(){return this.value;}).get();
       if (selectedGids.length > 0) {
         $.each(selectedGids, function(idx, gid) {
-          res = ep_call('listPads', [gid], verbose);
-          if (res !== undefined && res !== null) {
-            groups[gid]['padIDs'] = res['padIDs'];
-            jsonData.push(res);
+          jsonData = ep_call('listPads', [gid], verbose);
+          if (jsonData !== undefined && jsonData !== null) {
+            groups[gid]['padIDs'] = jsonData['padIDs'];
+            aData.push(jsonData);
           }
         });
       } else {
-        res = ep_call('listAllPads', [], verbose);
-        if (res !== undefined && res !== null)
-          jsonData.push(res);
+        jsonData = ep_call('listAllPads', [], verbose);
+        if (jsonData !== undefined && jsonData !== null)
+          aData.push(jsonData);
       }
       break;
   }
 
   // reset pads object
   pads = {};
-  if (jsonData.length > 0) {
+  if (aData.length > 0) {
     // process
-    $.each(jsonData, function(idx, result) {
-      if (result['padIDs'].length > 0) {
-        $.each(result['padIDs'], function(idx2, id) {
-          if (pads[id] === undefined)
-            pads[id] = {'id': id, 'name': id};
+    $.each(aData, function(idx, jsonData) {
+      if (jsonData['padIDs'].length > 0) {
+        $.each(jsonData['padIDs'], function(idx2, id) {
+          pads[id] = {'id': id, 'name': id};
           var pad = pads[id];
-          var args = [id]
-          var res2 = ep_call('getPublicStatus', args, false);
-          if (res2 === undefined)
+          var jsonData2 = ep_call('getPublicStatus', [id], false);
+          if (jsonData2 === undefined)
             // regular pad
             pad['type'] = 'regular';
           else {
             // group pad
             // set public status
-            if (res2) {
+            if (jsonData2) {
               pad['public'] = true;
               pad['type'] = 'public group';
             } else {

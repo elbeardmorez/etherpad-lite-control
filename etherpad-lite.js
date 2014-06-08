@@ -506,6 +506,11 @@ function epc_authorName(verbose, data) {
   }
 }
 
+function epc_authorPads(verbose) {
+  console.log('[debug|epc_authorPads]');
+  epc_pads('author');
+}
+
 //
 // groups
 //
@@ -697,6 +702,18 @@ function epc_pads(data, verbose) {
       res = ep_call('listAllPads', [], verbose);
       if (res !== undefined && res !== null)
         jsonData.push(res);
+      break;
+    case 'author':
+      selectedAids = $('#epAuthors :selected').map(function(){return this.value;}).get();
+      if (selectedAids.length > 0) {
+        $.each(selectedAids, function(idx, aid) {
+          authors[aid]['padIDs'] && jsonData.push({ 'padIDs': authors[aid]['padIDs'] });
+        });
+      } else {
+        res = ep_call('listAllPads', [], verbose);
+        if (res !== undefined && res !== null)
+          jsonData.push(res);
+      }
       break;
     case 'group':
       selectedGids = $('#epGroups :selected').map(function(){return this.value;}).get();

@@ -34,7 +34,7 @@ function getFunctionName($s) {
     <p style="margin: 2px 5px; font-size: 0.8em;">author</p>
     <hr style="margin: 5px;">
     <?php
-      $controls = [ 'Map', 'Name' ];
+      $controls = [ 'Pads', 'Map', 'Name' ];
       foreach ($controls as $control) {
         echo '<input id="epcGroup' . $control . '" type="button" class="button" onclick="epc_' . getFunctionName('author' . $control) . '()" value="' . $control . '" style="margin-left: 10px;">';
       }

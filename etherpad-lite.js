@@ -669,7 +669,7 @@ function epc_groupsRemove(verbose, data) {
         $.each(selected, function(idx, id) {
           var args = [id];
           var jsonData = ep_call('deleteGroup', args, verbose);
-          if (jsonData !== undefined && jsonData['affected'] == 1) {
+          if (jsonData === null) {
             console.log('[info] deleted group, id: \'' + id + '\'');
             delete(groups[id]);
           } else

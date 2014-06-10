@@ -204,7 +204,7 @@ function epc_authorsShow() {
   console.log('[debug|epc_authorsShow]');
 
   $('#epAuthors').html('');
-  $.each(authors, function(key, author) {
+  $.each(authors, function(id, author) {
     if (author['map'] === undefined)
       $('#epAuthors').append('<option value="' + author['id'] + '">[' + author['id'] + ']</option>');
     else
@@ -603,7 +603,7 @@ function epc_groupsShow() {
   console.log('[debug|epc_groupsShow]');
 
   $('#epGroups').html('');
-  $.each(groups, function(key, group) {
+  $.each(groups, function(id, group) {
     if (group['name'] === undefined)
       $('#epGroups').append('<option value="' + group['id'] + '">[' + group['id'] + ']</option>');
     else
@@ -837,7 +837,7 @@ function epc_padsShow(type) {
   }
   $('#epPads').html('');
   if (pads) {
-    $.each(pads, function(idx, pad) {
+    $.each(pads, function(id, pad) {
       switch (type) {
         case "group (private)":
           if (pad['type'] === 'private group')
@@ -867,6 +867,7 @@ function epc_padsAdd(verbose, data) {
 
   var func = '';
   var args = [];
+  var id = $('#epPadName').val();
   var name = $('#epPadName').val();
 
   selectedGids = $('#epGroups :selected').map(function() { return this.value; }).get();
@@ -874,6 +875,8 @@ function epc_padsAdd(verbose, data) {
     // create a group pad
     func = 'createGroupPad';
     args = [selectedGids[0], name];
+    id = selectedGids[0] + '$' + name;
+    name = name + ' [' + (groups !== undefined ? groups[selectedGids[0]]['name'] : selectedGids[0]) + ']';
   } else {
     // create a regular pad
     func = 'createPad';
@@ -881,22 +884,35 @@ function epc_padsAdd(verbose, data) {
   }
   var jsonData = ep_call(func, args, verbose);
   if (jsonData !== undefined) {
-    if (jsonData === null) {
-      if (pads === undefined)
-        pads = {};
-      var pad = pads[name];
-      if (pad === undefined) {
-        pads[name] = { 'id': name, 'name': name };
-        console.log('[info] pad name \'' + name + '\' added');
-      } else
-        console.log('[info] pad name \'' + name + '\' already exists');
-    }
+    if (pads === undefined)
+      pads = {};
+    var pad = pads[id];
+    if (pad === undefined) {
+      pads[id] = { 'id': id, 'name': name };
+      var jsonData2 = ep_call('getPublicStatus', [id], verbose, true);
+      if (jsonData2 === undefined)
+        // regular pad
+        pads[id]['type'] = 'regular';
+      else {
+        // group pad
+        // set public status
+        if (jsonData2) {
+          pads[id]['public'] = true;
+          pads[id]['type'] = 'public group';
+        } else {
+          pads[id]['public'] = false;
+          pads[id]['type'] = 'private group';
+        }
+      }
+      console.log('[info] pad name \'' + name + '\' added');
+    } else
+      console.log('[info] pad name \'' + name + '\' already exists');
   }
 
   // reload group
   epc_padsShow();
   // select added / existing
-  $('#epPads option[value="' + name + '"]').attr('selected', true);
+  $('#epPads option[value="' + id + '"]').attr('selected', true);
   // update info
   epc_padsInfoShow();
 }
@@ -1131,7 +1147,7 @@ function epc_sessionsShow() {
   console.log('[debug|epc_sessionsShow]');
 
   $('#epSessions').html('');
-  $.each(sessions, function(key, session) {
+  $.each(sessions, function(id, session) {
     $('#epSessions').append('<option value="' + session['id'] + '">' + session['id'] + '</option>');
   });
   if ($('#epSessions')[0].length > 0) {

@@ -658,6 +658,7 @@ function epc_groupsRemove(verbose, data) {
         sMessage += '<li>' + value + '</li>\n'
       });
       sMessage += '</ul>\n';
+      sMessage += '<p>please note that this will <span style=\'color: red; font-weight: bold;\'>DELETE ALL ASSOCIATED PADS</span> in the process</p>\n';
       $('#popupContent').html(sMessage);
       popupToggle('info', 'yes|no', [function() {epc_groupsRemove(true, true);}]);
     } else {

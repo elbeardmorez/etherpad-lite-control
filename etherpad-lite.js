@@ -770,6 +770,7 @@ function epc_pads(data, verbose) {
 
   // reset pads object
   pads = {};
+  var padTypes = {};
   if (aData.length > 0) {
     // process
     $.each(aData, function(idx, jsonData) {
@@ -778,18 +779,21 @@ function epc_pads(data, verbose) {
           pads[id] = {'id': id, 'name': id};
           var pad = pads[id];
           var jsonData2 = ep_call('getPublicStatus', [id], false);
-          if (jsonData2 === undefined)
+          if (jsonData2 === undefined) {
             // regular pad
             pad['type'] = 'regular';
-          else {
+            padTypes['regular'] = 1;
+          } else {
             // group pad
             // set public status
             if (jsonData2) {
               pad['public'] = true;
               pad['type'] = 'public group';
+              padTypes['public group'] = 1;
             } else {
               pad['public'] = false;
               pad['type'] = 'private group';
+              padTypes['private group'] = 1;
             }
             if (pad['name'] == pad['id']) {
               // modify name
@@ -803,7 +807,11 @@ function epc_pads(data, verbose) {
       }
     });
 
-    // update select control
+    // update select controls
+    $('#epPadsType').html('');
+    padTypes['private group'] && $('#epPadsType').append('<option>group (private)</option>');
+    padTypes['public group'] && $('#epPadsType').append('<option>group (public)</option>');
+    padTypes['regular'] && $('#epPadsType').append('<option>regular</option>');
     epc_padsShow();
     // reselect selected
     $.each(selected, function(idx, id) {

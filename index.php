@@ -192,9 +192,6 @@ function getFunctionName($s) {
         <p id="epPadsTitle" style="padding: 0px 5px 0px 5px; font-weight: bold;">pads</p>
         <div style="position: absolute; top: 35px; bottom: 30px; left: 5px; right: 2px;">
           <select id="epPadsType" style="width: 100%;" onchange="epc_padsShow(this.value)">
-            <option>group (private)</option>
-            <option>group (public)</option>
-            <option>regular</option>
           </select>
         </div>
         <div style="position: absolute; top: 55px; bottom: 26px; left: 5px; right: 2px;">

@@ -15,7 +15,7 @@ function getFunctionName($s) {
 <script type="text/javascript" src="etherpad-lite.js"></script>
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 </head>
-<body onload="loadState();">
+<body onload="init();">
   <div id="header" class="fadeIn" style="z-index: 2; position: absolute; height: 15px; width: 100%;"></div>
   <div id="control-background" style="z-index: 10; position: absolute; top: 15px; right: 0px; bottom: 25px; width: 120px;"></div>
   <div id="control-outer" style="z-index: 11; position: absolute; top: 15px; right: 0px; bottom: 25px; width: 120px; overflow: hidden;">
@@ -153,7 +153,7 @@ function getFunctionName($s) {
       <div style="position: relative; float: left; height: 100%; width: 24%; min-width: 100px;">
         <p id="epAuthorsTitle" style="padding: 0px 5px 0px 5px; font-weight: bold;">authors</p>
         <div style="position: absolute; top: 35px; bottom: 26px; left: 5px; right: 2px;">
-          <select id="epAuthors" multiple="multiple" style="height: 100%; width: 100%;" onclick="if (this.value == 'All') selectAll(this); epc_authorsInfoShow();">
+          <select id="epAuthors" multiple="multiple" style="height: 100%; width: 100%;" onclick="if (this.value == 'All') selectAll(this); else $('#epAuthorName').val($('option[value=\'' + this.value + '\']', '#epAuthors')[0].textContent || $('option [value=\'' + this.value + '\']', '#epAuthors')[0].innerText); epc_authorsInfoShow();">
           </select>
         </div>
         <div style="position: absolute; bottom: 5px; left: 5px; right: 0px; height: 20px;">
@@ -172,7 +172,7 @@ function getFunctionName($s) {
       <div style="position: relative; float: left; height: 100%; width: 24%; min-width: 100px;">
         <p id="epGroupsTitle" style="padding: 0px 5px 0px 5px; font-weight: bold;">groups</p>
         <div style="position: absolute; top: 35px; bottom: 26px; left: 5px; right: 2px;">
-          <select id="epGroups" multiple="multiple" style="height: 100%; width: 100%;" onclick="if (this.value == 'All') selectAll(this);">
+          <select id="epGroups" multiple="multiple" style="height: 100%; width: 100%;" onclick="if (this.value == 'All') selectAll(this); else $('#epGroupName').val($('option[value=\'' + this.value + '\']', '#epGroups')[0].textContent || $('option [value=\'' + this.value + '\']', '#epGroups')[0].innerText);">
           </select>
         </div>
         <div style="position: absolute; bottom: 5px; left: 5px; right: 0px; height: 20px;">
@@ -195,7 +195,7 @@ function getFunctionName($s) {
           </select>
         </div>
         <div style="position: absolute; top: 55px; bottom: 26px; left: 5px; right: 2px;">
-          <select id="epPads" multiple="multiple" style="top: 20px; height: 100%; width: 100%;" onclick="if (this.value == 'All') selectAll(this); epc_padsInfoShow();">
+          <select id="epPads" multiple="multiple" style="top: 20px; height: 100%; width: 100%;" onclick="if (this.value == 'All') selectAll(this); else $('#epPadName').val($('option[value=\'' + this.value + '\']', '#epPads')[0].textContent || $('option [value=\'' + this.value + '\']', '#epPads')[0].innerText); epc_padsInfoShow();">
           </select>
         </div>
         <div style="position: absolute; bottom: 5px; left: 5px; right: 0px; height: 20px;">

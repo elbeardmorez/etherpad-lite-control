@@ -1498,6 +1498,10 @@ function getServer() {
           $('#epc_basepath').val() : "");
 }
 
+function init() {
+  loadState();
+}
+
 function loadState() {
   var arr = [ 'epc_server', 'epc_port', 'epc_apikeypath', 'epc_settingspath' ];
   for (idx in arr) {

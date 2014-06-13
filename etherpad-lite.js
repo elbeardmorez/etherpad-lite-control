@@ -11,6 +11,10 @@ var padProps = ['name', 'created', 'updated', 'type', 'author(s)'];
 var authorProps = ['id', 'map', 'name', 'mapped', 'pad(s)'];
 var sessionProps = ['id', 'author', 'group', 'expiry'];
 
+var authorsSelected = { 'count': 0 };
+var groupsSelected = { 'count': 0 };
+var padsSelected = { 'count': 0 };
+
 /*
  return 'undefined' for erroneous and unsuccessful. 'null' used for successful queries, e.g. empty lists
 */
@@ -1563,6 +1567,38 @@ function sessionExpiry(quantity, unit) {
 function getDateString(dt) {
   var months = [ 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec' ];
   return ("0" + dt.getDate() + " " + months[dt.getMonth()] + " " + dt.getFullYear() + " 0" + dt.getHours() + ":0" + dt.getMinutes() + ":0"+ dt.getSeconds()).replace(/(^|\ |:)+0([0-9]{2})/g, "$1$2");
+}
+
+function selection(pre, post, target) {
+  console.log('[debug|selection]');
+
+  console.log('[debug|selection] pre');
+  $.each(pre, function(key, value) { console.log(key + '|' + value); })
+  console.log('[debug|selection] post');
+  $.each(post, function(idx, option) { console.log(option.value); })
+  if (post.length == 0) {
+    Object.keys(pre).map(function(key) { delete pre[key]; });
+    target.val('');
+  } else if (post.length == 1) {
+    // reset
+    Object.keys(pre).map(function(key) { delete pre[key]; });
+    option = post[0];
+    pre[option.value] = option.value;
+    target.val(option.textContent || option.innerText);
+  } else if (pre['count'] < post.length) {
+    // addition
+    $.each(post, function(idx, option) {
+      if (pre[option.value] === undefined) {
+        pre[option.value] = option.value;
+        target.val(option.textContent || option.innerText);
+      }
+    });
+  } else {
+    // removal
+    Object.keys(pre).map(function(key) { delete pre[key]; });
+    $.each(post, function(idx, option) { pre[option.value] = option.value; });
+  }
+  pre['count'] = post.length;
 }
 
 function popupToggle(type, buttons, cbs) {

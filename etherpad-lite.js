@@ -317,18 +317,20 @@ function epc_authorsInfo(verbose, data) {
   });
 }
 
-function epc_authorsInfoShow(verbose) {
+function epc_authorsInfoShow(verbose, data) {
   console.log('[debug|epc_authorsInfoShow]');
 
-  // get selected id
-  var selected = $('#epAuthors :selected').map(function(){return this.value;}).get();
-  if (selected.length > 0) {
+  if (!data)
+    // use selected id
+    data = $('#epAuthors :selected').map(function(){return this.value;}).get();
+
+  if (data && data.length > 0) {
 
     // clear last info
     $('#epInfo-inner').html('');
     $('#epInfo-title').html('info');
 
-    var id = selected[0];
+    var id = data[0];
     var author = authors[id];
 
     // check for 'all'
@@ -1078,18 +1080,20 @@ function epc_padsInfo(verbose, data) {
   });
 }
 
-function epc_padsInfoShow(verbose) {
+function epc_padsInfoShow(verbose, data) {
   console.log('[debug|epc_padsInfoShow]');
 
-  // get selected id
-  var selected = $('#epPads :selected').map(function(){return this.value;}).get();
-  if (selected.length > 0) {
+  if (!data)
+    // use selected id
+    data = $('#epPads :selected').map(function(){return this.value;}).get();
+
+  if (data && data.length > 0) {
 
     // clear last info
     $('#epInfo-inner').html('');
     $('#epInfo-title').html('info');
 
-    var id = selected[0];
+    var id = data[0];
     var pad = pads[id];
 
     // check for 'all'
@@ -1369,18 +1373,20 @@ function epc_sessionsInfo(verbose, data) {
   });
 }
 
-function epc_sessionsInfoShow(verbose) {
+function epc_sessionsInfoShow(verbose, data) {
   console.log('[debug|epc_sessionsInfoShow]');
 
-  // get selected id
-  var selected = $('#epSessions :selected').map(function(){return this.value;}).get();
-  if (selected.length > 0) {
+  if (!data)
+    // use selected id
+    data = $('#epSessions :selected').map(function(){return this.value;}).get();
+
+  if (data && data.length > 0) {
 
     // clear last info
     $('#epInfo-inner').html('');
     $('#epInfo-title').html('info');
 
-    var id = selected[0];
+    var id = data[0];
     var session = sessions[id];
 
     // check for 'all'
@@ -1569,13 +1575,15 @@ function getDateString(dt) {
   return ("0" + dt.getDate() + " " + months[dt.getMonth()] + " " + dt.getFullYear() + " 0" + dt.getHours() + ":0" + dt.getMinutes() + ":0"+ dt.getSeconds()).replace(/(^|\ |:)+0([0-9]{2})/g, "$1$2");
 }
 
-function selection(pre, post, target) {
+function selection(pre, post, target, info) {
   console.log('[debug|selection]');
 
   console.log('[debug|selection] pre');
   $.each(pre, function(key, value) { console.log(key + '|' + value); })
   console.log('[debug|selection] post');
   $.each(post, function(idx, option) { console.log(option.value); })
+
+  var id;
   if (post.length == 0) {
     Object.keys(pre).map(function(key) { delete pre[key]; });
     target.val('');
@@ -1585,20 +1593,24 @@ function selection(pre, post, target) {
     option = post[0];
     pre[option.value] = option.value;
     target.val(option.textContent || option.innerText);
+    id = option.value;
   } else if (pre['count'] < post.length) {
     // addition
     $.each(post, function(idx, option) {
       if (pre[option.value] === undefined) {
         pre[option.value] = option.value;
         target.val(option.textContent || option.innerText);
+        id = option.value;
       }
     });
   } else {
     // removal
     Object.keys(pre).map(function(key) { delete pre[key]; });
     $.each(post, function(idx, option) { pre[option.value] = option.value; });
+    id = post[0].value;
   }
   pre['count'] = post.length;
+  id && info && info(id);
 }
 
 function popupToggle(type, buttons, cbs) {

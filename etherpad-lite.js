@@ -3,9 +3,13 @@
 var help;
 
 var authors;
+var authorsShow;
 var groups;
+var groupsShow;
 var pads;
+var padsShow;
 var sessions;
+var sessionsShow;
 
 var padProps = ['name', 'created', 'updated', 'type', 'author(s)'];
 var authorProps = ['id', 'map', 'name', 'mapped', 'pad(s)'];
@@ -130,7 +134,6 @@ function epc_authors(data, verbose) {
         aData.push(jsonData);
       break;
     case 'group':
-      // alert if no groups?
       selectedGids = $('#epGroups :selected').map(function(){return this.value;}).get();
       // collect padIDs, from which to collect authorIDs
       if (selectedGids.length > 0) {
@@ -150,23 +153,37 @@ function epc_authors(data, verbose) {
       break;
   }
 
+  // reset authorsShow array
+  authorsShow = [];
   // reset authors object
-  authors = {};
+  if (!authors)
+    authors = {};
+
   if (aData.length > 0) {
     // process
     $.each(aData, function(idx, jsonData) {
       if (jsonData) {
         $.each(jsonData, function(id, author) {
-          authors[id] = author;
-          author['map'] = null;
-          author['mapped'] = false;
-          if (author['padIDs']) {
+          if (!authors[id]) {
+            authors[id] = author;
+            authors[id]['map'] = null;
+            authors[id]['mapped'] = false;
+          } else if (authors[id] !== author) {
+            // update
+            authors[id]['name'] = author['name'];
+            if (author['padIDs'])
+              authors[id]['padsID'] = author['padsID'];
+          }
+          // process
+          if (authors[id]['padIDs']) {
             // simple array
-            author['padIDs'] = Object.keys(author['padIDs']);
+            if (!$.isArray(authors[id]['padIDs']))
+              authors[id]['padIDs'] = Object.keys(authors[id]['padIDs']);
             // flatten
-            author['pad(s)'] = author['padIDs'].join(', ');
+            authors[id]['pad(s)'] = authors[id]['padIDs'].join(', ');
           } else
-            author['pad(s)'] = '';
+            authors[id]['pad(s)'] = '';
+          authorsShow.push(id);
         });
       }
     });
@@ -176,9 +193,8 @@ function epc_authors(data, verbose) {
     if (jsonData !== undefined && jsonData !== null) {
       // process
       $.each(jsonData, function(id, data) {
-        var author = authors[id];
-        author['mapped'] = true;
-        author['map'] = data['name'];
+        authors[id]['mapped'] = true;
+        authors[id]['map'] = data['name'];
       });
     }
   }
@@ -208,7 +224,8 @@ function epc_authorsShow() {
   console.log('[debug|epc_authorsShow]');
 
   $('#epAuthors').html('');
-  $.each(authors, function(id, author) {
+  $.each(authorsShow, function(idx, id) {
+    author = authors[id];
     if (author['map'] === undefined)
       $('#epAuthors').append('<option value="' + author['id'] + '">[' + author['id'] + ']</option>');
     else
@@ -237,6 +254,7 @@ function epc_authorsAdd(verbose) {
       console.log('[info] author name \'' + map + '\' added with id \'' + id + '\'');
     } else
       console.log('[info] author name \'' + map + '\' already exists with id \'' + id + '\'');
+    authorsShow.push(id);
 
     // reload author
     epc_authorsShow();
@@ -279,6 +297,7 @@ function epc_authorsRemove(verbose, data) {
           if (jsonData !== undefined && jsonData['affected'] == 1) {
             console.log('[info] deleted author, id: \'' + id + '\'');
             delete(authors[id]);
+            authorsShow.splice(authorsShow.indexOf(id), 1);
           } else
             console.log('[debug] issue deleting author, id: \'' + id + '\'');
         });
@@ -561,8 +580,11 @@ function epc_groups(verbose) {
   // remember current selection
   var selected = $('#epGroups :selected').map(function(){return this.value;}).get();
 
+  // reset groupsShow array
+  groupsShow = [];
   // reset groups object
-  groups = {};
+  if (!groups)
+    groups = {};
 
   var jsonData;
   jsonData = ep_call('listAllGroups', undefined, verbose)
@@ -572,18 +594,21 @@ function epc_groups(verbose) {
       $.each(jsonData['groupIDs'], function(idx, id) {
         if (groups[id] === undefined)
           groups[id] = {'id': id};
+        // process
+        groupsShow.push(id);
       });
     }
   }
+
   // map external names where possible
   jsonData = epx_call('getGroupMappers', undefined, true, true);
   if (jsonData !== undefined && jsonData !== null) {
     // process
-    $.each(groups, function(key, group) {
-      if (groups['name'] === undefined &&
-        jsonData[key] !== undefined) {
-        group['name'] = jsonData[key]['name'];
-      }
+    $.each(jsonData, function(id, data) {
+      if (groups[id])
+        groups[id]['name'] = data['name'];
+      else
+        console.log('[debug] lost group id \'' + id + '\'');
     });
   }
 
@@ -609,7 +634,8 @@ function epc_groupsShow() {
   console.log('[debug|epc_groupsShow]');
 
   $('#epGroups').html('');
-  $.each(groups, function(id, group) {
+  $.each(groupsShow, function(idx, id) {
+    group = groups[id]
     if (group['name'] === undefined)
       $('#epGroups').append('<option value="' + group['id'] + '">[' + group['id'] + ']</option>');
     else
@@ -638,6 +664,7 @@ function epc_groupsAdd(verbose) {
       console.log('[info] group name \'' + name + '\' added with id \'' + id + '\'');
     } else
       console.log('[info] group name \'' + name + '\' already exists with id \'' + id + '\'');
+    groupsShow.push(id);
 
     // reload group
     epc_groupsShow();
@@ -679,6 +706,7 @@ function epc_groupsRemove(verbose, data) {
           if (jsonData === null) {
             console.log('[info] deleted group, id: \'' + id + '\'');
             delete(groups[id]);
+            groupsShow.splice(groupsShow.indexOf(id), 1);
           } else
             console.log('[debug] issue deleting group, id: \'' + id + '\'');
         });
@@ -774,41 +802,53 @@ function epc_pads(data, verbose) {
       break;
   }
 
-  // reset pads object
-  pads = {};
+  // reset authorsShow array
+  padsShow = [];
+  // reset authors object
+  if (!pads)
+    pads = {};
+  // reset pad types
   var padTypes = {};
+
   if (aData.length > 0) {
     // process
     $.each(aData, function(idx, jsonData) {
       if (jsonData['padIDs'].length > 0) {
         $.each(jsonData['padIDs'], function(idx2, id) {
-          pads[id] = {'id': id, 'name': id};
-          var pad = pads[id];
-          var jsonData2 = ep_call('getPublicStatus', [id], false);
-          if (jsonData2 === undefined) {
-            // regular pad
-            pad['type'] = 'regular';
-            padTypes['regular'] = 1;
-          } else {
-            // group pad
-            // set public status
-            if (jsonData2) {
-              pad['public'] = true;
-              pad['type'] = 'public group';
-              padTypes['public group'] = 1;
+          if (!pads[id])
+            pads[id] = {'id': id, 'name': id};
+          // process
+          if (pads[id]['type'])
+            padTypes[pads[id]['type']] = 1;
+          else {
+            var jsonData2 = ep_call('getPublicStatus', [id], false);
+            if (jsonData2 === undefined) {
+              // regular pad
+              pads[id]['type'] = 'regular';
+              padTypes['regular'] = 1;
             } else {
-              pad['public'] = false;
-              pad['type'] = 'private group';
-              padTypes['private group'] = 1;
-            }
-            if (pad['name'] == pad['id']) {
-              // modify name
-              var arr = pad['id'].match('(.*)\\$(.*)');
-              var name = arr[2];
-              var gid = arr[1];
-              pad['name'] = name + ' [' + (groups !== undefined ? groups[gid]['name'] : gid) + ']';
+              // group pad
+              // set public status
+              if (jsonData2) {
+                pads[id]['public'] = true;
+                pads[id]['type'] = 'public group';
+                padTypes['public group'] = 1;
+              } else {
+                pads[id]['public'] = false;
+                pads[id]['type'] = 'private group';
+                padTypes['private group'] = 1;
+              }
             }
           }
+          if (pads[id]['type'] !== 'regular' &&
+              pads[id]['name'] == pads[id]['id']) {
+            // modify name
+            var arr = pads[id]['id'].match('(.*)\\$(.*)');
+            var name = arr[2];
+            var gid = arr[1];
+            pads[id]['name'] = name + ' [' + (groups !== undefined ? groups[gid]['name'] : gid) + ']';
+          }
+          padsShow.push(id);
         });
       }
     });
@@ -839,20 +879,12 @@ function epc_padsShow(type) {
 
   if (type === undefined)
     type = $('#epPadsType').val();
-  switch (type) {
-    case "group (private)":
-      console.log("[debug|epc_padsShow] selected private group pads");
-      break;
-    case "group (public)":
-      console.log("[debug|epc_padsShow] selected public group pads");
-      break;
-    case "regular":
-      console.log("[debug|epc_padsShow] selected regular pads");
-      break;
-  }
+  console.log("[debug|epc_padsShow] selected " + type + " pads");
+
   $('#epPads').html('');
-  if (pads) {
-    $.each(pads, function(id, pad) {
+  if (padsShow) {
+    $.each(padsShow, function(idx, id) {
+      pad = pads[id];
       switch (type) {
         case "group (private)":
           if (pad['type'] === 'private group')
@@ -899,29 +931,32 @@ function epc_padsAdd(verbose, data) {
   }
   var jsonData = ep_call(func, args, verbose);
   if (jsonData !== undefined) {
-    if (pads === undefined)
-      pads = {};
-    var pad = pads[id];
-    if (pad === undefined) {
-      pads[id] = { 'id': id, 'name': name };
-      var jsonData2 = ep_call('getPublicStatus', [id], verbose, true);
-      if (jsonData2 === undefined)
-        // regular pad
-        pads[id]['type'] = 'regular';
-      else {
-        // group pad
-        // set public status
-        if (jsonData2) {
-          pads[id]['public'] = true;
-          pads[id]['type'] = 'public group';
-        } else {
-          pads[id]['public'] = false;
-          pads[id]['type'] = 'private group';
+    if (jsonData === null) {
+      if (pads === undefined)
+        pads = {};
+      var pad = pads[name];
+      if (pad === undefined) {
+        pads[name] = { 'id': name, 'name': name };
+        var jsonData2 = ep_call('getPublicStatus', [id], verbose, true);
+        if (jsonData2 === undefined)
+          // regular pad
+          pads[id]['type'] = 'regular';
+        else {
+          // group pad
+          // set public status
+          if (jsonData2) {
+            pads[id]['public'] = true;
+            pads[id]['type'] = 'public group';
+          } else {
+            pads[id]['public'] = false;
+            pads[id]['type'] = 'private group';
+          }
         }
-      }
-      console.log('[info] pad name \'' + name + '\' added');
-    } else
-      console.log('[info] pad name \'' + name + '\' already exists');
+        console.log('[info] pad name \'' + name + '\' added');
+      } else
+        console.log('[info] pad name \'' + name + '\' already exists');
+      padsShow.push(name);
+    }
   }
 
   // reload group
@@ -960,6 +995,7 @@ function epc_padsRemove(verbose, data) {
           if (jsonData !== undefined && jsonData['affected'] == 1) {
             console.log('[info] deleted pad, id: \'' + id + '\'');
             delete(pads[id]);
+            padsShow.splice(padsShow.indexOf(id), 1);
           } else
             console.log('[debug] issue deleting pad, id: \'' + id + '\'');
         });
@@ -1137,12 +1173,24 @@ function epc_sessions(verbose) {
   // remember current selection
   var selected = $('#epSessions :selected').map(function(){return this.value;}).get();
 
+  // reset sessionsShow array
+  sessionsShow = [];
   // reset sessions object
-  sessions = {};
+  if (!sessions)
+    sessions = {};
 
-  var jsonData = epx_call('listAllSessions', undefined, verbose)
+  var jsonData;
+  jsonData = epx_call('listAllSessions', undefined, verbose)
   if (jsonData !== undefined && jsonData !== null) {
-    sessions = jsonData;
+    // process
+    if (jsonData) {
+      $.each(jsonData, function(id, session) {
+        if (sessions[id] === undefined)
+          sessions[id] = session;
+        // process
+        sessionsShow.push(id);
+      });
+    }
   }
 
   // update select control
@@ -1164,7 +1212,8 @@ function epc_sessionsShow() {
   console.log('[debug|epc_sessionsShow]');
 
   $('#epSessions').html('');
-  $.each(sessions, function(id, session) {
+  $.each(sessionsShow, function(idx, id) {
+    session = sessions[id];
     $('#epSessions').append('<option value="' + session['id'] + '">' + session['id'] + '</option>');
   });
   if ($('#epSessions')[0].length > 0) {
@@ -1219,6 +1268,7 @@ function epc_sessionsAdd(verbose) {
         } else {
           console.log('[info] session already exists with id \'' + id + '\'');
         }
+        sessionsShow.push(id);
       }
     });
   });
@@ -1263,6 +1313,7 @@ function epc_sessionsRemove(verbose, data) {
           if (jsonData !== undefined && jsonData['affected'] == 1) {
             console.log('[info] deleted session, id: \'' + id + '\'');
             delete(sessions[id]);
+            sessionsShow.splice(sessionsShow.indexOf(id), 1);
           } else
             console.log('[debug] issue deleting session, id: \'' + id + '\'');
         });

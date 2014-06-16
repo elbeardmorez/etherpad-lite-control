@@ -224,18 +224,23 @@ function epc_authorsShow() {
   console.log('[debug|epc_authorsShow]');
 
   $('#epAuthors').html('');
+  if (authorsShow) {
+    var authorsShowDisplay = [];
   $.each(authorsShow, function(idx, id) {
     author = authors[id];
     if (author['map'] === undefined)
-      $('#epAuthors').append('<option value="' + author['id'] + '">[' + author['id'] + ']</option>');
+        authorsShowDisplay.push(author['id'] + '|<option value="' + author['id'] + '">[' + author['id'] + ']</option>');
     else
-      $('#epAuthors').append('<option value="' + author['id'] + '">' + author['map'] + ' [' + author['id'] + ']</option>');
+        authorsShowDisplay.push(author['map'] + '|<option value="' + author['id'] + '">' + author['map'] + ' [' + author['id'] + ']</option>');
   });
-  if ($('#epAuthors')[0].length > 0) {
+    authorsShowDisplay.sort();
+    $.each(authorsShowDisplay, function(idx, display) {
+      $('#epAuthors').append(display.split('|')[1]);
+    });
+    if (authorsShowDisplay.length > 0)
     $('#epAuthors').prepend('<option value="All">All</option>');
-    $('#epAuthorsTitle').html('authors (' + ($('#epAuthors')[0].length - 1) + ')');
-  } else
-    $('#epAuthorsTitle').html('authors (0)');
+    $('#epAuthorsTitle').html('authors (' + authorsShowDisplay.length + ')');
+  }
 }
 
 function epc_authorsAdd(verbose) {
@@ -634,18 +639,23 @@ function epc_groupsShow() {
   console.log('[debug|epc_groupsShow]');
 
   $('#epGroups').html('');
+  if (groupsShow) {
+    var groupsShowDisplay = [];
   $.each(groupsShow, function(idx, id) {
     group = groups[id]
     if (group['name'] === undefined)
-      $('#epGroups').append('<option value="' + group['id'] + '">[' + group['id'] + ']</option>');
+        groupsShowDisplay.push(group['id'] + '|<option value="' + group['id'] + '">[' + group['id'] + ']</option>');
     else
-      $('#epGroups').append('<option value="' + group['id'] + '">' + group['name'] + ' [' + group['id'] + ']</option>');
+        groupsShowDisplay.push(group['name'] + '|<option value="' + group['id'] + '">' + group['name'] + ' [' + group['id'] + ']</option>');
   });
-  if ($('#epGroups')[0].length > 0) {
+    groupsShowDisplay.sort();
+    $.each(groupsShowDisplay, function(idx, display) {
+      $('#epGroups').append(display.split('|')[1]);
+    });
+    if (groupsShowDisplay.length > 0)
     $('#epGroups').prepend('<option value="All">All</option>');
-    $('#epGroupsTitle').html('groups (' + ($('#epGroups')[0].length - 1) + ')');
-  } else
-    $('#epGroupsTitle').html('groups (0)');
+    $('#epGroupsTitle').html('groups (' + groupsShowDisplay.length + ')');
+  }
 }
 
 function epc_groupsAdd(verbose) {
@@ -892,16 +902,19 @@ function epc_padsShow(type) {
 
   $('#epPads').html('');
   if (padsShow) {
+    var padsShowDisplay = [];
     $.each(padsShow, function(idx, id) {
       pad = pads[id];
       if (pad['type'] === type)
-        $('#epPads').append('<option value="' + pad['id'] + '">' + pad['name'] + '</option>');
+        padsShowDisplay.push(pad['name'] + '|<option value="' + pad['id'] + '">' + pad['name'] + '</option>');
     });
-    if ($('#epPads')[0].length > 0) {
+    padsShowDisplay.sort();
+    $.each(padsShowDisplay, function(idx, display) {
+      $('#epPads').append(display.split('|')[1]);
+    });
+    if (padsShowDisplay.length > 0)
       $('#epPads').prepend('<option value="All">All</option>');
-      $('#epPadsTitle').html('pads (' + ($('#epPads')[0].length - 1) + ')');
-    } else
-      $('#epPadsTitle').html('pads (0)');
+    $('#epPadsTitle').html('pads (' + padsShowDisplay.length + ')');
   }
 }
 
@@ -1208,15 +1221,16 @@ function epc_sessionsShow() {
   console.log('[debug|epc_sessionsShow]');
 
   $('#epSessions').html('');
+  if (sessionsShow) {
+    sessionsShow.sort();
   $.each(sessionsShow, function(idx, id) {
     session = sessions[id];
     $('#epSessions').append('<option value="' + session['id'] + '">' + session['id'] + '</option>');
   });
-  if ($('#epSessions')[0].length > 0) {
+    if (sessionsShow.length > 0)
     $('#epSessions').prepend('<option value="All">All</option>');
-    $('#epSessionsTitle').html('sessions (' + ($('#epSessions')[0].length - 1) + ')');
-  } else
-    $('#epSessionsTitle').html('sessions (0)');
+    $('#epSessionsTitle').html('sessions (' + sessionsShow.length + ')');
+  }
 }
 
 function epc_sessionsAdd(verbose) {

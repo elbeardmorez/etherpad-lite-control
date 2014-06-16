@@ -879,28 +879,24 @@ function epc_padsShow(type) {
 
   if (type === undefined)
     type = $('#epPadsType').val();
+  // map type display name to type
+  switch (type) {
+    case "group (private)":
+      type = 'private group';
+      break;
+    case "group (public)":
+      type = 'public group';
+      break;
+  }
   console.log("[debug|epc_padsShow] selected " + type + " pads");
 
   $('#epPads').html('');
   if (padsShow) {
     $.each(padsShow, function(idx, id) {
       pad = pads[id];
-      switch (type) {
-        case "group (private)":
-          if (pad['type'] === 'private group')
-            $('#epPads').append('<option value="' + pad['id'] + '">' + pad['name'] + '</option>');
-          break;
-        case "group (public)":
-          if (pad['type'] === 'public group')
-            $('#epPads').append('<option value="' + pad['id'] + '">' + pad['name'] + '</option>');
-          break;
-        case "regular":
-          if (pad['type'] === 'regular')
-            $('#epPads').append('<option value="' + pad['id'] + '">' + pad['name'] + '</option>');
-          break;
-      }
+      if (pad['type'] === type)
+        $('#epPads').append('<option value="' + pad['id'] + '">' + pad['name'] + '</option>');
     });
-
     if ($('#epPads')[0].length > 0) {
       $('#epPads').prepend('<option value="All">All</option>');
       $('#epPadsTitle').html('pads (' + ($('#epPads')[0].length - 1) + ')');

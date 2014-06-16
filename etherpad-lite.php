@@ -259,6 +259,7 @@ function epxCall($func, $args = [],
             $data['code'] = [];
             $data['message'] = [];
             $data['data'] = [];
+
             # remove session storage records
             # see issue: https://github.com/ether/etherpad-lite/issues/1659
             $query = 'delete from store where key like \'sessionstorage:%\'';
@@ -267,6 +268,18 @@ function epxCall($func, $args = [],
             $data['message']['deleteStorage'] = $qData['message'];
             $data['data']['deleteStorage'] = $qData['data'];
             $data['data']['deleteStorage']['info'] = ($qData['data']['affected'] == 0 ? '' : $qData['data']['affected'] . ' sessionstorage records deleted' );
+
+            # remove leftover mapper2group records
+            # these should have been removed by api deleteGroup calls
+            $sq1 = 'select key as key1, replace(store.value, \'"\', \'\') as value1 from store where store.key like \'%mapper2group%\'';
+            $sq2 = 'select replace(key, \'group:\', \'\') as key2, value as value2 from store where key like \'%group:%\'';
+            $query = 'delete from store where key like \'mapper2group:%\' and value in (select \'"\' || store1.value1 || \'"\' as id from (' . $sq1 . ') as store1 left outer join (' . $sq2 . ') as store2 on value1 = key2 where key2 is null)';
+            $qData = dbQuery($dbSettings['type'], $dbConnectionString, $query);
+            $data['code']['deleteGroupMapper'] = $qData['code'];
+            $data['message']['deleteGroupMapper'] = $qData['message'];
+            $data['data']['deleteGroupMapper'] = $qData['data'];
+            $data['data']['deleteGroupMapper']['info'] = ($qData['data']['affected'] == 0 ? '' : $qData['data']['affected'] . ' mapper2group records deleted' );
+
             $jsonData = $data;
             $sData = var2str($jsonData);
             break;

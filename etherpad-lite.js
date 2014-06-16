@@ -226,19 +226,19 @@ function epc_authorsShow() {
   $('#epAuthors').html('');
   if (authorsShow) {
     var authorsShowDisplay = [];
-  $.each(authorsShow, function(idx, id) {
-    author = authors[id];
-    if (author['map'] === undefined)
+    $.each(authorsShow, function(idx, id) {
+      author = authors[id];
+      if (author['map'] === undefined)
         authorsShowDisplay.push(author['id'] + '|<option value="' + author['id'] + '">[' + author['id'] + ']</option>');
-    else
+      else
         authorsShowDisplay.push(author['map'] + '|<option value="' + author['id'] + '">' + author['map'] + ' [' + author['id'] + ']</option>');
-  });
+    });
     authorsShowDisplay.sort();
     $.each(authorsShowDisplay, function(idx, display) {
       $('#epAuthors').append(display.split('|')[1]);
     });
     if (authorsShowDisplay.length > 0)
-    $('#epAuthors').prepend('<option value="All">All</option>');
+      $('#epAuthors').prepend('<option value="All">All</option>');
     $('#epAuthorsTitle').html('authors (' + authorsShowDisplay.length + ')');
   }
 }
@@ -641,19 +641,19 @@ function epc_groupsShow() {
   $('#epGroups').html('');
   if (groupsShow) {
     var groupsShowDisplay = [];
-  $.each(groupsShow, function(idx, id) {
-    group = groups[id]
-    if (group['name'] === undefined)
+    $.each(groupsShow, function(idx, id) {
+      group = groups[id]
+      if (group['name'] === undefined)
         groupsShowDisplay.push(group['id'] + '|<option value="' + group['id'] + '">[' + group['id'] + ']</option>');
-    else
+      else
         groupsShowDisplay.push(group['name'] + '|<option value="' + group['id'] + '">' + group['name'] + ' [' + group['id'] + ']</option>');
-  });
+    });
     groupsShowDisplay.sort();
     $.each(groupsShowDisplay, function(idx, display) {
       $('#epGroups').append(display.split('|')[1]);
     });
     if (groupsShowDisplay.length > 0)
-    $('#epGroups').prepend('<option value="All">All</option>');
+      $('#epGroups').prepend('<option value="All">All</option>');
     $('#epGroupsTitle').html('groups (' + groupsShowDisplay.length + ')');
   }
 }
@@ -1223,12 +1223,12 @@ function epc_sessionsShow() {
   $('#epSessions').html('');
   if (sessionsShow) {
     sessionsShow.sort();
-  $.each(sessionsShow, function(idx, id) {
-    session = sessions[id];
-    $('#epSessions').append('<option value="' + session['id'] + '">' + session['id'] + '</option>');
-  });
+    $.each(sessionsShow, function(idx, id) {
+      session = sessions[id];
+      $('#epSessions').append('<option value="' + session['id'] + '">' + session['id'] + '</option>');
+    });
     if (sessionsShow.length > 0)
-    $('#epSessions').prepend('<option value="All">All</option>');
+      $('#epSessions').prepend('<option value="All">All</option>');
     $('#epSessionsTitle').html('sessions (' + sessionsShow.length + ')');
   }
 }

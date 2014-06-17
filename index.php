@@ -151,7 +151,8 @@ function getFunctionName($s) {
     <div style="position: absolute; top: 35px; bottom: 35px; left: 15px; right: 115px;">
 
       <div style="position: relative; float: left; height: 100%; width: 24%; min-width: 100px;">
-        <p id="epAuthorsTitle" style="padding: 0px 5px 0px 5px; font-weight: bold;">authors</p>
+        <p id="epAuthorsTitle" style="display: inline-block; padding: 0px 5px 0px 5px; font-weight: bold;">authors</p>
+        <img id="epAuthorsFilter" src="resources/filter.png" style="display: none; height: 17px; vertical-align: middle;"></p>
         <div style="position: absolute; top: 35px; bottom: 26px; left: 5px; right: 2px;">
           <select id="epAuthors" multiple="multiple" style="height: 100%; width: 100%;" onclick="if (this.value == 'All') selectAll(this); else selection(authorsSelected, this.selectedOptions, $('#epAuthorName'), function(id){ epc_authorsInfoShow(false, [id]); });">
           </select>
@@ -189,7 +190,8 @@ function getFunctionName($s) {
       </div>
 
       <div style="position: relative; float: left; height: 100%; width: 30%; min-width: 150px;">
-        <p id="epPadsTitle" style="padding: 0px 5px 0px 5px; font-weight: bold;">pads</p>
+        <p id="epPadsTitle" style="display: inline-block; padding: 0px 5px 0px 5px; font-weight: bold;">pads</p>
+        <img id="epPadsFilter" src="resources/filter.png" style="display: none; height: 17px; vertical-align: middle;">
         <div style="position: absolute; top: 35px; bottom: 30px; left: 5px; right: 2px;">
           <select id="epPadsType" style="width: 100%;" onchange="epc_padsShow(this.value)">
           </select>

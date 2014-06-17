@@ -132,6 +132,7 @@ function epc_authors(data, verbose) {
       jsonData = epx_call('listAllAuthors', [], verbose);
       if (jsonData !== undefined && jsonData !== null)
         aData.push(jsonData);
+      filter("authors", "off");
       break;
     case 'group':
       selectedGids = $('#epGroups :selected').map(function(){return this.value;}).get();
@@ -150,6 +151,7 @@ function epc_authors(data, verbose) {
         if (jsonData !== undefined && jsonData !== null)
           aData.push(jsonData);
       }
+      filter("authors", "on");
       break;
   }
 
@@ -781,6 +783,7 @@ function epc_pads(data, verbose) {
       jsonData = ep_call('listAllPads', [], verbose);
       if (jsonData !== undefined && jsonData !== null)
         aData.push(jsonData);
+      filter("pads", "off");
       break;
     case 'author':
       selectedAids = $('#epAuthors :selected').map(function(){return this.value;}).get();
@@ -793,6 +796,7 @@ function epc_pads(data, verbose) {
         if (jsonData !== undefined && jsonData !== null)
           aData.push(jsonData);
       }
+      filter("pads", "on");
       break;
     case 'group':
       selectedGids = $('#epGroups :selected').map(function(){return this.value;}).get();
@@ -809,6 +813,7 @@ function epc_pads(data, verbose) {
         if (jsonData !== undefined && jsonData !== null)
           aData.push(jsonData);
       }
+      filter("pads", "on");
       break;
   }
 
@@ -1672,6 +1677,17 @@ function selection(pre, post, target, info) {
   }
   pre['count'] = post.length;
   id && info && info(id);
+}
+
+function filter(type, state) {
+  switch (type) {
+    case "authors":
+      $('#epAuthorsFilter').css('display', (state == 'on' ? 'inline' : 'none'));
+      break;
+    case "pads":
+      $('#epPadsFilter').css('display', (state == 'on' ? 'inline' : 'none'));
+      break;
+  }
 }
 
 function popupToggle(type, buttons, cbs) {
